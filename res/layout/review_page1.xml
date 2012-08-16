@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	android:layout_width="match_parent" android:layout_weight="1"
+	android:layout_height="fill_parent" android:orientation="vertical"
+	android:background="@drawable/bg_blank"
+	android:layout_gravity="fill_horizontal"
+	android:id="@+id/no_device">
+
+	<TextView
+	    android:id="@+id/title"
+	    android:layout_width="wrap_content"
+	    android:layout_height="wrap_content"
+	    android:layout_marginTop="45dp"
+	    android:layout_marginLeft="50dp"
+	    android:gravity="center"
+	    android:textColor = "#000000"
+	    android:text="Your Last Turn"
+	    android:textSize="42dip">
+	</TextView>
+	
+	<TextView
+	    android:id="@+id/level"
+	    android:layout_width="600dip"
+	    android:layout_height="45dp"
+	    android:layout_below="@+id/title"
+	    android:layout_marginTop="80dp"
+	    android:text="@string/level"
+	    android:textColor="#ffffff"
+	    android:textSize="30dip" />
+		
+	<TextView
+	    android:id="@+id/attempt"
+	    android:layout_width="600dip"
+	    android:layout_height="45dp"
+	    android:layout_marginTop="30dp"
+	    android:layout_below="@+id/level"
+	    android:text="@string/attempt"
+	    android:textColor="#ffffff"
+	    android:textSize="30dip" />
+		
+	<TextView
+	    android:id="@+id/score"
+	    android:layout_width="600dip"
+	    android:layout_height="45dp"
+	    android:layout_below="@+id/attempt"
+	    android:layout_marginTop="30dp"
+	    android:gravity="left"
+	    android:textColor="#ffffff"
+	    android:text="@string/score"
+	    android:textSize="30dip">
+	</TextView>
+
+	<TextView
+	    android:id="@+id/fabric"
+	    android:layout_width="600dip"
+	    android:layout_height="45dp"
+	    android:layout_below="@+id/score"
+	    android:layout_marginTop="30dp"
+	    android:text="@string/fabric"
+	    android:textColor="#ffffff"
+	    android:textSize="30dip" />
+	
+	<Button
+	    android:id="@+id/btn_next"
+	    android:layout_width="200dp"
+	    android:layout_height="100dp"
+	    android:layout_below="@+id/fabric"
+	    android:layout_marginTop ="300dp"
+	    android:layout_marginLeft="300dp"
+	    android:textSize="30sp"
+	    android:text="Next" />
+	
+</RelativeLayout>
