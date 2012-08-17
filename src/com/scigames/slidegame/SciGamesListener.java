@@ -25,7 +25,7 @@ import android.os.Bundle;
 public interface SciGamesListener {
 	
 	public void onResultsSucceeded(String[] student, String[] slide_session, String[] slide_level, String[] objective_images, 
-			String[] fabric, String[] result_images, String[] score_images, String attempts, JSONObject serverResponseJSON) throws JSONException;
+			String[] fabric, String[] result_images, String[] score_images, String attempts, boolean no_session, JSONObject serverResponseJSON) throws JSONException;
 	public void failedQuery(String failureReason);
 	
 }

@@ -53,6 +53,7 @@ import com.scigames.slidegame.R;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.Application;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -104,6 +105,14 @@ public class ReviewActivity extends Activity implements SciGamesListener{
     private String cartLevel = "CARTLEVEL";
     private String photoUrl = "none";
     
+    private String[] resultImg;
+    private String[] scoreImg;
+    
+    private int resultImgNum = 0;
+    private int scoreImgNum = 0;
+    
+    private boolean debug = true;
+    
     TextView title;
     TextView mLevel;
     TextView mScore;
@@ -115,13 +124,14 @@ public class ReviewActivity extends Activity implements SciGamesListener{
     Typeface Museo700Regular;
     Typeface ExistenceLightOtf;
     
-    Button reviewBtn;
+    Button reviewBtnNext;
     
     AlertDialog alertDialog;
     AlertDialog infoDialog;
+    AlertDialog needSlideDataDialog;
     
-   // DownloadProfilePhoto photoTask = new DownloadProfilePhoto(ReviewActivity.this, "sUrl");
     SciGamesHttpPoster task = new SciGamesHttpPoster(ReviewActivity.this,"http://mysweetwebsite.com/pull/slide_results.php");
+    DownloadNarrativeImage imgTask = new DownloadNarrativeImage(ReviewActivity.this, "url");
     
     public ReviewActivity() {
     	
@@ -143,7 +153,12 @@ public class ReviewActivity extends Activity implements SciGamesListener{
         // Inflate our UI from its XML layout description.
         setContentView(R.layout.review_page1);
         Log.d(TAG,"...setContentView");
-       
+        resultImgNum = 0;
+        scoreImgNum = 0;
+        
+        //resultImg[0] = "http://mysweetwebsite.com/narrative_images/Level0/results/_0012_Layer-Comp-13.png";
+        //resultImg[1] = "http://mysweetwebsite.com/narrative_images/Level0/results/_0012_Layer-Comp-13.png";
+        
 		alertDialog = new AlertDialog.Builder(ReviewActivity.this).create();
 	    alertDialog.setTitle("No Registration System Attached ");
 	    alertDialog.setButton(RESULT_OK,"OK", new DialogInterface.OnClickListener() {
@@ -160,6 +175,21 @@ public class ReviewActivity extends Activity implements SciGamesListener{
 	        public void onClick(DialogInterface dialog, int which) {
 	        // Write your code here to execute after dialog closed
 	        //Toast.makeText(getApplicationContext(), "", Toast.LENGTH_SHORT).show();
+	        }
+	    });
+	    
+	    needSlideDataDialog = new AlertDialog.Builder(ReviewActivity.this).create();
+	    needSlideDataDialog.setTitle("Debug Info");
+	    needSlideDataDialog.setButton(RESULT_OK,"OK", new DialogInterface.OnClickListener() {
+	        public void onClick(DialogInterface dialog, int which) {
+	        // Write your code here to execute after dialog closed
+	        //Toast.makeText(getApplicationContext(), "", Toast.LENGTH_SHORT).show();
+				Intent i = new Intent(ReviewActivity.this, LoginActivity.class);
+				Log.d(TAG,"new LoginActivity Intent");
+				i.putExtra("page", "login");
+				Log.d(TAG,"startActivity...");
+				ReviewActivity.this.startActivity(i);
+				Log.d(TAG,"...startActivity");
 	        }
 	    });
 	    
@@ -180,9 +210,8 @@ public class ReviewActivity extends Activity implements SciGamesListener{
 	    Museo500Regular = Typeface.createFromAsset(getAssets(),"fonts/Museo500-Regular.otf");
 	    Museo700Regular = Typeface.createFromAsset(getAssets(),"fonts/Museo700-Regular.otf");
 	    
-        reviewBtn = (Button) findViewById(R.id.btn_next);
-        reviewBtn.setOnClickListener(mReview);
-        setButtonFont(ExistenceLightOtf, reviewBtn);
+	    reviewBtnNext = (Button) findViewById(R.id.btn_next);
+        reviewBtnNext.setOnClickListener(mNext);
         
 	    if (isNetworkAvailable()){
 		    task.cancel(true);
@@ -192,6 +221,10 @@ public class ReviewActivity extends Activity implements SciGamesListener{
 	        task.setOnResultsListener(ReviewActivity.this);
 	        //prepare key value pairs to send
 			String[] keyVals = {"rfid", rfidIn}; 
+			if(debug){
+				keyVals[0] = "rfid";
+			    keyVals[1] = "500315c37"; //tester
+			}
 			infoDialog.setTitle("rfidIn:");
 			infoDialog.setMessage(rfidIn);
 			infoDialog.show();
@@ -213,32 +246,26 @@ public class ReviewActivity extends Activity implements SciGamesListener{
     }
 
     
-    OnClickListener mPlay = new OnClickListener(){
+    OnClickListener mNext = new OnClickListener(){
 	    public void onClick(View v) {
-			Log.d(TAG,"mPlay.onClick");
-			//startActivity(new Intent(ProfileActivity.this, Registration2RfidMass_AdkServiceActivity.class));
-			Intent i = new Intent(ReviewActivity.this, LoginActivity.class);
-			Log.d(TAG,"new Intent");
-			i.putExtra("studentId",studentIdIn);
-			i.putExtra("page", "fabric");
-			Log.d(TAG,"startActivity...");
-			ReviewActivity.this.startActivity(i);
-			Log.d(TAG,"...startActivity");
+	    	
+	    	setCurrImg(resultImg[resultImgNum]);
+	    	resultImgNum++; 
 		}
     };
     	
-    OnClickListener mReview = new OnClickListener() {
-        public void onClick(View v) {
-			Log.d(TAG,"mReview.onClick");
-			Intent i = new Intent(ReviewActivity.this, LoginActivity.class);
-			Log.d(TAG,"new LoginActivity Intent");
-			i.putExtra("rfid", rfidIn);
-			i.putExtra("page", "slideReview");
-			Log.d(TAG,"startActivity...");
-			ReviewActivity.this.startActivity(i);
-			Log.d(TAG,"...startActivity");
-        }
-    };
+//    OnClickListener mReview = new OnClickListener() {
+//        public void onClick(View v) {
+////			Log.d(TAG,"mReview.onClick");
+////			Intent i = new Intent(ReviewActivity.this, LoginActivity.class);
+////			Log.d(TAG,"new LoginActivity Intent");
+////			i.putExtra("rfid", rfidIn);
+////			i.putExtra("page", "slideReview");
+////			Log.d(TAG,"startActivity...");
+////			ReviewActivity.this.startActivity(i);
+////			Log.d(TAG,"...startActivity");
+//        }
+//    };
 
 	public void failedQuery(String failureReason) {
 
@@ -250,26 +277,32 @@ public class ReviewActivity extends Activity implements SciGamesListener{
 	public void onResultsSucceeded(String[] student, String[] slide_session,
 			String[] slide_level, String[] objective_images, String[] fabric,
 			String[] result_images, String[] score_images, String attempts,
-			JSONObject serverResponseJSON) throws JSONException {
+			boolean no_session, JSONObject serverResponseJSON) throws JSONException {
 		
-		infoDialog.setTitle("onResults Succeded: ");
-		infoDialog.setMessage(serverResponseJSON.toString());
-		infoDialog.show();
-		
-     	//update all text fields
-     	Resources res = getResources();
-     	
-        //TextView greets = (TextView)findViewById(R.id.greeting);
-     	mLevel.setText(String.format(res.getString(R.string.level), student[5]));
-        mScore.setText(String.format(res.getString(R.string.score), slide_session[4]));
-        mFabric.setText(String.format(res.getString(R.string.fabric), slide_session[8]));
-        mAttempt.setText(String.format(res.getString(R.string.attempt), slide_session[1]));
-        
-        setTextViewFont(Museo700Regular, title);
-        setTextViewFont(Museo500Regular, mLevel, mScore, mFabric);
-     	
-        Log.d(TAG,"...Profile Info");
-		
+		if(no_session == true){
+			needSlideDataDialog.setTitle("No Slide Data Today! ");
+			needSlideDataDialog.setMessage("Go play on the slide before checking your last score!");
+			needSlideDataDialog.show();
+		} else {
+			infoDialog.setTitle("onResults Succeded: ");
+			infoDialog.setMessage(serverResponseJSON.toString());
+			infoDialog.show();
+			
+	     	//update all text fields
+	     	Resources res = getResources();
+	     	
+	        //TextView greets = (TextView)findViewById(R.id.greeting);
+	     	mLevel.setText(String.format(res.getString(R.string.level), student[5]));
+	        mScore.setText(String.format(res.getString(R.string.score), slide_session[4]));
+	        mFabric.setText(String.format(res.getString(R.string.fabric), fabric[0]));
+	        mAttempt.setText(String.format(res.getString(R.string.attempt), slide_session[1]));
+	        
+	        setTextViewFont(Museo700Regular, title);
+	        setTextViewFont(Museo500Regular, mLevel, mScore, mFabric);
+	        
+	        resultImg = result_images;
+	        scoreImg = score_images;
+		}
 	}
 	
     //----- check if tablet is connected to internet!
@@ -301,6 +334,30 @@ public class ReviewActivity extends Activity implements SciGamesListener{
 		//do nothing
 		getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LOW_PROFILE);
         
+	}
+	
+	private void setCurrImg(String imgURL){
+		//View thisView = findViewById(R.layout.results_image_page);
+		//setContentView(thisView);
+		setContentView(R.layout.results_image_page);
+		
+//---- if image does not exist, download it	
+		
+		//download photo
+        ImageView narrativeImg = (ImageView) findViewById(R.id.narrative_image);
+        narrativeImg.setTag(imgURL);
+        //narrativeImg.setScaleX(1.4f);
+        //narrativeImg.setScaleY(1.4f);
+        //narrativeImg.setX(120f);
+        //narrativeImg.setY(123f);
+        imgTask.cancel(true);
+        imgTask = new DownloadNarrativeImage(ReviewActivity.this, imgURL);
+        //AsyncTask<ImageView, Void, Bitmap> pPhoto = 
+        imgTask.execute(narrativeImg);
+		
+
+//---- else if image does exist, set background.
+		//thisView.setBackgroundResource(R.id.results_image_page);
 	}
 }
 

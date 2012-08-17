@@ -52,6 +52,8 @@ import com.scigames.slidegame.MenuActivity;
 import com.scigames.slidegame.R;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
@@ -73,6 +75,7 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 /**
  * This class provides a basic demonstration of how to write an Android
@@ -97,6 +100,10 @@ public class MenuActivity extends Activity implements SciGamesListener{
     private String slideLevel = "SLIDELEVEL";
     private String cartLevel = "CARTLEVEL";
     private String photoUrl = "none";
+    
+    private boolean debug = true;
+    
+    AlertDialog infoDialog;
     
     TextView greets;
     TextView fname;
@@ -130,15 +137,27 @@ public class MenuActivity extends Activity implements SciGamesListener{
     	Log.d(TAG,"super.OnCreate");
         Intent i = getIntent();
         Log.d(TAG,"getIntent");
-    	firstNameIn = i.getStringExtra("fName");
-    	lastNameIn = i.getStringExtra("lName");;
-    	studentIdIn = i.getStringExtra("studentId");
-    	visitIdIn = i.getStringExtra("visitId");
-    	rfidIn = i.getStringExtra("rfid");
-    	photoUrl = i.getStringExtra("photo");
-    	photoUrl = "http://mysweetwebsite.com/" + photoUrl;
-    	slideLevel = i.getStringExtra("slideLevel");
-    	Log.d(TAG,"...getStringExtra");
+        if(!debug){
+	    	firstNameIn = i.getStringExtra("fName");
+	    	lastNameIn = i.getStringExtra("lName");;
+	    	studentIdIn = i.getStringExtra("studentId");
+	    	visitIdIn = i.getStringExtra("visitId");
+	    	rfidIn = i.getStringExtra("rfid");
+	    	photoUrl = i.getStringExtra("photo");
+	    	photoUrl = "http://mysweetwebsite.com/" + photoUrl;
+	    	slideLevel = i.getStringExtra("slideLevel");
+	    	Log.d(TAG,"...getStringExtra");
+        } else {
+	    	firstNameIn = "joe";
+	    	lastNameIn = "saavedra";
+	    	studentIdIn = "502d884fc0c0bad86e000001";
+	    	visitIdIn = "502d8875c0c0bad86e000002";
+	    	rfidIn = "500315c37";
+	    	photoUrl = "student_images/502d882cc0c0bad76e000001/502d884fc0c0bad86e000001.jpg";
+	    	photoUrl = "http://mysweetwebsite.com/" + photoUrl;
+	    	slideLevel = "0";
+        	
+        }
         // Inflate our UI from its XML layout description.
         setContentView(R.layout.menu_page);
         Log.d(TAG,"...setContentView");
@@ -165,10 +184,24 @@ public class MenuActivity extends Activity implements SciGamesListener{
         reviewBtn.setOnClickListener(mReview);
         setButtonFont(ExistenceLightOtf, reviewBtn);
         
-//        task.setOnResultsListener(this);
+	    infoDialog = new AlertDialog.Builder(MenuActivity.this).create();
+	    infoDialog.setTitle("Debug Info");
+	    infoDialog.setButton(RESULT_OK,"OK", new DialogInterface.OnClickListener() {
+	        public void onClick(DialogInterface dialog, int which) {
+	        // Write your code here to execute after dialog closed
+	        }
+	    });
+        
+		if(debug){
+			infoDialog.setTitle("studentId");
+			infoDialog.setMessage(studentIdIn);
+			infoDialog.show();
+		}
+        
+//      task.setOnResultsListener(this);
 //		task.cancel(true);
 //	    task = new SciGamesHttpPoster(MenuActivity.this,"http://mysweetwebsite.com/pull/return_profile.php");
-//        task.setOnResultsListener(MenuActivity.this);
+//      task.setOnResultsListener(MenuActivity.this);
 //        
 		//download photo
         ImageView profilePhoto = (ImageView) findViewById(R.id.profile_image);
@@ -184,7 +217,6 @@ public class MenuActivity extends Activity implements SciGamesListener{
         		
 		//prepare key value pairs to send
 		String[] keyVals = {"student_id", studentIdIn, "visit_id", visitIdIn}; 
-		
 		//create AsyncTask, then execute
 		@SuppressWarnings("unused")
 		AsyncTask<String, Void, JSONObject> serverResponse = null;
@@ -218,7 +250,7 @@ public class MenuActivity extends Activity implements SciGamesListener{
     OnClickListener mReview = new OnClickListener() {
         public void onClick(View v) {
 			Log.d(TAG,"mReview.onClick");
-			Intent i = new Intent(MenuActivity.this, LoginActivity.class);
+			Intent i = new Intent(MenuActivity.this, ReviewActivity.class);
 			Log.d(TAG,"new LoginActivity Intent");
 			i.putExtra("rfid", rfidIn);
 			i.putExtra("page", "slideReview");
@@ -238,7 +270,7 @@ public class MenuActivity extends Activity implements SciGamesListener{
 	public void onResultsSucceeded(String[] student, String[] slide_session,
 			String[] slide_level, String[] objective_images, String[] fabric,
 			String[] result_images, String[] score_images, String attempts,
-			JSONObject serverResponseJSON) throws JSONException {
+			boolean no_session, JSONObject serverResponseJSON) throws JSONException {
 		
 
      	//update all text fields

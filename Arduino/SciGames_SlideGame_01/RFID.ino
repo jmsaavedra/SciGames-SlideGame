@@ -75,7 +75,6 @@ void RFID_reader(){
         Serial.println(code[5] == checksum ? " -- passed." : " -- error.");
         Serial.println();
       }
-
       bytesread = 0;
     }
   }

@@ -38,11 +38,13 @@ import android.os.Handler;
 import android.os.Message;
 import android.os.ParcelFileDescriptor;
 import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.Window;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -76,6 +78,7 @@ public class LoginActivity extends Activity implements Runnable, SciGamesListene
     private String currRfid = "";
     
     private boolean debug = true;
+    private boolean debugImages = false;
     private boolean moveOn = false;
 
     TextView greets;
@@ -83,6 +86,7 @@ public class LoginActivity extends Activity implements Runnable, SciGamesListene
     TextView slideData;
     TextView slideInstructions;
     TextView debuggin;
+    TextView noDevice;
     
     Button sendFakeSlideData; //for testing
     Button playBtn;
@@ -94,6 +98,8 @@ public class LoginActivity extends Activity implements Runnable, SciGamesListene
     Typeface Museo300Regular;
     Typeface Museo500Regular;
     Typeface Museo700Regular;
+    
+    ImageView bg;
     
     SciGamesHttpPoster task = new SciGamesHttpPoster(LoginActivity.this, "http://mysweetwebsite.com/pull/auth_rfid.php");
 	
@@ -124,7 +130,6 @@ public class LoginActivity extends Activity implements Runnable, SciGamesListene
 	        }
 	    });
         
-	    
         /******* service stuff ******/
         mUsbManager = UsbManager.getInstance(this);
 		mPermissionIntent = PendingIntent.getBroadcast(this, 0, new Intent(
@@ -141,8 +146,9 @@ public class LoginActivity extends Activity implements Runnable, SciGamesListene
 		startService(new Intent(this, ADKService.class));
 
 		/***** end service stuff *****/      
+        //getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_HIDE_NAVIGATION);
         getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LOW_PROFILE);
-    	
+        
 	    ExistenceLightOtf = Typeface.createFromAsset(getAssets(),"fonts/Existence-Light.ttf");
 	    Museo300Regular = Typeface.createFromAsset(getAssets(),"fonts/Museo300-Regular.otf");
 	    Museo500Regular = Typeface.createFromAsset(getAssets(),"fonts/Museo500-Regular.otf");
@@ -154,11 +160,25 @@ public class LoginActivity extends Activity implements Runnable, SciGamesListene
         greets = (TextView)findViewById(R.id.welcome);
         setTextViewFont(Museo700Regular, greets);
         Log.d(TAG,"...Greetings");
-        	    
+        
         task.setOnResultsListener(this);
         //sendPress('X');
-        
+        if(debugImages) currPage = "slideReview";
         Log.d(TAG, "...end OnCreate");
+        
+        if(debugImages){
+		    task.cancel(true);
+		    //create a new async task for every time you hit login (each can only run once ever)
+		   	task = new SciGamesHttpPoster(LoginActivity.this,"http://mysweetwebsite.com/pull/auth_rfid.php");
+		    //set listener
+	        task.setOnResultsListener(LoginActivity.this);
+	        //prepare key value pairs to send
+			String thisBracelet = "500315c37";
+			String[] keyVals = {"rfid", thisBracelet}; 
+			//create AsyncTask, then execute
+			AsyncTask<String, Void, JSONObject> serverResponse = null;
+			serverResponse = task.execute(keyVals);
+        }
     }
 
     @Override
@@ -185,9 +205,9 @@ public class LoginActivity extends Activity implements Runnable, SciGamesListene
         		  currPage = "login";
         		  setContentView(R.layout.login_page);
         		  currRfid = "";
-        		  
         	  } else if(intent.getExtras().getString("page").equals("fabric")){
 	        	  currPage = "fabric";
+	        	  studentId = intent.getExtras().getString("studentId");
 	        	  setContentView(R.layout.fabric_page);
 	              fabricId = (TextView)findViewById(R.id.fabric_id);
 	              playBtn = (Button)findViewById(R.id.btn_play);
@@ -200,12 +220,10 @@ public class LoginActivity extends Activity implements Runnable, SciGamesListene
         		  slideData = (TextView)findViewById(R.id.slide_data);
         		  slideInstructions = (TextView)findViewById(R.id.slide_instructions);
         		  //setTextViewFont(Museo700Regular, slideData, slideInstructions);  
-        		  
         		  slideSessionIdIn = intent.getExtras().getString("slidesessionId");
         		  infoDialog.setTitle("slideSessionIdIn: ");
     	          infoDialog.setMessage(slideSessionIdIn);
     	          infoDialog.show();
-    	          
         		  debuggin = (TextView)findViewById(R.id.debug);
         		  debuggin.setText("created new LoginActivity");
         	      sendFakeSlideData = (Button) findViewById(R.id.btn_sendfakedata);
@@ -220,7 +238,6 @@ public class LoginActivity extends Activity implements Runnable, SciGamesListene
 	     		  Log.d(TAG,"startActivity...");
 	     		  LoginActivity.this.startActivity(i);
 	     		  Log.d(TAG,"...startActivity");
-
         	  }
          } 
     } 
@@ -263,7 +280,13 @@ public class LoginActivity extends Activity implements Runnable, SciGamesListene
 			Log.d(TAG, "NO ACCESSORY ATTACHED");
 			//alertDialog.setMessage("Please Attach the Registration System to this Tablet and Login");
 			//alertDialog.show();
-			setContentView(R.layout.no_device);
+			if(!debugImages){
+				setContentView(R.layout.no_device);
+				noDevice = (TextView)findViewById(R.id.connect_device);
+				setTextViewFont(Museo700Regular, noDevice);
+				bg = (ImageView)findViewById(R.id.thisBg);
+			}
+	        
 		}
 		// Let's update the textviews for easy debugging here...
 		updateTextViews();
@@ -354,7 +377,6 @@ public class LoginActivity extends Activity implements Runnable, SciGamesListene
 //				}
 		}
 	}
-
 
     // ------------
     // ADK Handling
@@ -510,6 +532,7 @@ public class LoginActivity extends Activity implements Runnable, SciGamesListene
 			//create AsyncTask, then execute
 			AsyncTask<String, Void, JSONObject> serverResponse = null;
 			serverResponse = task.execute(keyVals);
+			
 	    } else {
 			alertDialog.setMessage("You're not connected to the internet. Make sure this tablet is logged into a working Wifi Network.");
 			alertDialog.show();	
@@ -586,7 +609,7 @@ public class LoginActivity extends Activity implements Runnable, SciGamesListene
   	    public void onClick(View v) {
   	    	
   	    	
-  	    	String[] thisData = {"5","30","250", "150", "955","1415","55","101","45","1","true",slideSessionIdIn};
+  	    	String[] thisData = {"5","30","250", "150", "955","1415","55","101","45","1","false",slideSessionIdIn};
 
 //  	    	thisData[0] = "5"; 		//'slide_length'
 //  	    	thisData[1] = "30"; 	//'slide_angle'
@@ -619,7 +642,7 @@ public class LoginActivity extends Activity implements Runnable, SciGamesListene
 	public void onResultsSucceeded(String[] student, String[] slide_session,
 			String[] slide_level, String[] objective_images, String[] fabric,
 			String[] result_images, String[] score_images, String attempts,
-			JSONObject serverResponseJSON) throws JSONException {
+			boolean no_session, JSONObject serverResponseJSON) throws JSONException {
 		if (currPage.equals("login")){
 	   		Intent i = new Intent(LoginActivity.this, MenuActivity.class);
 			Log.d(TAG,"new Intent");
@@ -637,9 +660,11 @@ public class LoginActivity extends Activity implements Runnable, SciGamesListene
 		else if(currPage.equals("fabric")){			
 			fabricId.setText(serverResponseJSON.toString());
 			slideSessionIdIn = slide_session[0];
-			infoDialog.setTitle("onResults from fabric update slidesessionid: ");
-			infoDialog.setMessage(slideSessionIdIn);
-			infoDialog.show();
+			if(debug){
+//				infoDialog.setTitle("onResults from fabric update slidesessionid: ");
+//				infoDialog.setMessage(slideSessionIdIn);
+//				infoDialog.show();
+			}
 		} 
 		else if(currPage.equals("sliding")) {
 			slideInstructions.setText(serverResponseJSON.toString());
@@ -669,9 +694,8 @@ public class LoginActivity extends Activity implements Runnable, SciGamesListene
 		infoDialog.show();
 		onResume();
 	}
-	
-	
-    //---- methods for setting fonts!!
+		
+    //---- methods for setting fonts
     public static void setTextViewFont(Typeface tf, TextView...params) {
         for (TextView tv : params) {
             tv.setTypeface(tf);
@@ -701,6 +725,20 @@ public class LoginActivity extends Activity implements Runnable, SciGamesListene
 	public void onBackPressed() {
 		//do nothing
 		getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LOW_PROFILE);
-        
+		//getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_HIDE_NAVIGATION);
 	}
+	
+//	@Override
+//	  public boolean onTouchEvent(MotionEvent event){
+//		try {
+//			
+//			getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_HIDE_NAVIGATION);
+//			Thread.sleep(250);
+//			getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_HIDE_NAVIGATION);
+//		} catch (InterruptedException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
+//		return debug;
+//	}
 }

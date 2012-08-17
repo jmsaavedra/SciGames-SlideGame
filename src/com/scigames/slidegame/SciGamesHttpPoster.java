@@ -154,10 +154,12 @@ public class SciGamesHttpPoster extends AsyncTask <String, Void, JSONObject> {
     	String[] slide_session = {"null"};
     	String[] slide_level = {"null"};
     	String[] fabric = {"null"};
-    	String[] objective_images = {"null"};
-    	String[] result_images = {"null"};
-    	String[] score_images = {"null"};
+    	String[] objective_images = null;
     	String attempts = "null";
+    	String[] result_images = null;
+    	String[] score_images = null;
+    	
+    	boolean no_session = false;
     	
     	if (MyActivity.toString().startsWith("com.scigames.slidegame.LoginActivity") || 
     			MyActivity.toString().startsWith("com.scigames.slidegame.ReviewActivity")){ 
@@ -173,14 +175,18 @@ public class SciGamesHttpPoster extends AsyncTask <String, Void, JSONObject> {
 				}
 			}
 			if(response.has("slide_session")){
-				//parse slide session
-				try {
-					slide_session = parseSlideSession(response);
-				} catch (JSONException e) {
-					e.printStackTrace();
+				if(response.isNull("slide_session")){
+					Log.d(TAG,"SLIDE_SESSION == NULL");
+					no_session = true; //this is if a kid swipes in before going on the slide
+				} else {
+					try {
+						slide_session = parseSlideSession(response);
+					} catch (JSONException e) {
+						e.printStackTrace();
+					}
 				}
 			}
-			if(response.has("slide_level")){
+			if(response.has("slide_level") && !no_session){
 				//parse slide_level
 				try {
 					slide_level = parseSlideLevel(response);
@@ -188,7 +194,7 @@ public class SciGamesHttpPoster extends AsyncTask <String, Void, JSONObject> {
 					e.printStackTrace();
 				}
 			}
-			if(response.has("fabric")){
+			if(response.has("fabric") && !no_session){
 				//parse fabric
 				try {
 					fabric = parseFabric(response);
@@ -197,6 +203,7 @@ public class SciGamesHttpPoster extends AsyncTask <String, Void, JSONObject> {
 				}
 			}
 			if(response.has("objective_images")){
+
 				try {
 					for(int i=0; i<response.getJSONArray("objective_images").length(); i++ ){
 						objective_images[i] = response.getJSONArray("objective_images").getString(i);
@@ -206,7 +213,14 @@ public class SciGamesHttpPoster extends AsyncTask <String, Void, JSONObject> {
 				}
 			}
 			if(response.has("result_images")){
+				
 				try {
+					result_images = new String[response.getJSONArray("result_images").length()];
+					Log.d(TAG, "number of result_images:");
+					Log.d(TAG, String.valueOf(response.getJSONArray("result_images").length()));
+					Log.d(TAG, response.getJSONArray("result_images").toString());
+					Log.d(TAG, response.getJSONArray("result_images").getString(0));
+					
 					for(int i=0; i<response.getJSONArray("result_images").length(); i++ ){
 						result_images[i] = response.getJSONArray("result_images").getString(i);
 					}
@@ -215,7 +229,9 @@ public class SciGamesHttpPoster extends AsyncTask <String, Void, JSONObject> {
 				}
 			}
 			if(response.has("score_images")){
+				
 				try {
+					score_images = new String[response.getJSONArray("score_images").length()];
 					for(int i=0; i<response.getJSONArray("score_images").length(); i++ ){
 						score_images[i] = response.getJSONArray("score_images").getString(i);
 					}
@@ -231,7 +247,7 @@ public class SciGamesHttpPoster extends AsyncTask <String, Void, JSONObject> {
 				}
 			}
 			try {
-				listener.onResultsSucceeded(student, slide_session, slide_level, objective_images, fabric, result_images, score_images, attempts, response);
+				listener.onResultsSucceeded(student, slide_session, slide_level, objective_images, fabric, result_images, score_images, attempts, no_session, response);
 			} catch (JSONException e) {
 				e.printStackTrace();
 			}

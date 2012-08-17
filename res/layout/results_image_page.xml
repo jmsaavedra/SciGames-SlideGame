@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	android:layout_width="match_parent" android:layout_weight="1"
+	android:layout_height="fill_parent" android:screenOrientation="landscape"
+	android:background="@drawable/bg_test1"
+	android:layout_gravity="fill_horizontal"
+	android:id="@+id/results_image_page">
+
+<!-- 	<TextView
+	    android:id="@+id/connect_device"
+	    android:layout_width="600dip"
+	    android:layout_height="145dp"
+	    android:gravity="center"
+	    android:text="@string/no_device"
+	    android:textSize="30dip">
+	</TextView> -->
+	
+<!--  	<ImageView 
+	    android:id="@+id/thisBg" 
+	    android:layout_width="match_parent"
+		android:layout_height="wrap_content" 
+		android:src="@drawable/computer" 
+		android:layout_weight="1">
+	</ImageView> -->
+
+
+    <ImageView
+        android:id="@+id/narrative_image"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginLeft="0dp"
+        android:layout_marginTop="0dp"
+        android:layout_weight="1"
+        android:src="@drawable/bg_blank" />
+
+    
+	
+</RelativeLayout>
