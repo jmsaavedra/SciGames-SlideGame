@@ -53,6 +53,9 @@ public class LoginActivity extends Activity implements Runnable, SciGamesListene
     
 	private static final String TAG = "LoginActivity";
 	
+    private boolean debug = true;
+    private boolean debugImages = true;
+	
 	/*** service stuff ***/
 	private static final String ACTION_USB_PERMISSION = "com.google.android.DemoKit.action.USB_PERMISSION";
 	private UsbManager mUsbManager;
@@ -77,8 +80,6 @@ public class LoginActivity extends Activity implements Runnable, SciGamesListene
     private String currPage = "login";
     private String currRfid = "";
     
-    private boolean debug = true;
-    private boolean debugImages = false;
     private boolean moveOn = false;
 
     TextView greets;
@@ -87,12 +88,14 @@ public class LoginActivity extends Activity implements Runnable, SciGamesListene
     TextView slideInstructions;
     TextView debuggin;
     TextView noDevice;
+    TextView gotIt;
     
     Button sendFakeSlideData; //for testing
     Button playBtn;
     
     AlertDialog alertDialog;
     AlertDialog infoDialog;
+    AlertDialog fabricDialog;
     
     Typeface ExistenceLightOtf;
     Typeface Museo300Regular;
@@ -115,7 +118,7 @@ public class LoginActivity extends Activity implements Runnable, SciGamesListene
 	    alertDialog.setButton(RESULT_OK,"OK", new DialogInterface.OnClickListener() {
 	        public void onClick(DialogInterface dialog, int which) {
 	        // Write your code here to execute after dialog closed
-	        Toast.makeText(getApplicationContext(), "", Toast.LENGTH_SHORT).show();
+	        //Toast.makeText(getApplicationContext(), "", Toast.LENGTH_SHORT).show();
 	        finish();
 	        }
 	    });
@@ -125,8 +128,18 @@ public class LoginActivity extends Activity implements Runnable, SciGamesListene
 	    infoDialog.setButton(RESULT_OK,"OK", new DialogInterface.OnClickListener() {
 	        public void onClick(DialogInterface dialog, int which) {
 	        // Write your code here to execute after dialog closed
-	        Toast.makeText(getApplicationContext(), "", Toast.LENGTH_SHORT).show();
+	        //Toast.makeText(getApplicationContext(), "", Toast.LENGTH_SHORT).show();
 	        moveOn = true;
+	        }
+	    });
+	    
+	    fabricDialog = new AlertDialog.Builder(LoginActivity.this).create();
+	    fabricDialog.setTitle("Debug Info");
+	    fabricDialog.setButton(RESULT_OK,"OK", new DialogInterface.OnClickListener() {
+	        public void onClick(DialogInterface dialog, int which) {
+	        // Write your code here to execute after dialog closed
+	        //Toast.makeText(getApplicationContext(), "", Toast.LENGTH_SHORT).show();
+	        sendPress('Y');
 	        }
 	    });
         
@@ -157,14 +170,18 @@ public class LoginActivity extends Activity implements Runnable, SciGamesListene
     	Resources res = getResources();
     	setContentView(R.layout.login_page);
 
-        greets = (TextView)findViewById(R.id.welcome);
-        setTextViewFont(Museo700Regular, greets);
-        Log.d(TAG,"...Greetings");
+//        greets = (TextView)findViewById(R.id.welcome);
+//        setTextViewFont(Museo700Regular, greets);
+//        Log.d(TAG,"...Greetings");
         
         task.setOnResultsListener(this);
         //sendPress('X');
-        if(debugImages) currPage = "slideReview";
+        
+        currPage = "login";
+        if(debugImages) currPage = "objective";
         Log.d(TAG, "...end OnCreate");
+        
+        
         
         if(debugImages){
 		    task.cancel(true);
@@ -178,7 +195,7 @@ public class LoginActivity extends Activity implements Runnable, SciGamesListene
 			//create AsyncTask, then execute
 			AsyncTask<String, Void, JSONObject> serverResponse = null;
 			serverResponse = task.execute(keyVals);
-        }
+        }  
     }
 
     @Override
@@ -204,16 +221,35 @@ public class LoginActivity extends Activity implements Runnable, SciGamesListene
         	  if(intent.getExtras().getString("page").equals("login")){
         		  currPage = "login";
         		  setContentView(R.layout.login_page);
+        		  sendPress('Y');
         		  currRfid = "";
+        	  } else if(intent.getExtras().getString("page").equals("objective")){
+        		  currRfid = intent.getExtras().getString("rfid");
+        		  studentId = intent.getExtras().getString("studentId");
+	       		  Intent i = new Intent(LoginActivity.this, ObjectiveActivity.class);
+	     		  Log.d(TAG,"new Intent");
+	     		  i.putExtra("rfid",currRfid);
+	     		  i.putExtra("studentId",studentId);
+	     		  Log.d(TAG,"startActivity...");
+	     		  LoginActivity.this.startActivity(i);
+	     		  Log.d(TAG,"...startActivity");
+        		  
         	  } else if(intent.getExtras().getString("page").equals("fabric")){
 	        	  currPage = "fabric";
 	        	  studentId = intent.getExtras().getString("studentId");
+	        	  infoDialog.setTitle("onNewIntent page fabric: studId:");
+	        	  infoDialog.setMessage(studentId);
+	        	  infoDialog.show();
 	        	  setContentView(R.layout.fabric_page);
 	              fabricId = (TextView)findViewById(R.id.fabric_id);
+				  setTextViewFont(Museo700Regular, fabricId);
+        	      fabricId.setVisibility(View.INVISIBLE);
 	              playBtn = (Button)findViewById(R.id.btn_play);
 	              playBtn.setOnClickListener(mSlidePage);
         	      setTextViewFont(ExistenceLightOtf, playBtn);
+        	      playBtn.setVisibility(View.INVISIBLE);
 	              Log.d(TAG,"...fabricId");
+	              sendPress('Y');
         	  } else if (intent.getExtras().getString("page").equals("slideturn")){
         		  currPage = "sliding";
         		  setContentView(R.layout.slide_page);
@@ -284,7 +320,7 @@ public class LoginActivity extends Activity implements Runnable, SciGamesListene
 				setContentView(R.layout.no_device);
 				noDevice = (TextView)findViewById(R.id.connect_device);
 				setTextViewFont(Museo700Regular, noDevice);
-				bg = (ImageView)findViewById(R.id.thisBg);
+				//bg = (ImageView)findViewById(R.id.thisBg);
 			}
 	        
 		}
@@ -399,6 +435,7 @@ public class LoginActivity extends Activity implements Runnable, SciGamesListene
 			mThread.start(); // meep
 			Log.d(TAG, "accessory opened");
 			setContentView(R.layout.login_page);
+			sendPress('Y');
 			enableControls(true);
 		} else {
 			Log.d(TAG, "accessory open fail");
@@ -540,7 +577,7 @@ public class LoginActivity extends Activity implements Runnable, SciGamesListene
 	}
 	
 	private void sendFabricId(String braceletId){
-		Log.d(TAG, "hit checkBraceletId()");
+		Log.d(TAG, "hit checkFabrictId()");
 	    if (isNetworkAvailable()){
 		    task.cancel(true);
 		    //create a new async task for every time you hit login (each can only run once ever)
@@ -643,6 +680,10 @@ public class LoginActivity extends Activity implements Runnable, SciGamesListene
 			String[] slide_level, String[] objective_images, String[] fabric,
 			String[] result_images, String[] score_images, String attempts,
 			boolean no_session, JSONObject serverResponseJSON) throws JSONException {
+		
+		Log.d(TAG, "onResultsSucceded,");
+		Log.d(TAG, "currPage equals:" + currPage);
+		
 		if (currPage.equals("login")){
 	   		Intent i = new Intent(LoginActivity.this, MenuActivity.class);
 			Log.d(TAG,"new Intent");
@@ -656,14 +697,34 @@ public class LoginActivity extends Activity implements Runnable, SciGamesListene
 			Log.d(TAG,"startActivity...");
 			LoginActivity.this.startActivity(i);
 			Log.d(TAG,"...startActivity");
-		}
-		else if(currPage.equals("fabric")){			
-			fabricId.setText(serverResponseJSON.toString());
-			slideSessionIdIn = slide_session[0];
-			if(debug){
-//				infoDialog.setTitle("onResults from fabric update slidesessionid: ");
-//				infoDialog.setMessage(slideSessionIdIn);
-//				infoDialog.show();
+		} else if(currPage.equals("objective")){
+	   		Intent i = new Intent(LoginActivity.this, LoginActivity.class);
+			Log.d(TAG,"new Intent");
+			i.putExtra("page", "objective");
+			//i.putExtra("studentId",studentId);
+			Log.d(TAG,"startActivity...");
+			LoginActivity.this.startActivity(i);
+			Log.d(TAG,"...startActivity");
+			
+		} else if(currPage.equals("fabric")){
+			if(serverResponseJSON.isNull("fabric")){//if(serverResponseJSON.getString("fabric").equals(null)){ //
+				//this is not a fabric!
+				fabricDialog.setTitle("Not a Mat");
+				fabricDialog.setMessage("Try again, this time with a Mat tag, located at the corner of your chosen materal.");
+				fabricDialog.show();
+			} else {
+				fabricId.setVisibility(View.VISIBLE);
+				playBtn.setVisibility(View.VISIBLE);
+				fabricId.setText(serverResponseJSON.toString());
+				slideSessionIdIn = slide_session[0];
+				if(debug){
+	//				infoDialog.setTitle("onResults from fabric update slidesessionid: ");
+	//				infoDialog.setMessage(slideSessionIdIn);
+	//				infoDialog.show();
+				}
+				
+			//	fabricId.setText(serverResponseJSON.toString());
+			//	slideSessionIdIn = slide_session[0];
 			}
 		} 
 		else if(currPage.equals("sliding")) {

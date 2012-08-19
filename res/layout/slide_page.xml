@@ -36,8 +36,8 @@
         android:id="@+id/btn_sendfakedata"
         android:layout_width="260px"
         android:layout_height="120px"
-        android:layout_marginLeft="30dp"
-        android:layout_marginTop="760dp"
+        android:layout_marginLeft="530dp"
+        android:layout_marginTop="360dp"
         android:text="send fake data"
         android:textSize="30sp" />
 <!--    

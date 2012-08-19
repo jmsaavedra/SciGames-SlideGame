@@ -16,7 +16,7 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/bg_blank"
+    android:background="@drawable/bg_fabric"
     android:orientation="horizontal"
     android:paddingLeft="10dp"
     android:paddingTop="10dp" >
@@ -34,12 +34,12 @@
     
     <Button
         android:id="@+id/btn_play"
-        android:layout_width="260px"
-        android:layout_height="120px"
-        android:layout_marginLeft="30dp"
-        android:layout_marginTop="760dp"
-        android:text="READY TO SLIDE"
-        android:textSize="30sp" />
+	    android:layout_width="wrap_content"
+	    android:layout_height="wrap_content"
+	    android:layout_marginTop ="250dp"
+	    android:layout_marginLeft="850dp"
+	    android:textSize="30sp"
+	    android:background="@drawable/btn_arrow_right"/>
     
 <!--     <Button
         android:id="@+id/btn_review"
@@ -106,7 +106,7 @@
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:textSize="40px" /> -->
 
-    <TextView
+<!--     <TextView
         android:id="@+id/fabric_instructions"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -115,15 +115,16 @@
         android:text="swipe the tag on the fabric!"
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:textColor="@color/black"
-        android:textSize="46px" />
+        android:textSize="46px" /> -->
     
     <TextView
         android:id="@+id/fabric_id"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentRight="true"
-        android:layout_marginTop="255dp"
-        android:text="fabric id"
+        android:layout_alignParentLeft="true"
+        android:layout_marginTop="375dp"
+        android:layout_marginLeft="125dp"
+        android:text="Got It!"
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:textColor="@color/black"
         android:textSize="46px" />

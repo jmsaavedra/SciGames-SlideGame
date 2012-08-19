@@ -162,7 +162,8 @@ public class SciGamesHttpPoster extends AsyncTask <String, Void, JSONObject> {
     	boolean no_session = false;
     	
     	if (MyActivity.toString().startsWith("com.scigames.slidegame.LoginActivity") || 
-    			MyActivity.toString().startsWith("com.scigames.slidegame.ReviewActivity")){ 
+    			MyActivity.toString().startsWith("com.scigames.slidegame.ReviewActivity") ||
+    			MyActivity.toString().startsWith("com.scigames.slidegame.ObjectiveActivity")){ 
 		if(checkLoginFailed(response)){
 			listener.failedQuery(failureReason);
 		} else {
@@ -202,11 +203,16 @@ public class SciGamesHttpPoster extends AsyncTask <String, Void, JSONObject> {
 					e.printStackTrace();
 				}
 			}
-			if(response.has("objective_images")){
+			if(response.has("objectives")){
 
 				try {
-					for(int i=0; i<response.getJSONArray("objective_images").length(); i++ ){
-						objective_images[i] = response.getJSONArray("objective_images").getString(i);
+					objective_images = new String[response.getJSONArray("objectives").length()];
+					Log.d(TAG, "number of objective_images:");
+					Log.d(TAG, String.valueOf(response.getJSONArray("objectives").length()));
+					Log.d(TAG, response.getJSONArray("objectives").toString());
+					Log.d(TAG, response.getJSONArray("objectives").getString(0));
+					for(int i=0; i<response.getJSONArray("objectives").length(); i++ ){
+						objective_images[i] = response.getJSONArray("objectives").getString(i);
 					}
 				} catch (JSONException e) {
 					e.printStackTrace();

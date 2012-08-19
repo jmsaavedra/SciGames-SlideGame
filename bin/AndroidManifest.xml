@@ -14,25 +14,29 @@
  		<uses-library android:name="com.android.future.usb.accessory" />
  			
         
-        <activity android:name=".LoginActivity" android:label="SG Slide Game" android:screenOrientation="portrait" android:launchMode="singleInstance" >
+        <activity android:name=".LoginActivity" android:label="SG Slide Game" android:screenOrientation="landscape" android:launchMode="singleInstance" >
 			<intent-filter>
 
 			</intent-filter>
         </activity>
         
-        <activity android:name=".MenuActivity" android:label="SG Slide Game" android:screenOrientation="portrait" >
-            <intent-filter>
+        <activity android:name=".MenuActivity" android:label="SG Slide Game" android:screenOrientation="landscape" >
+            <intent-filter>	
                 <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.LAUNCHER" />	
+                <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
         
-        <activity android:name=".ReviewActivity" android:label="SG Slide Game" android:screenOrientation="portrait" >
+        <activity android:name=".ReviewActivity" android:label="SG Slide Game" android:screenOrientation="landscape" >
+            <intent-filter>
+            </intent-filter>
+        </activity>
+        <activity android:name=".ObjectiveActivity" android:label="SG Slide Game" android:screenOrientation="landscape" >
             <intent-filter>
             </intent-filter>
         </activity>
         
-        <activity android:name=".UsbAccessoryActivity" android:label="SG Slide Game" android:screenOrientation="portrait" android:taskAffinity="" android:launchMode="singleInstance">
+        <activity android:name=".UsbAccessoryActivity" android:label="SG Slide Game" android:screenOrientation="landscape" android:taskAffinity="" android:launchMode="singleInstance">
 			<intent-filter>
 				<action android:name="android.hardware.usb.action.USB_ACCESSORY_ATTACHED" />
 			</intent-filter>

@@ -85,6 +85,8 @@ import android.widget.Toast;
 public class MenuActivity extends Activity implements SciGamesListener{
     private String TAG = "MenuActivity";
     
+    private boolean debug = true;
+        
 	static final private int QUIT_ID = Menu.FIRST;
     static final private int BACK_ID = Menu.FIRST + 1;
 
@@ -100,8 +102,6 @@ public class MenuActivity extends Activity implements SciGamesListener{
     private String slideLevel = "SLIDELEVEL";
     private String cartLevel = "CARTLEVEL";
     private String photoUrl = "none";
-    
-    private boolean debug = true;
     
     AlertDialog infoDialog;
     
@@ -148,10 +148,11 @@ public class MenuActivity extends Activity implements SciGamesListener{
 	    	slideLevel = i.getStringExtra("slideLevel");
 	    	Log.d(TAG,"...getStringExtra");
         } else {
+        	Log.d(TAG, "MenuActivity DEBUG ON");
 	    	firstNameIn = "joe";
 	    	lastNameIn = "saavedra";
 	    	studentIdIn = "502d884fc0c0bad86e000001";
-	    	visitIdIn = "502d8875c0c0bad86e000002";
+	    	visitIdIn = "50305136c0c0baf760000003";
 	    	rfidIn = "500315c37";
 	    	photoUrl = "student_images/502d882cc0c0bad76e000001/502d884fc0c0bad86e000001.jpg";
 	    	photoUrl = "http://mysweetwebsite.com/" + photoUrl;
@@ -240,7 +241,8 @@ public class MenuActivity extends Activity implements SciGamesListener{
 			Intent i = new Intent(MenuActivity.this, LoginActivity.class);
 			Log.d(TAG,"new Intent");
 			i.putExtra("studentId",studentIdIn);
-			i.putExtra("page", "fabric");
+			i.putExtra("rfid", rfidIn);
+			i.putExtra("page", "objective");
 			Log.d(TAG,"startActivity...");
 			MenuActivity.this.startActivity(i);
 			Log.d(TAG,"...startActivity");

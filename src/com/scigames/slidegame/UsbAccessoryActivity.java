@@ -40,6 +40,7 @@ public final class UsbAccessoryActivity extends Activity {
 		intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK
 				| Intent.FLAG_ACTIVITY_CLEAR_TOP);
 		intent.putExtra("token", "boarded");
+		intent.putExtra("page","login");
 		try {
 			startActivity(intent);
 		} catch (ActivityNotFoundException e) {

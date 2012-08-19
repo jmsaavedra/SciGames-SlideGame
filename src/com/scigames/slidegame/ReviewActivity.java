@@ -16,11 +16,6 @@
 
 package com.scigames.slidegame;
 
-//import java.io.ByteArrayInputStream;
-//import java.io.FileNotFoundException;
-//import java.io.IOException;
-//import java.net.URI;
-
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
@@ -50,6 +45,7 @@ import org.json.JSONObject;
 import com.scigames.slidegame.DownloadProfilePhoto;
 import com.scigames.slidegame.ReviewActivity;
 import com.scigames.slidegame.R;
+import com.scigames.slidegame.ReviewAnimationView.ReviewAnimationThread;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -57,11 +53,13 @@ import android.app.Application;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Typeface;
 import android.graphics.BitmapFactory.Options;
+import android.graphics.drawable.Drawable;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
@@ -89,6 +87,8 @@ import android.widget.Toast;
 public class ReviewActivity extends Activity implements SciGamesListener{
     private String TAG = "ReviewActivity";
     
+    private boolean debug = true;
+    
 	static final private int QUIT_ID = Menu.FIRST;
     static final private int BACK_ID = Menu.FIRST + 1;
 
@@ -110,8 +110,7 @@ public class ReviewActivity extends Activity implements SciGamesListener{
     
     private int resultImgNum = 0;
     private int scoreImgNum = 0;
-    
-    private boolean debug = true;
+    private boolean showingImgs = false;//no touchie
     
     TextView title;
     TextView mLevel;
@@ -125,6 +124,8 @@ public class ReviewActivity extends Activity implements SciGamesListener{
     Typeface ExistenceLightOtf;
     
     Button reviewBtnNext;
+    Button reviewBtnBack;
+    Button btnContinue;
     
     AlertDialog alertDialog;
     AlertDialog infoDialog;
@@ -133,9 +134,14 @@ public class ReviewActivity extends Activity implements SciGamesListener{
     SciGamesHttpPoster task = new SciGamesHttpPoster(ReviewActivity.this,"http://mysweetwebsite.com/pull/slide_results.php");
     DownloadNarrativeImage imgTask = new DownloadNarrativeImage(ReviewActivity.this, "url");
     
+    /** A handle to the thread that's actually running the animation. */
+    private ReviewAnimationThread mAnimationThread;
+
+    /** A handle to the View in which the game is running. */
+    private ReviewAnimationView mAnimationView;
+    
     public ReviewActivity() {
     	
-
     }
 
     /** Called with the activity is first created. */
@@ -151,7 +157,12 @@ public class ReviewActivity extends Activity implements SciGamesListener{
 //    	photoUrl = "http://mysweetwebsite.com/" + photoUrl;
     	Log.d(TAG,"...getStringExtra");
         // Inflate our UI from its XML layout description.
-        setContentView(R.layout.review_page1);
+        setContentView(R.layout.review_page);
+        mAnimationView = (ReviewAnimationView) findViewById(R.id.review);
+        mAnimationThread = mAnimationView.getThread();
+//        mAnimationView.setNextButton((Button)findViewById(R.id.btn_next));
+//        mAnimationView.setBackButton((Button)findViewById(R.id.btn_back));
+        
         Log.d(TAG,"...setContentView");
         resultImgNum = 0;
         scoreImgNum = 0;
@@ -212,6 +223,12 @@ public class ReviewActivity extends Activity implements SciGamesListener{
 	    
 	    reviewBtnNext = (Button) findViewById(R.id.btn_next);
         reviewBtnNext.setOnClickListener(mNext);
+        reviewBtnNext.setVisibility(View.INVISIBLE);
+        reviewBtnBack = (Button) findViewById(R.id.btn_back);
+        reviewBtnBack.setOnClickListener(mBack);
+        reviewBtnBack.setVisibility(View.INVISIBLE);
+        btnContinue = (Button) findViewById(R.id.btn_continue);
+        btnContinue.setOnClickListener(mContinue);
         
 	    if (isNetworkAvailable()){
 		    task.cancel(true);
@@ -246,26 +263,6 @@ public class ReviewActivity extends Activity implements SciGamesListener{
     }
 
     
-    OnClickListener mNext = new OnClickListener(){
-	    public void onClick(View v) {
-	    	
-	    	setCurrImg(resultImg[resultImgNum]);
-	    	resultImgNum++; 
-		}
-    };
-    	
-//    OnClickListener mReview = new OnClickListener() {
-//        public void onClick(View v) {
-////			Log.d(TAG,"mReview.onClick");
-////			Intent i = new Intent(ReviewActivity.this, LoginActivity.class);
-////			Log.d(TAG,"new LoginActivity Intent");
-////			i.putExtra("rfid", rfidIn);
-////			i.putExtra("page", "slideReview");
-////			Log.d(TAG,"startActivity...");
-////			ReviewActivity.this.startActivity(i);
-////			Log.d(TAG,"...startActivity");
-//        }
-//    };
 
 	public void failedQuery(String failureReason) {
 
@@ -305,6 +302,216 @@ public class ReviewActivity extends Activity implements SciGamesListener{
 		}
 	}
 	
+
+	
+	private void setCurrImg(String imgURL){
+		
+		//View thisView = findViewById(R.id.review_page);
+		//setContentView(thisView);
+//		for(int i=0; i<40; i++){
+//			drawForceView.updateX();
+//			
+//			try {
+//				Thread.sleep(100);
+//			} catch (InterruptedException e) {
+//				// TODO Auto-generated catch block
+//				e.printStackTrace();
+//			}
+//		}
+		
+		
+		Log.d(TAG, "imgURL: ");
+		Log.d(TAG, imgURL);
+		//setContentView(R.layout.results_image_page);
+		String delims = "[/.]";
+		String[] tokens = imgURL.split(delims);
+		
+		String bgStr = "null";
+		
+		String gunStr = "null";
+		String pieceStr = "null";
+		
+		String rockStr = "null";
+		String drillStr = "null";
+		
+		int level = 0;
+		int scene = 0;
+		
+		int ePotential = 0;
+		int eThermal = 0;
+		int eKinetic = 0;
+
+		//token 6 wins
+		if(tokens[6].equals("Score")){
+			bgStr = tokens[7];
+		} else {
+			level = Integer.parseInt(String.valueOf(tokens[6].charAt(1)));
+			scene = Integer.parseInt(String.valueOf(tokens[6].charAt(12)));
+			if (tokens[6].substring(tokens[6].lastIndexOf('_') + 1).equals("a")){
+				bgStr = tokens[6];	    		
+				resultImgNum++; 
+		    	gunStr = tokens[6].replace(tokens[6].substring(tokens[6].lastIndexOf('_') + 1), "b");
+		    	Log.d(TAG, "gunStr: "+ gunStr);
+		    	resultImgNum++;
+		    	pieceStr = tokens[6].replace(tokens[6].substring(tokens[6].lastIndexOf('_') + 1), "c");
+		    	Log.d(TAG, "pieceStr: "+ pieceStr);
+		    	
+		    	if(resultImgNum > 0)reviewBtnBack.setVisibility(View.VISIBLE);
+				
+			} else if (tokens[6].substring(tokens[6].lastIndexOf('_') + 1).equals("d")){
+				bgStr = tokens[6];
+				resultImgNum++; 
+				rockStr = tokens[6].replace(tokens[6].substring(tokens[6].lastIndexOf('_') + 1), "e");
+		    	Log.d(TAG, "rockStr: "+ rockStr);
+		    	resultImgNum++;
+		    	drillStr = tokens[6].replace(tokens[6].substring(tokens[6].lastIndexOf('_') + 1), "f");
+		    	Log.d(TAG, "drillStr: "+ drillStr);
+			} else if(tokens[6].substring(tokens[6].lastIndexOf('_') + 1).equals("02")){
+				ePotential = 10; //these will get set by things coming in from DB
+				eThermal = 12;
+				eKinetic = 8;
+				bgStr = tokens[6];
+			}
+			
+			else {
+				bgStr = tokens[6];
+			}
+			
+		}
+		
+
+
+		//Log.d(TAG, String.valueOf(R.drawable._1_objective_01));
+		//mAnimationThread.s
+		int thisBg = getResources().getIdentifier(bgStr, "drawable", getPackageName());
+		//Drawable dThisImg = findViewById(getResources().getIdentifier(imgStr, "drawable", getPackageName()));
+		Log.d(TAG, "BG: "+bgStr);
+		mAnimationThread.setBackgroundResource(thisBg);//+tokens[4]);
+		
+		if(!gunStr.equals("null")){
+			int thisGunStr = getResources().getIdentifier(gunStr, "drawable", getPackageName());
+			int thisPieceStr = getResources().getIdentifier(pieceStr, "drawable", getPackageName());
+			Log.d(TAG, String.valueOf(level) + "  " + String.valueOf(scene) + "  " + gunStr + "  " + pieceStr);
+			Log.d(TAG, String.valueOf(level) + "  " + String.valueOf(scene) + "  " + String.valueOf(thisGunStr) + "  " + String.valueOf(thisPieceStr));
+			mAnimationThread.setLevelScene(level, scene, thisGunStr, thisPieceStr);
+		}
+		else if(!rockStr.equals("null")){
+			int thisRockStr = getResources().getIdentifier(rockStr, "drawable", getPackageName());
+			int thisDrillStr = getResources().getIdentifier(drillStr, "drawable", getPackageName());
+			Log.d(TAG, String.valueOf(level) + "  " + String.valueOf(scene) + "  " + rockStr + "  " + drillStr);
+			Log.d(TAG, String.valueOf(level) + "  " + String.valueOf(scene) + "  " + String.valueOf(thisRockStr) + "  " + String.valueOf(thisDrillStr));
+			mAnimationThread.setLevelScene(level, scene, thisRockStr, thisDrillStr);
+		}
+		
+		if(scene == 4){
+    		reviewBtnNext.setVisibility(View.INVISIBLE);
+    		btnContinue.setText("Done");
+    		btnContinue.setVisibility(View.VISIBLE);
+    		//setCurrImg(scoreImg[scoreImgNum]);
+    	}
+		if(eThermal+eKinetic >= 20)	mAnimationThread.setSlideEnergy(10, 12, 8);
+		
+		mAnimationThread.doStart();
+//		thisView.setBackgroundResource(thisImg);
+		//drawForceView.
+		//setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+//---- if image does not exist, download it	
+		//download photo
+        //ImageView narrativeImg = (ImageView) findViewById(R.id.narrative_image);
+        //narrativeImg.setTag(imgURL);
+        //narrativeImg.setScaleX(1.4f);
+        //narrativeImg.setScaleY(1.4f);
+        //narrativeImg.setX(120f);
+        //narrativeImg.setY(123f);
+        //imgTask.cancel(true);
+        //imgTask = new DownloadNarrativeImage(ReviewActivity.this, imgURL);
+        //AsyncTask<ImageView, Void, Bitmap> pPhoto = 
+        //imgTask.execute(narrativeImg);
+//---- else if image does exist, set background.
+		//thisView.setBackgroundResource(R.id.results_image_page);
+	}
+	
+    OnClickListener mNext = new OnClickListener(){
+	    public void onClick(View v) {
+	    	Log.d(TAG, "mNexted");
+	    	if(resultImgNum < resultImg.length){
+	    		resultImgNum++; 
+		    	Log.d(TAG, "curr resultImgNum" + String.valueOf(resultImgNum));
+		    	Log.d(TAG, "setCurrImg: "+resultImg[resultImgNum]);
+		    	setCurrImg(resultImg[resultImgNum]);
+		    	if(resultImgNum > 0)reviewBtnBack.setVisibility(View.VISIBLE);
+		    	
+	    	} else if (resultImgNum >=resultImg.length && scoreImgNum<scoreImg.length-1 ){
+	    		
+	    		scoreImgNum++;
+	    		setCurrImg(scoreImg[scoreImgNum]);
+	    		Log.d(TAG, "setCurrImg: "+resultImg[resultImgNum]);
+	    		
+	    	} else { //last slide
+	    		reviewBtnNext.setVisibility(View.INVISIBLE);
+	    		btnContinue.setText("Done");
+	    		btnContinue.setVisibility(View.VISIBLE);
+	    		setCurrImg(scoreImg[scoreImgNum]);
+	    	}
+	    	
+		}
+    };
+    
+    OnClickListener mBack = new OnClickListener(){
+	    public void onClick(View v) {
+	    	reviewBtnNext.setVisibility(View.VISIBLE);
+	    	if(resultImgNum > 0 && scoreImgNum <= 0){
+	    		resultImgNum--; 
+		    	setCurrImg(resultImg[resultImgNum]);
+		    	Log.d(TAG, "setCurrImg: "+resultImg[resultImgNum]);
+		    	if(resultImgNum == 0) reviewBtnBack.setVisibility(View.INVISIBLE);
+		    	
+	    	} else if (resultImgNum >= resultImg.length && scoreImgNum > 0){
+	    		scoreImgNum--;
+	    		setCurrImg(scoreImg[scoreImgNum]);
+	    		Log.d(TAG, "setCurrImg: "+resultImg[resultImgNum-1]);
+	    	} else {
+//	    		reviewBtnNext.setText("Done");
+//	    		setCurrImg(scoreImg[scoreImgNum]);
+	    	}
+	    	//mAnimationThread.doStart();
+		}
+    };
+    
+    OnClickListener mContinue = new OnClickListener(){
+	    public void onClick(View v) {
+	    	if(!showingImgs){
+	    		btnContinue.setVisibility(View.INVISIBLE);
+	    		reviewBtnNext.setVisibility(View.VISIBLE);
+	    		setCurrImg(resultImg[0]);
+	    		showingImgs = true;
+	    		mLevel.setVisibility(View.INVISIBLE);
+	    		mScore.setVisibility(View.INVISIBLE);
+	    		mAttempt.setVisibility(View.INVISIBLE);
+	    		mFabric.setVisibility(View.INVISIBLE);
+	    	} else {
+	    		Intent i = new Intent(ReviewActivity.this, LoginActivity.class);
+	     		//i.putExtra("rfid",currRfid);;
+	     		Log.d(TAG,"startActivity...");
+	     		ReviewActivity.this.startActivity(i);
+	    	}
+		}
+    };
+    	
+//    OnClickListener mReview = new OnClickListener() {
+//        public void onClick(View v) {
+////			Log.d(TAG,"mReview.onClick");
+////			Intent i = new Intent(ReviewActivity.this, LoginActivity.class);
+////			Log.d(TAG,"new LoginActivity Intent");
+////			i.putExtra("rfid", rfidIn);
+////			i.putExtra("page", "slideReview");
+////			Log.d(TAG,"startActivity...");
+////			ReviewActivity.this.startActivity(i);
+////			Log.d(TAG,"...startActivity");
+//        }
+//    };
+
+	
     //----- check if tablet is connected to internet!
     private boolean isNetworkAvailable() {
         ConnectivityManager connectivityManager 
@@ -334,30 +541,6 @@ public class ReviewActivity extends Activity implements SciGamesListener{
 		//do nothing
 		getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LOW_PROFILE);
         
-	}
-	
-	private void setCurrImg(String imgURL){
-		//View thisView = findViewById(R.layout.results_image_page);
-		//setContentView(thisView);
-		setContentView(R.layout.results_image_page);
-		
-//---- if image does not exist, download it	
-		
-		//download photo
-        ImageView narrativeImg = (ImageView) findViewById(R.id.narrative_image);
-        narrativeImg.setTag(imgURL);
-        //narrativeImg.setScaleX(1.4f);
-        //narrativeImg.setScaleY(1.4f);
-        //narrativeImg.setX(120f);
-        //narrativeImg.setY(123f);
-        imgTask.cancel(true);
-        imgTask = new DownloadNarrativeImage(ReviewActivity.this, imgURL);
-        //AsyncTask<ImageView, Void, Bitmap> pPhoto = 
-        imgTask.execute(narrativeImg);
-		
-
-//---- else if image does exist, set background.
-		//thisView.setBackgroundResource(R.id.results_image_page);
 	}
 }
 

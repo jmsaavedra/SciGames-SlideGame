@@ -36,15 +36,16 @@
         android:id="@+id/profile_image"
         android:layout_width="180dp"
         android:layout_height="240dp"
-        android:layout_marginLeft="47dp"
-        android:layout_marginTop="47dp" />
+        android:layout_marginLeft="47dip"
+        android:layout_marginTop="47dip" />
     
     <Button
         android:id="@+id/btn_play"
         android:layout_width="260px"
         android:layout_height="120px"
-        android:layout_marginLeft="30dp"
-        android:layout_marginTop="760dp"
+        android:layout_alignParentRight="true"
+        android:layout_marginRight="50dip"
+        android:layout_marginTop="120dip"
         android:text="play"
         android:textSize="30sp" />
     
@@ -52,8 +53,9 @@
         android:id="@+id/btn_review"
         android:layout_width="260px"
         android:layout_height="120px"
-        android:layout_marginLeft="310dp"
-        android:layout_marginTop="760dp"
+        android:layout_alignParentRight="true"
+        android:layout_marginRight="50dip"
+        android:layout_marginTop="350dip"
         android:text="review last turn"
         android:textSize="30sp" />
 

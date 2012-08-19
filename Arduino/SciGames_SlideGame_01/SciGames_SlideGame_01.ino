@@ -64,7 +64,7 @@ void checkForAndroidComm(){
       ledsOff();
       
       switch(command) {
-      case 'X':
+      case 'Y':
         Serial.println("received X"); //prepare for RFID Scan
         RFID_GO = true;
         break;
@@ -87,11 +87,11 @@ void checkForAndroidComm(){
         redOn();
         break;
 //        
-//      case 'Z':
-//        Serial.println("received Z"); //turn LEDs off, standby
-//        currLedStatus = !currLedStatus;
-//        allLeds(currLedStatus);
-//        break;
+      case 'X':
+        Serial.println("received Z"); //turn LEDs off, standby
+        currLedStatus = !currLedStatus;
+        allLeds(currLedStatus);
+        break;
       }
     } 
     else {

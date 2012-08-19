@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	android:layout_width="match_parent" android:layout_weight="1"
+	android:layout_height="fill_parent" android:orientation="vertical"
+	android:background="@drawable/bg_blank"
+	android:layout_gravity="fill_horizontal"
+	android:id="@+id/review_page">
+	
+    <com.scigames.slidegame.ReviewAnimationView
+        android:id="@+id/review"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+	<TextView
+	    android:id="@+id/title"
+	    android:layout_width="wrap_content"
+	    android:layout_height="wrap_content"
+	    android:layout_marginTop="45dp"
+	    android:layout_marginLeft="50dp"
+	    android:gravity="center"
+	    android:textColor = "#000000"
+	    android:text="Your Last Turn"
+	    android:textSize="42dip">
+	</TextView>
+	
+	<TextView
+	    android:id="@+id/level"
+	    android:layout_width="600dip"
+	    android:layout_height="45dp"
+	    android:layout_marginTop="180dp"
+	    android:text="@string/level"
+	    android:textColor="#ffffff"
+	    android:textSize="30dip" />
+		
+	<TextView
+	    android:id="@+id/attempt"
+	    android:layout_width="600dip"
+	    android:layout_height="45dp"
+	    android:layout_marginTop="230dp"
+	    android:text="@string/attempt"
+	    android:textColor="#ffffff"
+	    android:textSize="30dip" />
+		
+	<TextView
+	    android:id="@+id/score"
+	    android:layout_width="600dip"
+	    android:layout_height="45dp"
+	    android:layout_marginTop="330dp"
+	    android:gravity="left"
+	    android:textColor="#ffffff"
+	    android:text="@string/score"
+	    android:textSize="30dip">
+	</TextView>
+
+	<TextView
+	    android:id="@+id/fabric"
+	    android:layout_width="600dip"
+	    android:layout_height="45dp"
+	    android:layout_marginTop="430dp"
+	    android:text="@string/fabric"
+	    android:textColor="#ffffff"
+	    android:textSize="30dip" />
+	
+	<Button
+	    android:id="@+id/btn_next"
+	    android:layout_width="wrap_content"
+	    android:layout_height="wrap_content"
+	    android:layout_marginTop ="250dp"
+	    android:layout_marginLeft="850dp"
+	    android:textSize="30sp"
+	    android:background="@drawable/btn_arrow_right" />
+	
+	<Button
+	    android:id="@+id/btn_back"
+	    android:layout_width="wrap_content"
+	    android:layout_height="wrap_content"
+	    android:layout_marginTop ="250dp"
+	    android:layout_marginLeft="50dp"
+	    android:textSize="30sp"
+	    android:background="@drawable/btn_arrow_left" />
+	
+	<Button
+	    android:id="@+id/btn_continue"
+	    android:layout_width="wrap_content"
+	    android:layout_height="wrap_content"
+	    android:layout_marginTop ="450dp"
+	    android:layout_marginLeft="800dp"
+	    android:textSize="30sp"
+	    android:text="Continue" />
+	
+</FrameLayout>
