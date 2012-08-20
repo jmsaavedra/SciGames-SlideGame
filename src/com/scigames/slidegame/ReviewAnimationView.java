@@ -221,6 +221,7 @@ class ReviewAnimationView extends SurfaceView implements SurfaceHolder.Callback 
         private Paint mKineticPaint;
         private Paint mPotentialPaint;
         private Paint mThermalPaint;
+        private Paint mGoldPaint;
         
         private Bitmap mGunImage;
         private Bitmap mPieceImage;
@@ -238,7 +239,12 @@ class ReviewAnimationView extends SurfaceView implements SurfaceHolder.Callback 
         
         private int potentialE = 0;
         private int thermalE = 0;
+        private int tempTherm = 0;
         private int kineticE = 0;
+        private long elapsedTimeCount = 0;
+        
+    	int groupX = 921;
+    	int groupY = 260;
 
         public ReviewAnimationThread(SurfaceHolder surfaceHolder, Context context,
                 Handler handler) {
@@ -261,7 +267,7 @@ class ReviewAnimationView extends SurfaceView implements SurfaceHolder.Callback 
             // load background image as a Bitmap instead of a Drawable b/c
             // we don't need to transform it and it's faster to draw this way
             mBackgroundImage = BitmapFactory.decodeResource(res,
-                    R.drawable.bg_blank);
+                    R.drawable.bg_last_turn);
             mBackgroundImage = Bitmap.createScaledBitmap(
                     mBackgroundImage, 1280, 736, true);
 
@@ -280,15 +286,19 @@ class ReviewAnimationView extends SurfaceView implements SurfaceHolder.Callback 
 
             mThermalPaint = new Paint();
             mThermalPaint.setAntiAlias(true);
-            mThermalPaint.setARGB(255, 230, 50, 50);
+            mThermalPaint.setARGB(255, 230, 50, 100);
             
             mPotentialPaint = new Paint();
             mPotentialPaint.setAntiAlias(true);
-            mPotentialPaint.setARGB(255, 50, 230, 50);
+            mPotentialPaint.setARGB(255, 50, 100, 230);
             
             mKineticPaint = new Paint();
             mKineticPaint.setAntiAlias(true);
-            mKineticPaint.setARGB(255, 50, 50, 230);
+            mKineticPaint.setARGB(255, 100, 230, 50);
+            
+            mGoldPaint = new Paint();
+            mGoldPaint.setAntiAlias(true);
+            mGoldPaint.setARGB(255, 255, 215, 0);
 
             mScratchRect = new RectF(0, 0, 0, 0);
 
@@ -303,6 +313,10 @@ class ReviewAnimationView extends SurfaceView implements SurfaceHolder.Callback 
             mDY = 0;
             mHeading = 0;
             mEngineFiring = true;
+            
+            tempTherm = 0;
+        	groupX = 921; //for the energy slide
+        	groupY = 260;
         }
 
         /**
@@ -462,6 +476,7 @@ class ReviewAnimationView extends SurfaceView implements SurfaceHolder.Callback 
         	isScene2 = false;
         	isScene3 = false; //assume not a scene
         	isScene4 = false; //assume not a scene
+        	elapsedTimeCount = 0;
         }
         
         public void setLevelScene(int level, int scene, int foregroundImg, int middleGroundImg){
@@ -628,6 +643,7 @@ class ReviewAnimationView extends SurfaceView implements SurfaceHolder.Callback 
             // Draw the background image. Operations on the Canvas accumulate
             // so this is like clearing the screen.
             canvas.drawBitmap(mBackgroundImage, 0, 0, null);
+            elapsedTimeCount++;
         	//Resources res = mContext.getResources();
         	//View thisView = (View) findViewById(R.id.review);
         	//thisView.setBackgroundResource(bgDrawable);
@@ -660,43 +676,72 @@ class ReviewAnimationView extends SurfaceView implements SurfaceHolder.Callback 
             }
 
             // Draw the landing pad
-            canvas.drawLine(mGoalX, 1 + mCanvasHeight - TARGET_PAD_HEIGHT,
-                    mGoalX + mGoalWidth, 1 + mCanvasHeight - TARGET_PAD_HEIGHT,
-                    mLinePaint);
+//            canvas.drawLine(mGoalX, 1 + mCanvasHeight - TARGET_PAD_HEIGHT,
+//                    mGoalX + mGoalWidth, 1 + mCanvasHeight - TARGET_PAD_HEIGHT,
+//                    mLinePaint);
 
 
             // Draw the ship with its current rotation
             canvas.save();
             canvas.rotate((float) mHeading, (float) mX, mCanvasHeight
                     - (float) mY);
-            if (mMode == STATE_LOSE) {
-                mCrashedImage.setBounds(xLeft, yTop, xLeft + mLanderWidth, yTop
-                        + mLanderHeight);
-                mCrashedImage.draw(canvas);
-            } else if (mEngineFiring) {
-                mFiringImage.setBounds(xLeft, yTop, xLeft + mLanderWidth, yTop
-                        + mLanderHeight);
-                mFiringImage.draw(canvas);
-            } else {
-                mLanderImage.setBounds(xLeft, yTop, xLeft + mLanderWidth, yTop
-                        + mLanderHeight);
-                mLanderImage.draw(canvas);
-            }
+//            if (mMode == STATE_LOSE) {
+//                mCrashedImage.setBounds(xLeft, yTop, xLeft + mLanderWidth, yTop
+//                        + mLanderHeight);
+//                mCrashedImage.draw(canvas);
+//            } else if (mEngineFiring) {
+//                mFiringImage.setBounds(xLeft, yTop, xLeft + mLanderWidth, yTop
+//                        + mLanderHeight);
+//                mFiringImage.draw(canvas);
+//            } else {
+//                mLanderImage.setBounds(xLeft, yTop, xLeft + mLanderWidth, yTop
+//                        + mLanderHeight);
+//                mLanderImage.draw(canvas);
+//            }
             
             if(isScene2){
-            	int energyRadius = 18;
-            	for(int i=0; i<thermalE; i++){
-            		canvas.drawCircle(620+(i*energyRadius-20), 575-(i*energyRadius-25), energyRadius, mThermalPaint);
+            	int energyRadius = 15;
+            	if(groupX > 300){
+            		groupX -= 1.1;//(int)(groupX*0.007);
+            	}
+            	if(groupY < 700){
+            		groupY += 2;//(int)(groupY*0.009);
+            	}
+            	
+            	if(elapsedTimeCount%15 == 0){
+            		if(tempTherm<thermalE) tempTherm++;
+            	}
+            	for(int i=0; i<tempTherm; i++){
+            		canvas.drawCircle(921-(int)(i*energyRadius*1.65), 260+(int)(i*energyRadius*1.8), energyRadius, mThermalPaint);
             	}
             	for(int i=0; i<kineticE; i++){
-            		canvas.drawCircle((int)(300+Math.random()*(160)), (int)(700-Math.random()*(160)), energyRadius, mKineticPaint);
-            	}
-            	for(int i=0; i<potentialE; i++){
-            		canvas.drawCircle((int)(300+Math.random()*(160)), (int)(700-Math.random()*(160)), energyRadius, mPotentialPaint);
+            		canvas.drawCircle((int)(groupX+Math.random()*(160)), (int)(groupY-Math.random()*(160)), energyRadius, mKineticPaint);
+            	}//300 y700
+            	for(int i=0; i<(int)(potentialE-(tempTherm/3+kineticE/2)); i++){
+            		canvas.drawCircle((int)(groupX+Math.random()*(160)), (int)(groupY-Math.random()*(160)), energyRadius, mPotentialPaint);
             	}
             }
             
-            if(isScene3){
+            /***** Laser melting gold into piece molde *****/
+            if(isScene3){ 
+            	int energyRadius = 10;
+            	for(int i=0; i<thermalE-(int)elapsedTimeCount/25; i++){
+            		//for(int j=0; j<thermalE/4;j++){
+            			canvas.drawCircle(403, 530-(int)(i*energyRadius*2), energyRadius, mThermalPaint);
+            		//}
+            	}
+            	canvas.save();
+            	
+            	int fillBarH = (int)(elapsedTimeCount/5);
+            	if(fillBarH > thermalE*5) fillBarH = thermalE*5;
+
+            	canvas.rotate(32, 402f, 572f);
+            	canvas.drawRect(402, 572, 422, 568-fillBarH, mThermalPaint) ; //Laser
+            	canvas.restore();
+            	
+            	int fillHeight = (int)elapsedTimeCount/5;
+            	if(fillHeight > thermalE*10) fillHeight = thermalE*10;
+            	canvas.drawRect(545, 690-fillHeight, 653, 690, mGoldPaint); //Piece
             	int mLaserX = 392;
             	int mLaserY = 438;
             	int mLaserW = 124;
@@ -717,22 +762,42 @@ class ReviewAnimationView extends SurfaceView implements SurfaceHolder.Callback 
             	mPieceDrawable.setBounds(mPieceX, mPieceY, mPieceX + mPieceW, mPieceY + mPieceH);
             	mPieceDrawable.draw(canvas);
             }
+            
+            /**** Drill pile of rocks *****/
             if(isScene4){
             	
             	int mRockX = 753;
             	int mRockY = 400;
             	int mRockW = 490;
-            	int mRockH= 303;
+            	int mRockH = 303;
             	
             	int mDrillX = 50;
             	int mDrillY = 310;
             	int mDrillW = 533;
             	int mDrillH = 300;
+            	int energyRadius = 10;
+            	for(int i=0; i<kineticE-(int)elapsedTimeCount/25; i++){
+            		//for(int j=0; j<thermalE/4;j++){
+            			canvas.drawCircle(92, 375-(int)(i*energyRadius*2), energyRadius, mKineticPaint);
+            		//}
+            	}
             	
-            	mRockDrawable.setBounds(mRockX, mRockY, mRockX + mRockW, mRockY + mRockH);
-            	mRockDrawable.draw(canvas);
-            	mDrillDrawable.setBounds(mDrillX, mDrillY, mDrillX + mDrillW, mDrillY + mDrillH);
+            	int fillBarW = (int)(elapsedTimeCount/2);
+            	if(fillBarW > kineticE*10) fillBarW = kineticE*10;
+            	
+            	
+            	int DrillXMoved = mDrillX+ (int)elapsedTimeCount*3;
+            	if(DrillXMoved >kineticE*80) DrillXMoved = kineticE*80;
+            	
+            	canvas.drawRect(DrillXMoved+50, mDrillY+135, DrillXMoved+50+fillBarW, mDrillY+135+60, mKineticPaint) ; //Drill Level
+            	
+            	//drill is in middleground
+            	mDrillDrawable.setBounds(DrillXMoved, mDrillY, DrillXMoved + mDrillW, mDrillY + mDrillH); //Drill itself
             	mDrillDrawable.draw(canvas);
+            	
+            	//rock in foreground
+            	mRockDrawable.setBounds(mRockX, mRockY, mRockX + mRockW, mRockY + mRockH); //Rock
+            	mRockDrawable.draw(canvas);
             }
             canvas.restore();
         }

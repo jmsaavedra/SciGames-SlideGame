@@ -194,9 +194,9 @@ public class MenuActivity extends Activity implements SciGamesListener{
 	    });
         
 		if(debug){
-			infoDialog.setTitle("studentId");
-			infoDialog.setMessage(studentIdIn);
-			infoDialog.show();
+//			infoDialog.setTitle("studentId");
+//			infoDialog.setMessage(studentIdIn);
+//			infoDialog.show();
 		}
         
 //      task.setOnResultsListener(this);

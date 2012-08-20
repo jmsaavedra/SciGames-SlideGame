@@ -318,8 +318,8 @@ public class LoginActivity extends Activity implements Runnable, SciGamesListene
 			//alertDialog.show();
 			if(!debugImages){
 				setContentView(R.layout.no_device);
-				noDevice = (TextView)findViewById(R.id.connect_device);
-				setTextViewFont(Museo700Regular, noDevice);
+//				noDevice = (TextView)findViewById(R.id.connect_device);
+//				setTextViewFont(Museo700Regular, noDevice);
 				//bg = (ImageView)findViewById(R.id.thisBg);
 			}
 	        
@@ -400,7 +400,7 @@ public class LoginActivity extends Activity implements Runnable, SciGamesListene
 						//this is where slide sensor data is received!
 						
 					} else {
-						greets.setText(fThisBracelet);
+						//greets.setText(fThisBracelet);
 						checkBraceletId(fThisBracelet);
 					}
 				}

@@ -242,9 +242,9 @@ public class ReviewActivity extends Activity implements SciGamesListener{
 				keyVals[0] = "rfid";
 			    keyVals[1] = "500315c37"; //tester
 			}
-			infoDialog.setTitle("rfidIn:");
-			infoDialog.setMessage(rfidIn);
-			infoDialog.show();
+//			infoDialog.setTitle("rfidIn:");
+//			infoDialog.setMessage(rfidIn);
+//			infoDialog.show();
 			//create AsyncTask, then execute
 			AsyncTask<String, Void, JSONObject> serverResponse = null;
 			serverResponse = task.execute(keyVals);
@@ -281,9 +281,9 @@ public class ReviewActivity extends Activity implements SciGamesListener{
 			needSlideDataDialog.setMessage("Go play on the slide before checking your last score!");
 			needSlideDataDialog.show();
 		} else {
-			infoDialog.setTitle("onResults Succeded: ");
-			infoDialog.setMessage(serverResponseJSON.toString());
-			infoDialog.show();
+//			infoDialog.setTitle("onResults Succeded: ");
+//			infoDialog.setMessage(serverResponseJSON.toString());
+//			infoDialog.show();
 			
 	     	//update all text fields
 	     	Resources res = getResources();
@@ -367,7 +367,7 @@ public class ReviewActivity extends Activity implements SciGamesListener{
 		    	drillStr = tokens[6].replace(tokens[6].substring(tokens[6].lastIndexOf('_') + 1), "f");
 		    	Log.d(TAG, "drillStr: "+ drillStr);
 			} else if(tokens[6].substring(tokens[6].lastIndexOf('_') + 1).equals("02")){
-				ePotential = 10; //these will get set by things coming in from DB
+				ePotential = 25; //these will get set by things coming in from DB
 				eThermal = 12;
 				eKinetic = 8;
 				bgStr = tokens[6];

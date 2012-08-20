@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
 	android:layout_width="match_parent" android:layout_weight="1"
-	android:layout_height="fill_parent" android:orientation="vertical"
-	android:background="@drawable/bg_blank"
+	android:layout_height="fill_parent" android:orientation="horizontal"
+	android:background="@drawable/bg_last_turn"
 	android:layout_gravity="fill_horizontal"
 	android:id="@+id/review_page">
 	
@@ -10,6 +10,10 @@
         android:id="@+id/review"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
+
+	<RelativeLayout
+	    android:layout_width="wrap_content"
+	    android:layout_height="wrap_content" >
 
 	<TextView
 	    android:id="@+id/title"
@@ -19,7 +23,7 @@
 	    android:layout_marginLeft="50dp"
 	    android:gravity="center"
 	    android:textColor = "#000000"
-	    android:text="Your Last Turn"
+	    android:text=""
 	    android:textSize="42dip">
 	</TextView>
 	
@@ -27,27 +31,33 @@
 	    android:id="@+id/level"
 	    android:layout_width="600dip"
 	    android:layout_height="45dp"
-	    android:layout_marginTop="180dp"
+	    android:layout_marginTop="145dp"
+	    android:layout_marginLeft="240dp"
 	    android:text="@string/level"
-	    android:textColor="#ffffff"
+	    android:textColor="#ffd700"
 	    android:textSize="30dip" />
 		
 	<TextView
 	    android:id="@+id/attempt"
 	    android:layout_width="600dip"
 	    android:layout_height="45dp"
-	    android:layout_marginTop="230dp"
+	    android:layout_below="@+id/level"
+	    android:layout_marginTop="12dp"
+	    android:layout_marginLeft="40dp"
+	    android:layout_alignLeft="@+id/level"
 	    android:text="@string/attempt"
-	    android:textColor="#ffffff"
+	    android:textColor="#ffd700"
 	    android:textSize="30dip" />
 		
 	<TextView
 	    android:id="@+id/score"
 	    android:layout_width="600dip"
 	    android:layout_height="45dp"
-	    android:layout_marginTop="330dp"
-	    android:gravity="left"
-	    android:textColor="#ffffff"
+	  	android:layout_below="@+id/attempt"
+	    android:layout_marginTop="22dp"
+	    android:layout_marginLeft="10dp"
+	    android:layout_alignLeft="@+id/level"
+	    android:textColor="#ffd700"
 	    android:text="@string/score"
 	    android:textSize="30dip">
 	</TextView>
@@ -56,9 +66,12 @@
 	    android:id="@+id/fabric"
 	    android:layout_width="600dip"
 	    android:layout_height="45dp"
-	    android:layout_marginTop="430dp"
+	  	android:layout_below="@+id/score"
+	    android:layout_marginTop="13dp"
+	    android:layout_marginLeft="-30dp"
+	    android:layout_alignLeft="@+id/level"
 	    android:text="@string/fabric"
-	    android:textColor="#ffffff"
+	    android:textColor="#ffd700"
 	    android:textSize="30dip" />
 	
 	<Button
@@ -66,7 +79,7 @@
 	    android:layout_width="wrap_content"
 	    android:layout_height="wrap_content"
 	    android:layout_marginTop ="250dp"
-	    android:layout_marginLeft="850dp"
+	    android:layout_marginLeft="890dp"
 	    android:textSize="30sp"
 	    android:background="@drawable/btn_arrow_right" />
 	
@@ -75,7 +88,7 @@
 	    android:layout_width="wrap_content"
 	    android:layout_height="wrap_content"
 	    android:layout_marginTop ="250dp"
-	    android:layout_marginLeft="50dp"
+	    android:layout_marginLeft="10dp"
 	    android:textSize="30sp"
 	    android:background="@drawable/btn_arrow_left" />
 	
@@ -83,9 +96,9 @@
 	    android:id="@+id/btn_continue"
 	    android:layout_width="wrap_content"
 	    android:layout_height="wrap_content"
-	    android:layout_marginTop ="450dp"
-	    android:layout_marginLeft="800dp"
-	    android:textSize="30sp"
-	    android:text="Continue" />
-	
+	    android:layout_marginLeft="100dp"
+	    android:layout_marginTop ="390dp"
+	    android:background="@drawable/btn_done_off"
+	    android:textSize="30sp"/>
+	</RelativeLayout>
 </FrameLayout>

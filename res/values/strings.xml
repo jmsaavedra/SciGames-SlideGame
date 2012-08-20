@@ -10,7 +10,7 @@
 
     <!--  Profile Page -->
     <string name="profile_sentence1">Here\'s your info:</string>
-    <string name="profile_name">Hi, %1$s %2$s !</string>
+    <string name="profile_name">%1$s %2$s!</string>
     <string name="profile_school_name"> %1$s</string>
     <string name="profile_teacher_name"> %1$s</string>
     <string name="profile_classid"> %1$s</string>
@@ -21,9 +21,9 @@
     <string name="profile_classname"> %1$s</string>
     
     <!-- ReviewActivity -->
-    <string name="score">Score: %1$s</string>
-    <string name="fabric">Fabric: %1$s</string>
-    <string name="level">Level: %1$s</string>
-    <string name="attempt">Attempt: %1$s</string>
+    <string name="score">%1$s</string>
+    <string name="fabric">%1$s</string>
+    <string name="level">%1$s</string>
+    <string name="attempt">%1$s</string>
     
 </resources>

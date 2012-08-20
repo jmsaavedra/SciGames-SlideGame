@@ -6,7 +6,7 @@
 	android:layout_gravity="fill_horizontal"
 	android:id="@+id/no_device">
 
-	<TextView
+<!-- 	<TextView
 	    android:id="@+id/connect_device"
 	    android:layout_width="wrap_content"
 	    android:layout_height="wrap_content"
@@ -14,7 +14,7 @@
 	    android:layout_marginLeft = "60dp"
 	    android:text="@string/no_device"
 	    android:textSize="40dip">
-	</TextView>
+	</TextView> -->
 	
 <!--  	<ImageView 
 	    android:id="@+id/thisBg" 

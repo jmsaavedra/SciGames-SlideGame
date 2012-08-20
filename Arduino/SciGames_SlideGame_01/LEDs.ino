@@ -1,8 +1,8 @@
 
 
 #define  LED1_RED       13
-#define  LED1_GREEN     12
-#define  LED1_BLUE      11
+#define  LED1_GREEN     11
+#define  LED1_BLUE      12
 
 int currBlue = 10;
 int currRed = 10;
