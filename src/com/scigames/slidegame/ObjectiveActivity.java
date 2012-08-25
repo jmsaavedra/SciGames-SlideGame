@@ -47,7 +47,10 @@ import org.apache.http.message.BasicNameValuePair;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import com.scigames.slidegame.DownloadProfilePhoto;
+import com.scigames.serverutils.DownloadNarrativeImage;
+import com.scigames.serverutils.DownloadProfilePhoto;
+import com.scigames.serverutils.SciGamesHttpPoster;
+import com.scigames.serverutils.SciGamesListener;
 import com.scigames.slidegame.ObjectiveActivity;
 import com.scigames.slidegame.R;
 

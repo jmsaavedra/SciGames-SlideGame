@@ -9,9 +9,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
-import com.scigames.slidegame.ServiceADKApplication;
-import com.scigames.slidegame.ADKService;
-
+import com.scigames.slidegame.LoginActivity;
 import android.app.Service;
 import android.content.Intent;
 import android.os.IBinder;

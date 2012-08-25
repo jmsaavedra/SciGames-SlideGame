@@ -16,33 +16,13 @@
 
 package com.scigames.slidegame;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
-import java.io.BufferedReader;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLConnection;
-import java.util.ArrayList;
-import java.util.List;
-
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
-import org.apache.http.NameValuePair;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.entity.UrlEncodedFormEntity;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.message.BasicNameValuePair;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import com.scigames.slidegame.DownloadProfilePhoto;
+import com.scigames.serverutils.DownloadNarrativeImage;
+import com.scigames.serverutils.DownloadProfilePhoto;
+import com.scigames.serverutils.SciGamesHttpPoster;
+import com.scigames.serverutils.SciGamesListener;
 import com.scigames.slidegame.ReviewActivity;
 import com.scigames.slidegame.R;
 import com.scigames.slidegame.ReviewAnimationView.ReviewAnimationThread;
@@ -87,7 +67,7 @@ import android.widget.Toast;
 public class ReviewActivity extends Activity implements SciGamesListener{
     private String TAG = "ReviewActivity";
     
-    private boolean debug = true;
+    private boolean debug = false;
     
 	static final private int QUIT_ID = Menu.FIRST;
     static final private int BACK_ID = Menu.FIRST + 1;

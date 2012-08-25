@@ -47,7 +47,9 @@ import org.apache.http.message.BasicNameValuePair;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import com.scigames.slidegame.DownloadProfilePhoto;
+import com.scigames.serverutils.DownloadProfilePhoto;
+import com.scigames.serverutils.SciGamesHttpPoster;
+import com.scigames.serverutils.SciGamesListener;
 import com.scigames.slidegame.MenuActivity;
 import com.scigames.slidegame.R;
 
@@ -85,7 +87,7 @@ import android.widget.Toast;
 public class MenuActivity extends Activity implements SciGamesListener{
     private String TAG = "MenuActivity";
     
-    private boolean debug = true;
+    private boolean debug = false;
         
 	static final private int QUIT_ID = Menu.FIRST;
     static final private int BACK_ID = Menu.FIRST + 1;
@@ -172,7 +174,7 @@ public class MenuActivity extends Activity implements SciGamesListener{
 
         Log.d(TAG,"...Profile Info");
 	    ExistenceLightOtf = Typeface.createFromAsset(getAssets(),"fonts/Existence-Light.ttf");
-	    Typeface Museo300Regular = Typeface.createFromAsset(getAssets(),"fonts/Museo300-Regular.otf");
+	    //Typeface Museo300Regular = Typeface.createFromAsset(getAssets(),"fonts/Museo300-Regular.otf");
 	    Museo500Regular = Typeface.createFromAsset(getAssets(),"fonts/Museo500-Regular.otf");
 	    Museo700Regular = Typeface.createFromAsset(getAssets(),"fonts/Museo700-Regular.otf");
 	    
@@ -199,11 +201,11 @@ public class MenuActivity extends Activity implements SciGamesListener{
 //			infoDialog.show();
 		}
         
-//      task.setOnResultsListener(this);
-//		task.cancel(true);
-//	    task = new SciGamesHttpPoster(MenuActivity.this,"http://mysweetwebsite.com/pull/return_profile.php");
-//      task.setOnResultsListener(MenuActivity.this);
-//        
+		task.setOnResultsListener(this);
+		task.cancel(true);
+	    task = new SciGamesHttpPoster(MenuActivity.this,"http://mysweetwebsite.com/pull/return_profile.php");
+	    task.setOnResultsListener(MenuActivity.this);
+        
 		//download photo
         ImageView profilePhoto = (ImageView) findViewById(R.id.profile_image);
         profilePhoto.setTag(photoUrl);
@@ -279,10 +281,11 @@ public class MenuActivity extends Activity implements SciGamesListener{
      	Resources res = getResources();
      	
         //TextView greets = (TextView)findViewById(R.id.greeting);
+     	setTextViewFont(Museo500Regular, greets);
         greets.setText(String.format(res.getString(R.string.profile_name), student[2], student[3]));
-  
-        setTextViewFont(Museo500Regular, teachername, classid, mpass, classname);
-        setTextViewFont(Museo700Regular, greets);
+        setTextViewFont(Museo500Regular, greets);
+        //setTextViewFont(Museo500Regular, teachername, classid, mpass, classname);
+        
      	
         Log.d(TAG,"...Profile Info");
 		

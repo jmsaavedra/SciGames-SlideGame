@@ -15,8 +15,11 @@ import org.json.JSONObject;
 
 import com.android.future.usb.UsbAccessory;
 import com.android.future.usb.UsbManager;
+import com.scigames.slidegame.ADKService;
+import com.scigames.slidegame.ServiceADKApplication;
+import com.scigames.serverutils.SciGamesHttpPoster;
+import com.scigames.serverutils.SciGamesListener;
 import com.scigames.slidegame.LoginActivity;
-import com.scigames.slidegame.SciGamesHttpPoster;
 import com.scigames.slidegame.R;
 
 import android.app.Activity;
@@ -53,8 +56,8 @@ public class LoginActivity extends Activity implements Runnable, SciGamesListene
     
 	private static final String TAG = "LoginActivity";
 	
-    private boolean debug = true;
-    private boolean debugImages = true;
+    private boolean debug = false;
+    private boolean debugImages = false;
 	
 	/*** service stuff ***/
 	private static final String ACTION_USB_PERMISSION = "com.google.android.DemoKit.action.USB_PERMISSION";
@@ -72,6 +75,7 @@ public class LoginActivity extends Activity implements Runnable, SciGamesListene
 	
     private String visitId = "VISITID";
     private String studentId = "STUDENTID";
+    private String studentMass = "STUDENTMASS";
     private String firstName = "FNAME";
     private String lastName = "LNAME";
     private String classId = "CLASSID";
@@ -105,6 +109,8 @@ public class LoginActivity extends Activity implements Runnable, SciGamesListene
     ImageView bg;
     
     SciGamesHttpPoster task = new SciGamesHttpPoster(LoginActivity.this, "http://mysweetwebsite.com/pull/auth_rfid.php");
+    
+    SciMath calculator;
 	
 	@Override
     public void onCreate(Bundle savedInstanceState) {
@@ -599,8 +605,9 @@ public class LoginActivity extends Activity implements Runnable, SciGamesListene
 	    }
 	}
 	
-	private void sendSlideData(String[] slideDataIn){
+	private void sendSlideData(String[] slideDataIn){ 
 		Log.d(TAG, "hit sendSlideData()");
+		
 	    if (isNetworkAvailable()){
 		    task.cancel(true);
 		    //create a new async task for every time you hit login (each can only run once ever)
@@ -630,7 +637,7 @@ public class LoginActivity extends Activity implements Runnable, SciGamesListene
 
      OnClickListener mSlidePage = new OnClickListener(){
  	    public void onClick(View v) {
- 			Log.d(TAG,"mDone.onClick");
+ 			Log.d(TAG,"mSlidePage.onClick");
  			//startActivity(new Intent(ProfileActivity.this, Registration2RfidMass_AdkServiceActivity.class));
  			Intent i = new Intent(LoginActivity.this, LoginActivity.class);
  			Log.d(TAG,"new Intent");
@@ -642,11 +649,38 @@ public class LoginActivity extends Activity implements Runnable, SciGamesListene
  		}
      };
      
-     OnClickListener mSlideDataGo = new OnClickListener(){
+     OnClickListener mSlideDataGo = new OnClickListener(){ //gets called when Arduino returns last stop bit
   	    public void onClick(View v) {
+  	    	int mass = 65;
+  	    	int startGate = 200;
+  	    	int endGate = 50;
+  	    	int totalTime = 795;
   	    	
+  	    	int level = 0;
+  	    	int attempt = 2;
+  	    	int kineticGoal = 45; //add up to 100
+  	    	int thermalGoal = 55;
   	    	
-  	    	String[] thisData = {"5","30","250", "150", "955","1415","55","101","45","1","false",slideSessionIdIn};
+  	    	/* remains static for now: */
+  	    	float slideLength = 4.8f;
+  	    	
+  	    	calculator = new SciMath( mass, startGate, endGate, totalTime);
+  	    	calculator.getTotalKinetic();
+  	    	calculator.getScore(level, attempt, kineticGoal, thermalGoal);
+  	    	calculator.getTotalPotential();
+  	    	calculator.getThermal();
+  	    	calculator.getThermal2();
+  	    	
+  	    	String[] thisData = {
+  	    			"5", "30",
+  	    			String.valueOf(startGate), 
+  	    			String.valueOf(endGate), 
+  	    			String.valueOf(totalTime),
+  	    			String.valueOf(calculator.getScore(level, attempt, kineticGoal, thermalGoal)),
+  	    			String.valueOf(calculator.getTotalKinetic()),
+  	    			String.valueOf(calculator.getTotalPotential()),
+  	    			String.valueOf(calculator.getThermal()),
+  	    			"2","true",slideSessionIdIn };
 
 //  	    	thisData[0] = "5"; 		//'slide_length'
 //  	    	thisData[1] = "30"; 	//'slide_angle'

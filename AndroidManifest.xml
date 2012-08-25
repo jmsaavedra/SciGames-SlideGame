@@ -16,14 +16,14 @@
         
         <activity android:name=".LoginActivity" android:label="SG Slide Game" android:screenOrientation="landscape" android:launchMode="singleInstance" >
 			<intent-filter>
-
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
 			</intent-filter>
         </activity>
         
         <activity android:name=".MenuActivity" android:label="SG Slide Game" android:screenOrientation="landscape" >
             <intent-filter>	
-                <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.LAUNCHER" />
+
             </intent-filter>
         </activity>
         
