@@ -1,27 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
+
+
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
 	android:layout_width="match_parent" android:layout_weight="1"
 	android:layout_height="fill_parent" android:orientation="horizontal"
 	android:background="@drawable/bg_no_device"
 	android:layout_gravity="fill_horizontal"
 	android:id="@+id/no_device">
-
-<!-- 	<TextView
-	    android:id="@+id/connect_device"
-	    android:layout_width="wrap_content"
-	    android:layout_height="wrap_content"
-	    android:layout_marginTop = "490dp"
-	    android:layout_marginLeft = "60dp"
-	    android:text="@string/no_device"
-	    android:textSize="40dip">
-	</TextView> -->
-	
-<!--  	<ImageView 
-	    android:id="@+id/thisBg" 
-	    android:layout_width="match_parent"
-		android:layout_height="wrap_content" 
-		android:src="@drawable/computer" 
-		android:layout_weight="1">
-	</ImageView> -->
 	
 </LinearLayout>

@@ -25,5 +25,6 @@
     <string name="fabric">%1$s</string>
     <string name="level">%1$s</string>
     <string name="attempt">%1$s</string>
+    <string name="fabric_choice">You Chose: %1$s</string>
     
 </resources>

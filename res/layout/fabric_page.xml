@@ -50,61 +50,7 @@
         android:text="review last turn"
         android:textSize="30sp" />
  -->
- <!--    
- android:background="@drawable/btn_done_off"
  
- <Button
-        android:id="@+id/done"
-        android:layout_width="260px"
-        android:layout_height="120px"
-        android:layout_marginLeft="40dp"
-        android:layout_marginTop="760dp"
-        android:background="@drawable/btn_done_off"
-        android:textSize="30sp" />
-
-    <TextView
-        android:id="@+id/class_name"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="130dp"
-        android:layout_marginTop="15dp"
-        android:text="@string/profile_classname"
-        android:textAppearance="?android:attr/textAppearanceMedium"
-        android:textSize="40px" />
-
-    <TextView
-        android:id="@+id/teacher_name"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/class_name"
-        android:layout_marginLeft="170dp"
-        android:layout_marginTop="3dp"
-        android:text="@string/profile_teacher_name"
-        android:textAppearance="?android:attr/textAppearanceMedium"
-        android:textSize="40px" />
-
-    <TextView
-        android:id="@+id/class_id"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/teacher_name"
-        android:layout_marginLeft="170dp"
-        android:layout_marginTop="25dp"
-        android:text="@string/profile_classid"
-        android:textAppearance="?android:attr/textAppearanceMedium"
-        android:textSize="40px" />
-
-    <TextView
-        android:id="@+id/password"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/class_id"
-        android:layout_below="@+id/class_id"
-        android:layout_marginLeft="20dp"
-        android:layout_marginTop="3dp"
-        android:text="@string/profile_password"
-        android:textAppearance="?android:attr/textAppearanceMedium"
-        android:textSize="40px" /> -->
 
 <!--     <TextView
         android:id="@+id/fabric_instructions"
@@ -123,8 +69,8 @@
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
         android:layout_marginTop="375dp"
-        android:layout_marginLeft="125dp"
-        android:text="Got It!"
+        android:layout_marginLeft="50dp"
+        android:text="@string/fabric_choice"
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:textColor="@color/black"
         android:textSize="46px" />

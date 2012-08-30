@@ -46,6 +46,7 @@ public class ADKService extends Service {
 		super.onCreate();
 	}
 	  
+	@SuppressWarnings("deprecation")
 	@Override
 	public synchronized void onStart(Intent intent, int startId) {
 		Log.d(TAG, "onStart");

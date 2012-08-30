@@ -16,21 +16,10 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/bg_blank"
+    android:background="@drawable/bg_ready_set_go"
     android:orientation="horizontal"
     android:paddingLeft="10dp"
     android:paddingTop="10dp" >
-
-    <!--
-         <TextView
-        android:id="@+id/greeting"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:layout_marginTop="28dp"
-        android:text="@string/greeting"
-        android:textAppearance="?android:attr/textAppearanceLarge" />
-    -->
     
      <Button
         android:id="@+id/btn_sendfakedata"
@@ -50,72 +39,7 @@
         android:text="review last turn"
         android:textSize="30sp" /> -->
 
- <!--    
- android:background="@drawable/btn_done_off"
- 
- <Button
-        android:id="@+id/done"
-        android:layout_width="260px"
-        android:layout_height="120px"
-        android:layout_marginLeft="40dp"
-        android:layout_marginTop="760dp"
-        android:background="@drawable/btn_done_off"
-        android:textSize="30sp" />
-
-    <TextView
-        android:id="@+id/class_name"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="130dp"
-        android:layout_marginTop="15dp"
-        android:text="@string/profile_classname"
-        android:textAppearance="?android:attr/textAppearanceMedium"
-        android:textSize="40px" />
-
-    <TextView
-        android:id="@+id/teacher_name"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/class_name"
-        android:layout_marginLeft="170dp"
-        android:layout_marginTop="3dp"
-        android:text="@string/profile_teacher_name"
-        android:textAppearance="?android:attr/textAppearanceMedium"
-        android:textSize="40px" />
-
-    <TextView
-        android:id="@+id/class_id"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/teacher_name"
-        android:layout_marginLeft="170dp"
-        android:layout_marginTop="25dp"
-        android:text="@string/profile_classid"
-        android:textAppearance="?android:attr/textAppearanceMedium"
-        android:textSize="40px" />
-
-    <TextView
-        android:id="@+id/password"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/class_id"
-        android:layout_below="@+id/class_id"
-        android:layout_marginLeft="20dp"
-        android:layout_marginTop="3dp"
-        android:text="@string/profile_password"
-        android:textAppearance="?android:attr/textAppearanceMedium"
-        android:textSize="40px" /> -->
-
-    <TextView
-        android:id="@+id/slide_instructions"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentRight="true"
-        android:layout_marginTop="155dp"
-        android:text="go slide!"
-        android:textAppearance="?android:attr/textAppearanceMedium"
-        android:textColor="#ffffff"
-        android:textSize="25px" />
+<!--   
     
     <TextView
         android:id="@+id/slide_data"
@@ -126,17 +50,6 @@
         android:text="slide data"
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:textColor="@color/black"
-        android:textSize="25px" />
-
-    <TextView
-        android:id="@+id/debug"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/slide_instructions"
-        android:layout_alignParentTop="true"
-        android:layout_marginTop="60dp"
-        android:textColor="#ffffff"
-        android:text="Small Text"
-        android:textAppearance="?android:attr/textAppearanceSmall" />
+        android:textSize="25px" /> -->
 
 </RelativeLayout>

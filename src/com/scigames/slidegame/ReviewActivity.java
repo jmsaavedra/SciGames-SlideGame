@@ -234,7 +234,37 @@ public class ReviewActivity extends Activity implements SciGamesListener{
 	    }
     }
         
-
+    @Override
+    protected void onNewIntent(Intent i){
+    	rfidIn = i.getStringExtra("rfid");
+        setContentView(R.layout.review_page);
+        mAnimationView = (ReviewAnimationView) findViewById(R.id.review);
+        mAnimationThread = mAnimationView.getThread();
+	    if (isNetworkAvailable()){
+		    task.cancel(true);
+		    //create a new async task for every time you hit login (each can only run once ever)
+		   	task = new SciGamesHttpPoster(ReviewActivity.this,"http://mysweetwebsite.com/pull/slide_results.php");
+		    //set listener
+	        task.setOnResultsListener(ReviewActivity.this);
+	        //prepare key value pairs to send
+			String[] keyVals = {"rfid", rfidIn}; 
+			if(debug){
+				keyVals[0] = "rfid";
+			    keyVals[1] = "500315c37"; //tester
+			}
+//			infoDialog.setTitle("rfidIn:");
+//			infoDialog.setMessage(rfidIn);
+//			infoDialog.show();
+			//create AsyncTask, then execute
+			AsyncTask<String, Void, JSONObject> serverResponse = null;
+			serverResponse = task.execute(keyVals);
+	    } else {
+			alertDialog.setMessage("You're not connected to the internet. Make sure this tablet is logged into a working Wifi Network.");
+			alertDialog.show();
+	    }
+    }
+    
+    
     @Override
     protected void onResume() {
         super.onResume();
@@ -470,8 +500,9 @@ public class ReviewActivity extends Activity implements SciGamesListener{
 	    		mAttempt.setVisibility(View.INVISIBLE);
 	    		mFabric.setVisibility(View.INVISIBLE);
 	    	} else {
+	    		mAnimationView.surfaceDestroyed(null);
 	    		Intent i = new Intent(ReviewActivity.this, LoginActivity.class);
-	     		//i.putExtra("rfid",currRfid);;
+	     		i.putExtra("page","login");
 	     		Log.d(TAG,"startActivity...");
 	     		ReviewActivity.this.startActivity(i);
 	    	}
@@ -520,7 +551,7 @@ public class ReviewActivity extends Activity implements SciGamesListener{
 	public void onBackPressed() {
 		//do nothing
 		getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LOW_PROFILE);
-        
+		        
 	}
 }
 

@@ -65,7 +65,8 @@ void checkForAndroidComm(){
       
       switch(command) {
       case 'Y':
-        Serial.println("received X"); //prepare for RFID Scan
+        Serial.println("received Y"); //prepare for RFID Scan
+        ledsOff();
         RFID_GO = true;
         break;
 
@@ -88,7 +89,7 @@ void checkForAndroidComm(){
         break;
 //        
       case 'X':
-        Serial.println("received Z"); //turn LEDs off, standby
+        Serial.println("received X"); //turn LEDs off, standby
         currLedStatus = !currLedStatus;
         allLeds(currLedStatus);
         break;
@@ -104,7 +105,9 @@ void checkForAndroidComm(){
       }
     }
   } else {
-    //redOn();
+    //solid green when not connected to board
+    RFID_GO = false;
+    haveInfoToSend = false;
     greenOn();
   }
 }

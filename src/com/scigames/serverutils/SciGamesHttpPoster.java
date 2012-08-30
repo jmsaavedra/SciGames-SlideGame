@@ -85,21 +85,16 @@ public class SciGamesHttpPoster extends AsyncTask <String, Void, JSONObject> {
 	
 	@Override
 	protected JSONObject doInBackground (String... keyVals){
-		Log.d(TAG, "keyVal.length: ");
-		Log.d(TAG, String.valueOf(keyVals.length));
-		Log.d(TAG, "keyVals: ");
-		Log.d(TAG, "keyVals[0] "+ keyVals[0]);
-		Log.d(TAG, "keyVals[1] "+ keyVals[1]);
-		
+		Log.d(TAG, "keyVal.length: " + String.valueOf(keyVals.length));		
 	    String[] key = new String[keyVals.length/2];
 	    String[] val = new String[keyVals.length/2];
 	    int count = 0;
 		for(int i=0; i < keyVals.length/2; i++){
-			Log.d(TAG, "i ="+ String.valueOf(i));
+			//Log.d(TAG, "i ="+ String.valueOf(i));
 			key[i] = keyVals[count];
 			val[i] = keyVals[count+1];
 			count+=2;
-			Log.d(TAG, key[i] +":"+ val[i]);
+			Log.d(TAG, "keyVal pair #"+ String.valueOf(i)+ ":   " +key[i] +":"+ val[i]);
 		}    	
     	try{
         	JSONObject thisResponse=null;
@@ -271,6 +266,7 @@ public class SciGamesHttpPoster extends AsyncTask <String, Void, JSONObject> {
 		String thisVisitId = "null";
 		String slideLevel = "null";
 		String rfid = "null";
+		String mass = "null";
 
 		Log.d(TAG, "has student object:");
 		student = response.getJSONObject("student");
@@ -280,11 +276,12 @@ public class SciGamesHttpPoster extends AsyncTask <String, Void, JSONObject> {
 		thisVisitId = student.getString("current_visit");
 		slideLevel = student.getString("slide_game_level");
 		rfid = student.getString("current_rfid");
+		mass = student.getString("mass");
 		if(student.has("photo")){
 			thisStudentPhoto = student.getString("photo");
 		}
 		 
-		String[] parsedStudent = {thisStudentId, thisVisitId, thisFirstName, thisLastName, thisStudentPhoto, slideLevel, rfid };
+		String[] parsedStudent = {thisStudentId, thisVisitId, thisFirstName, thisLastName, thisStudentPhoto, slideLevel, rfid, mass };
 		return parsedStudent;
 	}
 	

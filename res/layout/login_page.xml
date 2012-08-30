@@ -4,14 +4,5 @@
     android:layout_height="wrap_content" 
     android:id="@+id/login_page"
     android:background="@drawable/bg_login">
-    
-<!--     <TextView
-        android:id="@+id/welcome"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="100dp"
-        android:layout_marginLeft="50dp"
-        android:text="Welcome to the Slide Game! Please swipe in."
-        android:textAppearance="?android:attr/textAppearanceLarge" /> -->
 
 </RelativeLayout>

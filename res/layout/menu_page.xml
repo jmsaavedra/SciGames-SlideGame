@@ -1,18 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Copyright (C) 2007 The Android Open Source Project
 
-     Licensed under the Apache License, Version 2.0 (the "License");
-     you may not use this file except in compliance with the License.
-     You may obtain a copy of the License at
-  
-          http://www.apache.org/licenses/LICENSE-2.0
-  
-     Unless required by applicable law or agreed to in writing, software
-     distributed under the License is distributed on an "AS IS" BASIS,
-     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-     See the License for the specific language governing permissions and
-     limitations under the License.
--->
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -46,8 +33,7 @@
         android:layout_marginLeft="690dp"
         android:layout_marginTop="265dp"
         android:textSize="30sp"
-        android:background="@drawable/btn_play"
-        />
+        android:background="@drawable/btn_play" />
     
     <Button
         android:id="@+id/btn_review"
@@ -58,68 +44,12 @@
         android:textSize="30sp"
         android:background="@drawable/btn_review" />
 
- <!--    
- android:background="@drawable/btn_done_off"
- 
- <Button
-        android:id="@+id/done"
-        android:layout_width="260px"
-        android:layout_height="120px"
-        android:layout_marginLeft="40dp"
-        android:layout_marginTop="760dp"
-        android:background="@drawable/btn_done_off"
-        android:textSize="30sp" />
-
-    <TextView
-        android:id="@+id/class_name"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="130dp"
-        android:layout_marginTop="15dp"
-        android:text="@string/profile_classname"
-        android:textAppearance="?android:attr/textAppearanceMedium"
-        android:textSize="40px" />
-
-    <TextView
-        android:id="@+id/teacher_name"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/class_name"
-        android:layout_marginLeft="170dp"
-        android:layout_marginTop="3dp"
-        android:text="@string/profile_teacher_name"
-        android:textAppearance="?android:attr/textAppearanceMedium"
-        android:textSize="40px" />
-
-    <TextView
-        android:id="@+id/class_id"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/teacher_name"
-        android:layout_marginLeft="170dp"
-        android:layout_marginTop="25dp"
-        android:text="@string/profile_classid"
-        android:textAppearance="?android:attr/textAppearanceMedium"
-        android:textSize="40px" />
-
-    <TextView
-        android:id="@+id/password"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/class_id"
-        android:layout_below="@+id/class_id"
-        android:layout_marginLeft="20dp"
-        android:layout_marginTop="3dp"
-        android:text="@string/profile_password"
-        android:textAppearance="?android:attr/textAppearanceMedium"
-        android:textSize="40px" /> -->
-
     <TextView
         android:id="@+id/student_name"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="505dp"
-        android:layout_marginTop="190dp"
+        android:layout_marginLeft="487dp"
+        android:layout_marginTop="197dp"
         android:text="@string/profile_name"
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:textColor="#ffffff"

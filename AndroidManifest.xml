@@ -21,17 +21,17 @@
 			</intent-filter>
         </activity>
         
-        <activity android:name=".MenuActivity" android:label="SG Slide Game" android:screenOrientation="landscape" >
+        <activity android:name=".MenuActivity" android:label="SG Slide Game" android:screenOrientation="landscape"  android:launchMode="singleInstance">
             <intent-filter>	
 
             </intent-filter>
         </activity>
         
-        <activity android:name=".ReviewActivity" android:label="SG Slide Game" android:screenOrientation="landscape" >
+        <activity android:name=".ReviewActivity" android:label="SG Slide Game" android:screenOrientation="landscape" android:launchMode="singleInstance">
             <intent-filter>
             </intent-filter>
         </activity>
-        <activity android:name=".ObjectiveActivity" android:label="SG Slide Game" android:screenOrientation="landscape" >
+        <activity android:name=".ObjectiveActivity" android:label="SG Slide Game" android:screenOrientation="landscape"  android:launchMode="singleInstance">
             <intent-filter>
             </intent-filter>
         </activity>

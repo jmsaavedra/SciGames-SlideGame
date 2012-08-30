@@ -16,39 +16,10 @@
 
 package com.scigames.slidegame;
 
-//import java.io.ByteArrayInputStream;
-//import java.io.FileNotFoundException;
-//import java.io.IOException;
-//import java.net.URI;
-
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
-import java.io.BufferedReader;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLConnection;
-import java.util.ArrayList;
-import java.util.List;
-
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
-import org.apache.http.NameValuePair;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.entity.UrlEncodedFormEntity;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.message.BasicNameValuePair;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.scigames.serverutils.DownloadNarrativeImage;
-import com.scigames.serverutils.DownloadProfilePhoto;
 import com.scigames.serverutils.SciGamesHttpPoster;
 import com.scigames.serverutils.SciGamesListener;
 import com.scigames.slidegame.ObjectiveActivity;
@@ -56,70 +27,36 @@ import com.scigames.slidegame.R;
 
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.app.Application;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.pm.ActivityInfo;
-import android.content.res.Resources;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Typeface;
-import android.graphics.BitmapFactory.Options;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
-//import android.net.Uri;
 import android.os.Bundle;
-//import android.view.KeyEvent;
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-/**
- * This class provides a basic demonstration of how to write an Android
- * activity. Inside of its window, it places a single view: an EditText that
- * displays and edits some internal text.
- */
+
 public class ObjectiveActivity extends Activity implements SciGamesListener{
     private String TAG = "ObjectiveActivity";
     
-	static final private int QUIT_ID = Menu.FIRST;
-    static final private int BACK_ID = Menu.FIRST + 1;
+    private boolean debug = false;
+    
 
-    private String firstNameIn = "FNAME";
-    private String lastNameIn = "LNAME";
-    private String passwordIn = "PWORD";
-    private String massIn = "MASS";
-    private String emailIn = "EMAIL";
-    private String classIdIn = "CLASSID";
     private String studentIdIn = "STUDENTID";
-    private String visitIdIn = "VISITID";
     private String rfidIn = "RFID";
-    private String slideLevel = "SLIDELEVEL";
-    private String cartLevel = "CARTLEVEL";
-    private String photoUrl = "none";
+    private String slideLevelIn = "SLIDELEVEL";
     
     private String[] objectiveImg;
     
-    private int objectiveImgNum = 0;
-    private boolean showingImgs = false;
-    private boolean debug = false;
-    
-//    TextView title;
-//    TextView mLevel;
-//    TextView mScore;
-//    TextView mFabric;
-//    TextView mAttempt;
+    protected int objectiveImgNum = 0;
     
     Typeface Museo300Regular;
     Typeface Museo500Regular;
@@ -151,6 +88,7 @@ public class ObjectiveActivity extends Activity implements SciGamesListener{
         Log.d(TAG,"getIntent");
     	rfidIn = i.getStringExtra("rfid");
     	studentIdIn = i.getStringExtra("studentId");
+    	slideLevelIn = i.getStringExtra("slideLevel");
 //    	photoUrl = i.getStringExtra("photo");
 //    	photoUrl = "http://mysweetwebsite.com/" + photoUrl;
     	Log.d(TAG,"...getStringExtra");
@@ -195,20 +133,8 @@ public class ObjectiveActivity extends Activity implements SciGamesListener{
 				Log.d(TAG,"...startActivity");
 	        }
 	    });
-	    
-        //display name and profile info
-        Resources res = getResources();
-//        title = (TextView)findViewById(R.id.title);
-//        mLevel = (TextView)findViewById(R.id.level);
-//        mScore = (TextView)findViewById(R.id.score);
-//        mFabric = (TextView)findViewById(R.id.fabric);
-//        mAttempt = (TextView)findViewById(R.id.attempt);
-//        //greets.setText(String.format(res.getString(R.string.profile_name), firstNameIn, lastNameIn));
-//        setTextViewFont(Museo700Regular, title);
-//        setTextViewFont(Museo500Regular, mLevel, mScore, mFabric);
 
-        Log.d(TAG,"...Profile Info");
-	    ExistenceLightOtf = Typeface.createFromAsset(getAssets(),"fonts/Existence-Light.ttf");
+        ExistenceLightOtf = Typeface.createFromAsset(getAssets(),"fonts/Existence-Light.ttf");
 	    Museo300Regular = Typeface.createFromAsset(getAssets(),"fonts/Museo300-Regular.otf");
 	    Museo500Regular = Typeface.createFromAsset(getAssets(),"fonts/Museo500-Regular.otf");
 	    Museo700Regular = Typeface.createFromAsset(getAssets(),"fonts/Museo700-Regular.otf");
@@ -222,6 +148,10 @@ public class ObjectiveActivity extends Activity implements SciGamesListener{
         btnContinue = (Button) findViewById(R.id.btn_continue);
         btnContinue.setOnClickListener(mContinue);
         
+        getObjectiveImages(slideLevelIn);
+    }
+    
+    private void getObjectiveImages(String mSlideLevelIn){
 	    if (isNetworkAvailable()){
 		    task.cancel(true);
 		    //create a new async task for every time you hit login (each can only run once ever)
@@ -230,15 +160,15 @@ public class ObjectiveActivity extends Activity implements SciGamesListener{
 	        task.setOnResultsListener(ObjectiveActivity.this);
 	        //prepare key value pairs to send
 			//String[] keyVals = {"rfid", rfidIn}; 
-	        String[] keyVals = {"slide_game_level", "0"}; 
+	        String[] keyVals = {"slide_game_level", mSlideLevelIn}; 
 			if(debug){
-				//keyVals[0] = "rfid";
-			    //keyVals[1] = "500315c37"; //tester
+				infoDialog.setTitle("rfidIn:");
+				infoDialog.setMessage(rfidIn);
+				infoDialog.show();
 			}
-			infoDialog.setTitle("rfidIn:");
-			infoDialog.setMessage(rfidIn);
-			infoDialog.show();
+
 			//create AsyncTask, then execute
+			@SuppressWarnings("unused")
 			AsyncTask<String, Void, JSONObject> serverResponse = null;
 			serverResponse = task.execute(keyVals);
 	    } else {
@@ -246,14 +176,37 @@ public class ObjectiveActivity extends Activity implements SciGamesListener{
 			alertDialog.show();
 	    }
     }
-        
-
+    
     @Override
-    protected void onResume() {
-        super.onResume();
-        getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LOW_PROFILE);
-        Log.d(TAG,"...super.onResume()");
+    protected void onNewIntent(Intent i){
+    	View thisView = findViewById(R.id.objective_page); //find view
+		setContentView(thisView);
+    	thisView.setBackgroundResource(R.drawable.bg_blank);
+    	objectiveImgNum = 0;
+    	objectiveImg = null;
+    	if(i.getExtras().getString("slideLevel") != null){
+    		Log.d(TAG, "onNewIntent!");
+        	rfidIn = i.getStringExtra("rfid");
+        	studentIdIn = i.getStringExtra("studentId");
+        	slideLevelIn = i.getStringExtra("slideLevel");
+        	
+    		String thisSlideLevel = i.getExtras().getString("slideLevel");
+    		getObjectiveImages(slideLevelIn);
+    	} 
+    
     }
+
+//    @Override
+//    protected void onResume() {
+//        super.onResume();
+//        getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LOW_PROFILE);
+//        objectiveImgNum = 0;
+//        objectiveImg = null;
+//        Log.d(TAG, "objectiveImgNum: "+ String.valueOf(objectiveImgNum));
+//        Log.d(TAG,"Objective Activity..super.onResume()");
+//        Log.d(TAG,"currSlideLevel: "+String.valueOf(slideLevelIn));
+//        
+//    }
 
     
 
@@ -274,27 +227,24 @@ public class ObjectiveActivity extends Activity implements SciGamesListener{
 			needSlideDataDialog.setMessage("Go play on the slide before checking your last score!");
 			needSlideDataDialog.show();
 		} else {
-			infoDialog.setTitle("onResults Succeded: ");
-			infoDialog.setMessage(serverResponseJSON.toString());
-			infoDialog.show();
-			
-	     	//update all text fields
-	     	Resources res = getResources();
-	     	
-	        //TextView greets = (TextView)findViewById(R.id.greeting);
-//	     	mLevel.setText(String.format(res.getString(R.string.level), student[5]));
-//	        mScore.setText(String.format(res.getString(R.string.score), slide_session[4]));
-//	        mFabric.setText(String.format(res.getString(R.string.fabric), fabric[0]));
-//	        mAttempt.setText(String.format(res.getString(R.string.attempt), slide_session[1]));
-//	        
-//	        setTextViewFont(Museo700Regular, title);
-//	        setTextViewFont(Museo500Regular, mLevel, mScore, mFabric);
-	        
+			if(debug){
+				infoDialog.setTitle("onResults Succeded -ObjActivity: ");
+				infoDialog.setMessage(serverResponseJSON.toString());
+				infoDialog.show();
+			}
+			     	
 	        objectiveImg = objective_images;
 	        //scoreImg = score_images;
-	        btnContinue.setVisibility(View.INVISIBLE);
-    		reviewBtnNext.setVisibility(View.VISIBLE);
-    		setCurrImg(objectiveImg[0]);
+	        if(objectiveImg.length>1){
+		        btnContinue.setVisibility(View.INVISIBLE);
+	    		reviewBtnNext.setVisibility(View.VISIBLE);
+	        } else { //if there is just 1 objective image!
+	        	btnContinue.setVisibility(View.VISIBLE);
+	    		reviewBtnNext.setVisibility(View.INVISIBLE);
+	        }
+	        Log.d(TAG, "about to set: objectiveImg");
+	        Log.d(TAG, "objectiveImgNum: "+ String.valueOf(objectiveImgNum));
+    		setCurrImg(objectiveImg[objectiveImgNum]);
 		}
 	}
 	
@@ -302,7 +252,7 @@ public class ObjectiveActivity extends Activity implements SciGamesListener{
 	
 	private void setCurrImg(String imgURL){
 		
-		View thisView = findViewById(R.id.objective_page);
+		View thisView = findViewById(R.id.objective_page); //find view
 		setContentView(thisView);
 		Log.d(TAG, "imgURL: ");
 		Log.d(TAG, imgURL);
@@ -348,7 +298,6 @@ public class ObjectiveActivity extends Activity implements SciGamesListener{
 	    	} else {
 	    		objectiveImgNum++; 
 	    		reviewBtnNext.setVisibility(View.INVISIBLE);
-	    		btnContinue.setText("Continue");
 	    		btnContinue.setVisibility(View.VISIBLE);
 	    		setCurrImg(objectiveImg[objectiveImgNum]);
 	    	}
@@ -366,38 +315,27 @@ public class ObjectiveActivity extends Activity implements SciGamesListener{
 		}
     };
     
-    OnClickListener mContinue = new OnClickListener(){
+    OnClickListener mContinue = new OnClickListener(){ //same img as mNext, but different intent
 	    public void onClick(View v) {
-//	    	if(!showingImgs){
-//	    		btnContinue.setVisibility(View.INVISIBLE);
-//	    		reviewBtnNext.setVisibility(View.VISIBLE);
-//	    		setCurrImg(objectiveImg[0]);
-//	    		showingImgs = true;
-//	    	} else {
+//	    	View thisView = findViewById(R.id.objective_page); //find view
+//			setContentView(thisView);
+//	    	thisView.setBackgroundResource(R.drawable.bg_blank);
+	    	Log.d(TAG, "leaving ObjectiveActivity, to fabric through login:");
+	    	Log.d(TAG, "this studentId: "+studentIdIn);
+	    	Log.d(TAG, "this slideLevel: "+ slideLevelIn);
+	    	Log.d(TAG,  "this rfid: "+ rfidIn);
+	    	
 				Intent i = new Intent(ObjectiveActivity.this, LoginActivity.class);
 				Log.d(TAG,"new Intent");
 				i.putExtra("studentId",studentIdIn);
 				i.putExtra("page", "fabric");
+				i.putExtra("slideLevel", slideLevelIn);
+				i.putExtra("rfid", rfidIn);
 				Log.d(TAG,"startActivity...");
 				ObjectiveActivity.this.startActivity(i);
 				Log.d(TAG,"...startActivity");
-	    	//}
 		}
     };
-    	
-//    OnClickListener mReview = new OnClickListener() {
-//        public void onClick(View v) {
-////			Log.d(TAG,"mReview.onClick");
-////			Intent i = new Intent(ReviewActivity.this, LoginActivity.class);
-////			Log.d(TAG,"new LoginActivity Intent");
-////			i.putExtra("rfid", rfidIn);
-////			i.putExtra("page", "slideReview");
-////			Log.d(TAG,"startActivity...");
-////			ReviewActivity.this.startActivity(i);
-////			Log.d(TAG,"...startActivity");
-//        }
-//    };
-
 	
     //----- check if tablet is connected to internet!
     private boolean isNetworkAvailable() {

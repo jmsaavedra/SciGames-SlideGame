@@ -16,34 +16,6 @@
 
 package com.scigames.slidegame;
 
-//import java.io.ByteArrayInputStream;
-//import java.io.FileNotFoundException;
-//import java.io.IOException;
-//import java.net.URI;
-
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
-import java.io.BufferedReader;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLConnection;
-import java.util.ArrayList;
-import java.util.List;
-
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
-import org.apache.http.NameValuePair;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.entity.UrlEncodedFormEntity;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.message.BasicNameValuePair;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -58,51 +30,31 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Resources;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Typeface;
-import android.graphics.BitmapFactory.Options;
 import android.os.AsyncTask;
-//import android.net.Uri;
 import android.os.Bundle;
-//import android.view.KeyEvent;
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
-/**
- * This class provides a basic demonstration of how to write an Android
- * activity. Inside of its window, it places a single view: an EditText that
- * displays and edits some internal text.
- */
+
 public class MenuActivity extends Activity implements SciGamesListener{
     private String TAG = "MenuActivity";
+    private String baseDbURL = "http://mysweetwebsite.com";
     
     private boolean debug = false;
-        
-	static final private int QUIT_ID = Menu.FIRST;
-    static final private int BACK_ID = Menu.FIRST + 1;
 
     private String firstNameIn = "FNAME";
     private String lastNameIn = "LNAME";
-    private String passwordIn = "PWORD";
     private String massIn = "MASS";
-    private String emailIn = "EMAIL";
-    private String classIdIn = "CLASSID";
     private String studentIdIn = "STUDENTID";
     private String visitIdIn = "VISITID";
     private String rfidIn = "RFID";
-    private String slideLevel = "SLIDELEVEL";
-    private String cartLevel = "CARTLEVEL";
+    private String slideLevelIn = "SLIDELEVEL";
     private String photoUrl = "none";
     
     AlertDialog infoDialog;
@@ -124,7 +76,7 @@ public class MenuActivity extends Activity implements SciGamesListener{
     Button reviewBtn;
     
     DownloadProfilePhoto photoTask = new DownloadProfilePhoto(MenuActivity.this, "sUrl");
-    SciGamesHttpPoster task = new SciGamesHttpPoster(MenuActivity.this,"mysweetwebsite.com/pull/objective_images.php");
+    SciGamesHttpPoster task = new SciGamesHttpPoster(MenuActivity.this, baseDbURL+"/pull/objective_images.php");
     
     public MenuActivity() {
     	
@@ -139,7 +91,7 @@ public class MenuActivity extends Activity implements SciGamesListener{
     	Log.d(TAG,"super.OnCreate");
         Intent i = getIntent();
         Log.d(TAG,"getIntent");
-        if(!debug){
+        //if(!debug){
 	    	firstNameIn = i.getStringExtra("fName");
 	    	lastNameIn = i.getStringExtra("lName");;
 	    	studentIdIn = i.getStringExtra("studentId");
@@ -147,46 +99,67 @@ public class MenuActivity extends Activity implements SciGamesListener{
 	    	rfidIn = i.getStringExtra("rfid");
 	    	photoUrl = i.getStringExtra("photo");
 	    	photoUrl = "http://mysweetwebsite.com/" + photoUrl;
-	    	slideLevel = i.getStringExtra("slideLevel");
+	    	slideLevelIn = i.getStringExtra("slideLevel");
+	    	massIn = i.getStringExtra("mass");
+	    	Log.d(TAG, "slideLevelIn: " + slideLevelIn);
 	    	Log.d(TAG,"...getStringExtra");
-        } else {
-        	Log.d(TAG, "MenuActivity DEBUG ON");
-	    	firstNameIn = "joe";
-	    	lastNameIn = "saavedra";
-	    	studentIdIn = "502d884fc0c0bad86e000001";
-	    	visitIdIn = "50305136c0c0baf760000003";
-	    	rfidIn = "500315c37";
-	    	photoUrl = "student_images/502d882cc0c0bad76e000001/502d884fc0c0bad86e000001.jpg";
-	    	photoUrl = "http://mysweetwebsite.com/" + photoUrl;
-	    	slideLevel = "0";
-        	
-        }
+        //}
         // Inflate our UI from its XML layout description.
         setContentView(R.layout.menu_page);
         Log.d(TAG,"...setContentView");
        
-        
-        //display name and profile info
-        Resources res = getResources();
-        greets = (TextView)findViewById(R.id.student_name);
-        greets.setText(String.format(res.getString(R.string.profile_name), firstNameIn, lastNameIn));
-        setTextViewFont(Museo700Regular, greets); 
-
-        Log.d(TAG,"...Profile Info");
 	    ExistenceLightOtf = Typeface.createFromAsset(getAssets(),"fonts/Existence-Light.ttf");
 	    //Typeface Museo300Regular = Typeface.createFromAsset(getAssets(),"fonts/Museo300-Regular.otf");
 	    Museo500Regular = Typeface.createFromAsset(getAssets(),"fonts/Museo500-Regular.otf");
 	    Museo700Regular = Typeface.createFromAsset(getAssets(),"fonts/Museo700-Regular.otf");
+
+        displayProfile();
+    }
+    
+    @Override
+    protected void onNewIntent(Intent i){ //for the 2nd, 3rd, 4th... time we arrive at Menu Activity.
+    	Log.d(TAG, "onNewIntent");
+    	rfidIn = i.getStringExtra("rfid");
+    	studentIdIn = i.getStringExtra("studentId");
+    	slideLevelIn = i.getStringExtra("slideLevel");
+    	massIn = i.getStringExtra("mass");
+    	firstNameIn = i.getStringExtra("fName");
+    	lastNameIn = i.getStringExtra("lName");;
+    	visitIdIn = i.getStringExtra("visitId");
+    	photoUrl = i.getStringExtra("photo");
+    	photoUrl = "http://mysweetwebsite.com/" + photoUrl;
+    	Log.d(TAG, "Menu Activity INs: ");
+    	Log.d(TAG, rfidIn + studentIdIn + slideLevelIn + massIn);
+    	displayProfile();
+    }
+	
+    @Override
+    protected void onResume() {
+        super.onResume();
+        getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LOW_PROFILE);
+        Log.d(TAG,"...super.onResume()");
+    }
+
+	private void displayProfile(){
+        setContentView(R.layout.menu_page);
+        Log.d(TAG,"...setContentView");
+       
 	    
-        Log.d(TAG,"...instantiateButtons");
-        playBtn = (Button) findViewById(R.id.btn_play);
-        playBtn.setOnClickListener(mPlay);
-        setButtonFont(ExistenceLightOtf, playBtn);
+	    //display name and profile info
+	    Resources res = getResources();
+	    greets = (TextView)findViewById(R.id.student_name);
+	    greets.setText(String.format(res.getString(R.string.profile_name), firstNameIn, lastNameIn));
+	    setTextViewFont(Museo700Regular, greets); 
+	    Log.d(TAG,"...Profile Info");
+	
+	    playBtn = (Button) findViewById(R.id.btn_play);
+	    playBtn.setOnClickListener(mPlay);
+	    setButtonFont(ExistenceLightOtf, playBtn);
 	    
-        reviewBtn = (Button) findViewById(R.id.btn_review);
-        reviewBtn.setOnClickListener(mReview);
-        setButtonFont(ExistenceLightOtf, reviewBtn);
-        
+	    reviewBtn = (Button) findViewById(R.id.btn_review);
+	    reviewBtn.setOnClickListener(mReview);
+	    setButtonFont(ExistenceLightOtf, reviewBtn);
+	    
 	    infoDialog = new AlertDialog.Builder(MenuActivity.this).create();
 	    infoDialog.setTitle("Debug Info");
 	    infoDialog.setButton(RESULT_OK,"OK", new DialogInterface.OnClickListener() {
@@ -194,46 +167,31 @@ public class MenuActivity extends Activity implements SciGamesListener{
 	        // Write your code here to execute after dialog closed
 	        }
 	    });
-        
+	    
 		if(debug){
-//			infoDialog.setTitle("studentId");
-//			infoDialog.setMessage(studentIdIn);
-//			infoDialog.show();
+	//		infoDialog.setTitle("studentId");
+	//		infoDialog.setMessage(studentIdIn);
+	//		infoDialog.show();
 		}
-        
+	    
 		task.setOnResultsListener(this);
 		task.cancel(true);
-	    task = new SciGamesHttpPoster(MenuActivity.this,"http://mysweetwebsite.com/pull/return_profile.php");
+	    task = new SciGamesHttpPoster(MenuActivity.this,baseDbURL+"/pull/return_profile.php");
 	    task.setOnResultsListener(MenuActivity.this);
-        
+	    
 		//download photo
-        ImageView profilePhoto = (ImageView) findViewById(R.id.profile_image);
-        profilePhoto.setTag(photoUrl);
-        profilePhoto.setScaleX(1.4f);
-        profilePhoto.setScaleY(1.4f);
-        profilePhoto.setX(120f);
-        profilePhoto.setY(123f);
-        photoTask.cancel(true);
-        photoTask = new DownloadProfilePhoto(MenuActivity.this, photoUrl);
-        //AsyncTask<ImageView, Void, Bitmap> pPhoto = 
-     	photoTask.execute(profilePhoto);
-        		
-		//prepare key value pairs to send
-		String[] keyVals = {"student_id", studentIdIn, "visit_id", visitIdIn}; 
-		//create AsyncTask, then execute
-		@SuppressWarnings("unused")
-		AsyncTask<String, Void, JSONObject> serverResponse = null;
-		serverResponse = task.execute(keyVals);
-		Log.d(TAG,"...task.execute(keyVals)");
-    }
-        
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LOW_PROFILE);
-        Log.d(TAG,"...super.onResume()");
-    }
+	    ImageView profilePhoto = (ImageView) findViewById(R.id.profile_image);
+	    profilePhoto.setTag(photoUrl);
+	    profilePhoto.setScaleX(1.4f);
+	    profilePhoto.setScaleY(1.4f);
+	    profilePhoto.setX(120f);
+	    profilePhoto.setY(123f);
+	    photoTask.cancel(true);
+	    photoTask = new DownloadProfilePhoto(MenuActivity.this, photoUrl);
+	    //AsyncTask<ImageView, Void, Bitmap> pPhoto = 
+	 	photoTask.execute(profilePhoto);
+	}
+	
 
     
     OnClickListener mPlay = new OnClickListener(){
@@ -245,6 +203,8 @@ public class MenuActivity extends Activity implements SciGamesListener{
 			i.putExtra("studentId",studentIdIn);
 			i.putExtra("rfid", rfidIn);
 			i.putExtra("page", "objective");
+			i.putExtra("slideLevel", slideLevelIn);
+			i.putExtra("mass", massIn);
 			Log.d(TAG,"startActivity...");
 			MenuActivity.this.startActivity(i);
 			Log.d(TAG,"...startActivity");
@@ -276,7 +236,7 @@ public class MenuActivity extends Activity implements SciGamesListener{
 			String[] result_images, String[] score_images, String attempts,
 			boolean no_session, JSONObject serverResponseJSON) throws JSONException {
 		
-
+		massIn = student[7];
      	//update all text fields
      	Resources res = getResources();
      	
