@@ -245,6 +245,8 @@ class ReviewAnimationView extends SurfaceView implements SurfaceHolder.Callback 
         
     	int groupX = 921;
     	int groupY = 260;
+    	private int[] groupXRandom = new int[50];
+    	private int[] groupYRandom = new int[50];
 
         public ReviewAnimationThread(SurfaceHolder surfaceHolder, Context context,
                 Handler handler) {
@@ -317,6 +319,14 @@ class ReviewAnimationView extends SurfaceView implements SurfaceHolder.Callback 
             tempTherm = 0;
         	groupX = 921; //for the energy slide
         	groupY = 260;
+        	
+        	/* create random position changers for slide cloud */
+        	for (int i=0; i< groupXRandom.length; i++){
+        		groupXRandom[i] = (int)(Math.random()*(160));
+        	}
+        	for (int i=0; i< groupYRandom.length; i++){
+        		groupYRandom[i] = (int)(Math.random()*(160));
+        	}
         }
 
         /**
@@ -649,31 +659,31 @@ class ReviewAnimationView extends SurfaceView implements SurfaceHolder.Callback 
         	//thisView.setBackgroundResource(bgDrawable);
             int yTop = mCanvasHeight - ((int) mY + mLanderHeight / 2);
             int xLeft = (int) mX - mLanderWidth / 2;
-
-            // Draw the fuel gauge
-            int fuelWidth = (int) (UI_BAR * mFuel / PHYS_FUEL_MAX);
-            mScratchRect.set(4, 4, 4 + fuelWidth, 4 + UI_BAR_HEIGHT);
-            canvas.drawRect(mScratchRect, mLinePaint);
-
-            // Draw the speed gauge, with a two-tone effect
-            double speed = Math.sqrt(mDX * mDX + mDY * mDY);
-            int speedWidth = (int) (UI_BAR * speed / PHYS_SPEED_MAX);
-
-            if (speed <= mGoalSpeed) {
-                mScratchRect.set(4 + UI_BAR + 4, 4,
-                        4 + UI_BAR + 4 + speedWidth, 4 + UI_BAR_HEIGHT);
-                canvas.drawRect(mScratchRect, mLinePaint);
-            } else {
-                // Draw the bad color in back, with the good color in front of
-                // it
-                mScratchRect.set(4 + UI_BAR + 4, 4,
-                        4 + UI_BAR + 4 + speedWidth, 4 + UI_BAR_HEIGHT);
-                canvas.drawRect(mScratchRect, mLinePaintBad);
-                int goalWidth = (UI_BAR * mGoalSpeed / PHYS_SPEED_MAX);
-                mScratchRect.set(4 + UI_BAR + 4, 4, 4 + UI_BAR + 4 + goalWidth,
-                        4 + UI_BAR_HEIGHT);
-                canvas.drawRect(mScratchRect, mLinePaint);
-            }
+//
+//            // Draw the fuel gauge
+//            int fuelWidth = (int) (UI_BAR * mFuel / PHYS_FUEL_MAX);
+//            mScratchRect.set(4, 4, 4 + fuelWidth, 4 + UI_BAR_HEIGHT);
+//            canvas.drawRect(mScratchRect, mLinePaint);
+//
+//            // Draw the speed gauge, with a two-tone effect
+//            double speed = Math.sqrt(mDX * mDX + mDY * mDY);
+//            int speedWidth = (int) (UI_BAR * speed / PHYS_SPEED_MAX);
+//
+//            if (speed <= mGoalSpeed) {
+//                mScratchRect.set(4 + UI_BAR + 4, 4,
+//                        4 + UI_BAR + 4 + speedWidth, 4 + UI_BAR_HEIGHT);
+//                canvas.drawRect(mScratchRect, mLinePaint);
+//            } else {
+//                // Draw the bad color in back, with the good color in front of
+//                // it
+//                mScratchRect.set(4 + UI_BAR + 4, 4,
+//                        4 + UI_BAR + 4 + speedWidth, 4 + UI_BAR_HEIGHT);
+//                canvas.drawRect(mScratchRect, mLinePaintBad);
+//                int goalWidth = (UI_BAR * mGoalSpeed / PHYS_SPEED_MAX);
+//                mScratchRect.set(4 + UI_BAR + 4, 4, 4 + UI_BAR + 4 + goalWidth,
+//                        4 + UI_BAR_HEIGHT);
+//                canvas.drawRect(mScratchRect, mLinePaint);
+//            }
 
             // Draw the landing pad
 //            canvas.drawLine(mGoalX, 1 + mCanvasHeight - TARGET_PAD_HEIGHT,
@@ -699,6 +709,7 @@ class ReviewAnimationView extends SurfaceView implements SurfaceHolder.Callback 
 //                mLanderImage.draw(canvas);
 //            }
             
+            /* energy going down slide */
             if(isScene2){
             	int energyRadius = 15;
             	if(groupX > 300){
@@ -715,10 +726,10 @@ class ReviewAnimationView extends SurfaceView implements SurfaceHolder.Callback 
             		canvas.drawCircle(921-(int)(i*energyRadius*1.65), 260+(int)(i*energyRadius*1.8), energyRadius, mThermalPaint);
             	}
             	for(int i=0; i<kineticE; i++){
-            		canvas.drawCircle((int)(groupX+Math.random()*(160)), (int)(groupY-Math.random()*(160)), energyRadius, mKineticPaint);
+            		canvas.drawCircle((int)(groupX+groupXRandom[i]), (int)(groupY-groupYRandom[i]), energyRadius, mKineticPaint);
             	}//300 y700
             	for(int i=0; i<(int)(potentialE-(tempTherm/3+kineticE/2)); i++){
-            		canvas.drawCircle((int)(groupX+Math.random()*(160)), (int)(groupY-Math.random()*(160)), energyRadius, mPotentialPaint);
+            		canvas.drawCircle((int)(groupX+groupYRandom[i]), (int)(groupY-groupXRandom[i]), energyRadius, mPotentialPaint);
             	}
             }
             
@@ -908,6 +919,12 @@ class ReviewAnimationView extends SurfaceView implements SurfaceHolder.Callback 
                 //setState(STATE_WIN, message);
                 //setRunning(false);
             }
+        }
+        
+        public void destroySurface(){ //kill animation thread and view
+        	synchronized (mSurfaceHolder) {
+    			surfaceDestroyed(mSurfaceHolder);
+    		}
         }
     }
     

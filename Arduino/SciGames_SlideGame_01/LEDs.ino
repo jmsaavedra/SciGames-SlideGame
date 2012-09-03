@@ -1,21 +1,52 @@
 
+/* all led functions */
 
-#define  LED1_RED       13
+#define  LED1_RED       13 //pin assignments
 #define  LED1_GREEN     11
 #define  LED1_BLUE      12
 
-int currBlue = 10;
+int currBlue = 10; //vals for fading
 int currRed = 10;
 int currGreen = 10;
 
-int blueAddr = 1;
-int redAddr = 1;
-int greenAddr = 1;
+int fadeAdder = 1; //adder for fading, controls fade speed
+
+int onVal = 50; //brightness of LEDs when 'on'
+
+void initLeds(){
+  pinMode(LED1_RED, OUTPUT);
+  pinMode(LED1_GREEN, OUTPUT);
+  pinMode(LED1_BLUE, OUTPUT);
+  ledsOff();
+}
 
 void greenOn(){
-  analogWrite(LED1_GREEN, 180);
+  analogWrite(LED1_GREEN, onVal);
   analogWrite(LED1_RED, 0);
   analogWrite(LED1_BLUE, 0);
+}
+void blueOn(){
+  analogWrite(LED1_BLUE, onVal);
+  analogWrite(LED1_RED, 0);
+  analogWrite(LED1_GREEN, 0);
+}
+
+void redOn(){
+  analogWrite(LED1_RED, onVal);
+  analogWrite(LED1_GREEN, 0);
+  analogWrite(LED1_BLUE, 0);
+}
+
+void blueFader(){
+
+  if(currBlue > onVal || currBlue < 1){
+    fadeAdder *= -1;
+  }
+  currBlue += fadeAdder;
+  analogWrite(LED1_RED, 0);
+  analogWrite(LED1_GREEN, 0);
+  analogWrite(LED1_BLUE, currBlue);
+  delay(5);
 }
 
 void blinkGreen(int numBlinks){
@@ -25,38 +56,6 @@ void blinkGreen(int numBlinks){
     ledsOff();
     delay(250);
   }
-
-}
-
-void blueOn(){
-  analogWrite(LED1_RED, 0);
-  analogWrite(LED1_GREEN, 0);
-  analogWrite(LED1_BLUE, 180);
-}
-
-void redOn(){
-  analogWrite(LED1_RED, 180);
-  analogWrite(LED1_GREEN, 0);
-  analogWrite(LED1_BLUE, 0);
-}
-
-void blueFader(){
-
-  if(currBlue > 200 || currBlue < 1){
-    blueAddr *= -1;
-  }
-  currBlue += blueAddr;
-  analogWrite(LED1_BLUE, currBlue);
-  delay(5);
-}
-
-void initLeds(){
-
-  pinMode(LED1_RED, OUTPUT);
-  pinMode(LED1_GREEN, OUTPUT);
-  pinMode(LED1_BLUE, OUTPUT);
-
-  ledsOff();
 }
 
 void ledsOff(){
@@ -65,12 +64,11 @@ void ledsOff(){
   analogWrite(LED1_BLUE, 0);
 }
 
-void allLeds( boolean state ){
-
+void allLeds(boolean state){
   if (state){
-    analogWrite(LED1_RED, 100);
-    analogWrite(LED1_GREEN, 100);
-    analogWrite(LED1_BLUE, 100);
+    analogWrite(LED1_RED, 40);
+    analogWrite(LED1_GREEN, 50);
+    analogWrite(LED1_BLUE, 50);
   }
   else {
     analogWrite(LED1_RED, 0);
@@ -78,5 +76,6 @@ void allLeds( boolean state ){
     analogWrite(LED1_BLUE, 0);
   }
 }
+
 
 

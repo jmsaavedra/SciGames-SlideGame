@@ -19,6 +19,7 @@ package com.scigames.slidegame;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import com.scigames.slidegame.LoginActivity;
 import com.scigames.serverutils.DownloadProfilePhoto;
 import com.scigames.serverutils.SciGamesHttpPoster;
 import com.scigames.serverutils.SciGamesListener;
@@ -40,6 +41,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 
 public class MenuActivity extends Activity implements SciGamesListener{
@@ -78,6 +80,7 @@ public class MenuActivity extends Activity implements SciGamesListener{
     DownloadProfilePhoto photoTask = new DownloadProfilePhoto(MenuActivity.this, "sUrl");
     SciGamesHttpPoster task = new SciGamesHttpPoster(MenuActivity.this, baseDbURL+"/pull/objective_images.php");
     
+    AlertDialog alertDialog;
     public MenuActivity() {
     	
 

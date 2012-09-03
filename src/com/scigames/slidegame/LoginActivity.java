@@ -58,10 +58,10 @@ public class LoginActivity extends Activity implements Runnable, SciGamesListene
 	public String baseDbURL = "http://mysweetwebsite.com";
 	
 	
-    private boolean debug = true; //for debug info popups
-    private boolean debugFakeBracelet = true; //to send fake bracelet Ids
-    private String debugBracelet1 = "500315affffffe5";
-    private String debugBracelet2 = "5006affffffc3ffffffd9";
+    private boolean debug = false; //for debug info popups
+    private boolean debugFakeBracelet = false; //to send fake bracelet Ids
+    private String debugBracelet1 = "500315c37";
+    private String debugBracelet2 = "500315c37"; //500315518 (yellow) //500315affffffe5 (green) //5006affffffc3ffffffd9 (red) //500315c37 (blue)
     private String debugFabricID = "0056ffffff9affffff90";
     //private int debugSlideLevel = 2;
     private int debugMassVal = 65;
@@ -99,7 +99,7 @@ public class LoginActivity extends Activity implements Runnable, SciGamesListene
 	protected String SlideLevel = "null";
 	
     
-    private boolean moveOn = false;
+    private boolean slideTimeGo = false;
 
     TextView greets;
     TextView fabricId;
@@ -147,7 +147,7 @@ public class LoginActivity extends Activity implements Runnable, SciGamesListene
 	        public void onClick(DialogInterface dialog, int which) {
 	        // Write your code here to execute after dialog closed
 	        //Toast.makeText(getApplicationContext(), "", Toast.LENGTH_SHORT).show();
-	        moveOn = true;
+	        //moveOn = true;
 	        }
 	    });
 	    
@@ -200,18 +200,22 @@ public class LoginActivity extends Activity implements Runnable, SciGamesListene
     }
 
 	private void sendFakeBraceletId(String mBracelet){
-		
-	    task.cancel(true);
-	    //create a new async task for every time you hit login (each can only run once ever)
-	   	task = new SciGamesHttpPoster(LoginActivity.this,baseDbURL + "/pull/auth_rfid.php");
-	    //set listener
-        task.setOnResultsListener(this);
-        //prepare key value pairs to send
-		String thisBracelet = mBracelet;
-		String[] keyVals = {"rfid", thisBracelet}; 
-		//create AsyncTask, then execute
-		AsyncTask<String, Void, JSONObject> serverResponse = null;
-		serverResponse = task.execute(keyVals);
+		if (isNetworkAvailable()){
+		    task.cancel(true);
+		    //create a new async task for every time you hit login (each can only run once ever)
+		   	task = new SciGamesHttpPoster(LoginActivity.this,baseDbURL + "/pull/auth_rfid.php");
+		    //set listener
+	        task.setOnResultsListener(this);
+	        //prepare key value pairs to send
+			String thisBracelet = mBracelet;
+			String[] keyVals = {"rfid", thisBracelet}; 
+			//create AsyncTask, then execute
+			AsyncTask<String, Void, JSONObject> serverResponse = null;
+			serverResponse = task.execute(keyVals);
+		} else {
+			alertDialog.setMessage("You're not connected to the internet. Make sure this tablet is logged into a working Wifi Network.");
+			alertDialog.show();	
+	    }
 	}
 	
 	
@@ -230,12 +234,13 @@ public class LoginActivity extends Activity implements Runnable, SciGamesListene
 
         if(currPage.equals("login")){
   		  setContentView(R.layout.login_page);
-  		  sendPress('Y');
+  		  //sendPress('Y');
   		  currRfid = "";
         }
           if(intent.hasExtra("page")){
         	  if(intent.getExtras().getString("page").equals("login")){
         		  currPage = "login";
+        		  slideTimeGo = false;
         		  setContentView(R.layout.login_page);
         		  if(debugFakeBracelet) sendFakeBraceletId(debugBracelet2);
         		  sendPress('Y');
@@ -292,7 +297,8 @@ public class LoginActivity extends Activity implements Runnable, SciGamesListene
         	      sendFakeSlideData.setOnClickListener(mSlideDataGo);
         	      
         	      //*****send press TELL ARDUINO SLIDE GO *******
-        	      
+        	      slideTimeGo = true;
+        	      sendPress('S');
         	  } 
         	  
         	  /* head to slideRevewActivity */
@@ -418,12 +424,12 @@ public class LoginActivity extends Activity implements Runnable, SciGamesListene
   	    	int totalTime = 1008;
   	    	
   	    	/* from server! */
-  	    	int attempt = Integer.valueOf(currAttempt);
-  	    	int fabricFrictionCoefficient = Integer.valueOf(chosenFabricValue);
-  	    	int tKineticGoal = Integer.valueOf(kineticGoal);
-  	    	int tThermalGoal = Integer.valueOf(thermalGoal);
-  	    	int level = Integer.valueOf(currSlideLevel);
-  	    	int mass = Integer.valueOf(currMass);
+  	    	int attempt = Integer.parseInt(currAttempt);
+  	    	int fabricFrictionCoefficient = Integer.parseInt(chosenFabricValue);
+  	    	int tKineticGoal = Integer.parseInt(kineticGoal);
+  	    	int tThermalGoal = Integer.parseInt(thermalGoal);
+  	    	int level = Integer.parseInt(currSlideLevel);
+  	    	int mass = Integer.parseInt(currMass);
   	    	if (mass < 20) mass = 65; /* for debug for now! */
   	    	
   	    	Log.d(TAG, ">>>>>>> currMass: "+currMass);
@@ -481,6 +487,78 @@ public class LoginActivity extends Activity implements Runnable, SciGamesListene
   	    	sendSlideData(thisData);
   		}
       };
+      
+   //called when we receive slide timer durations from Arduino
+   public void prepareSlideData(int timer1, int timer2, int timer3){ 
+	    	Log.d(TAG, "mSlideDataGo.onClick");
+	    	/* from Arduino! */
+	    	int startGate = timer1;
+	    	int endGate = timer3;
+	    	int totalTime = timer1+timer2+timer3;
+	    	
+	    	/* from server! */
+	    	int attempt = Integer.parseInt(currAttempt);
+	    	int fabricFrictionCoefficient = Integer.parseInt(chosenFabricValue);
+	    	int tKineticGoal = Integer.parseInt(kineticGoal);
+	    	int tThermalGoal = Integer.parseInt(thermalGoal);
+	    	int level = Integer.parseInt(currSlideLevel);
+	    	int mass = Integer.parseInt(currMass);
+	    	if (mass < 20) mass = 65; /* for debug for now! */
+	    	
+	    	Log.d(TAG, ">>>>>>> currMass: "+currMass);
+	    	Log.d(TAG, ">>>>>>> currAttempt: "+currAttempt);
+	    	Log.d(TAG, ">>>>>>> fabricValue: "+chosenFabricValue);
+	    	Log.d(TAG, ">>>>>>> tKineticGoal: "+kineticGoal);
+	    	Log.d(TAG, ">>>>>>> level: "+currSlideLevel);
+	    	  	    	
+//	    	if(debug){
+//	  	    	 startGate = 190 + (int)(Math.random()*220);
+//	  	    	 endGate = 65+(int)(Math.random()*110);
+//	  	    	 totalTime = startGate+endGate+400;
+//	    	}
+	    	
+	    	/* remains static for now: */
+	    	float slideLength = 5.1f;
+	    	float slideAngle = 30;
+	    	
+	    	//create the calculator object with incoming data from Arduino!
+	    	calculator = new SciMath(mass, startGate, endGate, totalTime);
+	    	
+	    	String[] thisData = {
+	    		String.valueOf(slideLength),  //slide_length
+	    		String.valueOf(slideAngle),	//slide_angle
+	    		String.valueOf(startGate), 
+	    		String.valueOf(endGate), 
+	    		String.valueOf(totalTime),
+	    		String.valueOf(1000+(int)(Math.random()*2000)), //fake, random score debug
+	    		//String.valueOf(calculator.getScore(level, attempt, tKineticGoal, tThermalGoal)), //REAL score
+	    		String.valueOf(calculator.getTotalKinetic()),
+	    		String.valueOf(calculator.getTotalPotential()),
+	    		String.valueOf(calculator.getThermal()),
+	    		String.valueOf(attempt),	//attempt
+	    		"true", //fake passed for debug testing of passing a level
+	    		//String.valueOf(calculator.getLevelPassed()), //REAL level passed
+	    		slideSessionIdIn 
+	    	};
+
+		infoDialog.setTitle("Slide Data: ");
+		infoDialog.setMessage("holy crap");
+		infoDialog.show();
+		infoDialog.setMessage(
+				"slide length: "+thisData[0]+
+				"	  slide_angle: "+thisData[1]+
+				"	  start_gate: "+thisData[2]+
+				"	  end_gate: "+thisData[3]+
+				"	  total_time: "+thisData[4]+
+				"     score: "+thisData[5]+
+				"     total_kinetic: "+thisData[6]+
+    			"	  total_potential: "+thisData[7]+
+    			"	  total_thermal: "+thisData[8]+
+    			"	  attempt: "+thisData[9]+
+    			"	  level_passed: "+thisData[10]+
+    			"	  slide_sessionID: "+thisData[11]);
+	    	sendSlideData(thisData);
+   }
 
 
 	@Override
@@ -494,8 +572,9 @@ public class LoginActivity extends Activity implements Runnable, SciGamesListene
 		
 		if (currPage.equals("login")){
 			Log.d(TAG, "onResultsSucceeded,login page: "+ serverResponseJSON.toString());
-			currAttempt = String.valueOf(serverResponseJSON.getInt("attempts"));
-			Log.d(TAG, "currAttempt received: "+ String.valueOf(currAttempt));
+			//currAttempt = String.valueOf(serverResponseJSON.getInt("attempts"));
+			currAttempt = attempts;
+			Log.d(TAG, "currAttempt received: "+ currAttempt);
 	   		Intent i = new Intent(LoginActivity.this, MenuActivity.class);
 			Log.d(TAG,"new Intent");
 			i.putExtra("fName", student[2]);
@@ -522,7 +601,7 @@ public class LoginActivity extends Activity implements Runnable, SciGamesListene
 			
 		} else if(currPage.equals("fabric")){
 			if(serverResponseJSON.isNull("fabric")){//if(serverResponseJSON.getString("fabric").equals(null)){ //
-				//this is not a fabric!
+				//this is not a fabric! kid swiped his bracelet instead or something ridiculous.
 				fabricDialog.setTitle("Not a Mat");
 				fabricDialog.setMessage("Try again, this time with a Mat tag, located at the corner of your chosen materal.");
 				fabricDialog.show();
@@ -670,12 +749,17 @@ public class LoginActivity extends Activity implements Runnable, SciGamesListene
 
 		//@Override
 		public void run() {
-			int ret = 0;
-			byte[] buffer = new byte[16384];
+			int ret = 0; //number of bytes returned
+			byte[] buffer = new byte[16384]; //holds all bytes returned
 			int i;
 			int iValue = 0;
 			String thisBracelet = "";
-			int thisMassR = 0;
+			int slideTime1 = 0;
+			int slideTime1b = 0;
+			int slideTime1c = 0;
+			int slideTime2 = 0;
+			int slideTime3 = 0;
+			int slideCtr = 0;
 			//while (ret >= 0) {
 			while(true){
 				try {
@@ -686,36 +770,84 @@ public class LoginActivity extends Activity implements Runnable, SciGamesListene
 				}
 				thisBracelet = "";
 				i = 0;
-				while (i < ret) {
-					int len = ret - i;
-					Log.v(TAG, "Read: " + buffer[i]);	
-					final int val = (int)buffer[i];
-					byte[] value = new byte [ret];
-					value[i] = (byte)buffer[i];
-					iValue = (int)buffer[i];
-					if(i == 0 && iValue == 111){
-						thisMassR = buffer[1] & 0xFF;
+				byte[] sValue1 = new byte [8]; //will hold slide values from buffer
+				byte[] sValue2 = new byte [8]; //will hold slide values from buffer
+				byte[] sValue3 = new byte [8]; //will hold slide values from buffer
+				
+				int one = 0;
+				int two = 0;
+				int three = 0;
+				byte crc = 0;
+				
+				if(!slideTimeGo){ /* for when we are reading any RFID tag */
+					while (i < ret) {
+						int len = ret - i;
+						Log.v(TAG, "Read: " + buffer[i]);	
+						final int val = (int)buffer[i];
+						byte[] bValue = new byte [ret];
+						bValue[i] = (byte)buffer[i];
+						iValue = (int)buffer[i];
+						Log.d(TAG, "currBuffer: "+String.valueOf((int)i));
+						Log.d(TAG, Integer.toHexString(iValue));
+						thisBracelet = thisBracelet.concat(Integer.toHexString(iValue));
+						Log.d(TAG, "thisBracelet: "+thisBracelet);
+						i++;
 					}
-					Log.d(TAG, "buffer: "+String.valueOf(i));
-					Log.d(TAG, Integer.toHexString(iValue));
-					thisBracelet = thisBracelet.concat(Integer.toHexString(iValue));
-					Log.d(TAG, "thisBracelet: "+thisBracelet);
-					
-					i++;
-				}	
+				} else { /* for when we are receiving slide data */
+					while (i < ret){
+						
+						crc = (byte)((0x00FF & buffer[0]) ^ (0x00FF & buffer[1]) ^ (0x00FF &
+								buffer[2]) ^ (0x00FF & buffer[3]) ^ (0x00FF & buffer[4]) ^ (0x00FF & buffer[5]));
+								// calculate the "CRC"
+						
+						if (buffer[6] == crc) {  // compare to the received "CRC" - if it matches we'll trust that the received data is good
+							
+							one = ((int)(buffer[0] & 0x00FF) * 256) + (int)(buffer[1] & 0x00FF);
+							two = ((int)(buffer[2] & 0x00FF) * 256) + (int)(buffer[3] & 0x00FF);
+							three = ((int)(buffer[4] & 0x00FF) * 256) + (int)(buffer[5] & 0x00FF);
+						}
+						i++;	
+					}
+				}
+				
+				/* values need to be final before passing to handler */
+				final int fRet = ret;
+				//final byte[] finalVals1 = sValue1;	//copy array into a final byte[]
+				//final byte[] finalVals2 = sValue2; //copy array into a final byte[]
+				//final byte[] finalVals3 = sValue3; //copy array into a final byte[]
+				
+				final int tOne = one;
+				final int tTwo = two;
+				final int tThree = three;
+				final byte fCrc = crc;
 				final String fThisBracelet = thisBracelet;
 				mHandler.post(new Runnable() {
 					
 					public void run() {
 		            	// This gets executed on the UI thread so it can safely modify Views
 						if(currPage.equals("fabric")){
+							Log.d(TAG, "checkFabricID: "+ fThisBracelet);
 							currRfid = fThisBracelet; //not a bracelet at all in this case
 							sendFabricId(fThisBracelet);
 						} else if(currPage.equals("sliding")){
 							//this is where slide sensor data is received!
+							infoDialog.setTitle("slide times returned:");
+//							String mFinalVals1 = "mfv1: ";
+//							for(int i=0; i<finalVals1.length; i++){
+//								mFinalVals1 = mFinalVals1+ " " + String.valueOf((finalVals1[i]&0xff));
+//							}							
+							infoDialog.setMessage(
+								"numBytesReceived= "+String.valueOf(fRet) +
+								"    slideTime1= "+String.valueOf(tOne) +
+								"    slideTime2= "+String.valueOf(tTwo)  +
+								"    slideTime3= "+String.valueOf(tThree) +
+								"    CRC= "+String.valueOf(fCrc)
+							);
+							infoDialog.show();
+							prepareSlideData(tOne, tTwo, tThree);
 							
-						} else { //we are logging in for the first time
-							//greets.setText(fThisBracelet);
+						} else { //we are doing initial login=
+							Log.d(TAG, "from arduino fThisBraceletId: "+ fThisBracelet);
 							checkBraceletId(fThisBracelet);
 						}
 					}
@@ -750,7 +882,7 @@ public class LoginActivity extends Activity implements Runnable, SciGamesListene
 				mThread.start(); // meep
 				Log.d(TAG, "accessory opened");
 				setContentView(R.layout.login_page);
-				sendPress('Y');
+				if(currPage.equals("login"))sendPress('Y');
 				enableControls(true);
 			} else {
 				Log.d(TAG, "accessory open fail");
@@ -817,10 +949,6 @@ public class LoginActivity extends Activity implements Runnable, SciGamesListene
 	    	return false;
 	    }
 			
-		// --------------
-		// User interface
-		// --------------
-		
 		private void enableControls(boolean b) {
 			((ServiceADKApplication) getApplication()).setInputStream(mInputStream);
 			((ServiceADKApplication) getApplication()).setOutputStream(mOutputStream);
@@ -835,7 +963,7 @@ public class LoginActivity extends Activity implements Runnable, SciGamesListene
 					
 				}
 			}
-			sendPress('X');
+			//sendPress('X');
 		}
 	    
 	    private void updateTextViews() {

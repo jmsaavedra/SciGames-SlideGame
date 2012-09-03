@@ -205,7 +205,6 @@ public class SciGamesHttpPoster extends AsyncTask <String, Void, JSONObject> {
 					Log.d(TAG, "number of objective_images:");
 					Log.d(TAG, String.valueOf(response.getJSONArray("objectives").length()));
 					Log.d(TAG, response.getJSONArray("objectives").toString());
-					Log.d(TAG, response.getJSONArray("objectives").getString(0));
 					for(int i=0; i<response.getJSONArray("objectives").length(); i++ ){
 						objective_images[i] = response.getJSONArray("objectives").getString(i);
 					}
@@ -220,7 +219,6 @@ public class SciGamesHttpPoster extends AsyncTask <String, Void, JSONObject> {
 					Log.d(TAG, "number of result_images:");
 					Log.d(TAG, String.valueOf(response.getJSONArray("result_images").length()));
 					Log.d(TAG, response.getJSONArray("result_images").toString());
-					Log.d(TAG, response.getJSONArray("result_images").getString(0));
 					
 					for(int i=0; i<response.getJSONArray("result_images").length(); i++ ){
 						result_images[i] = response.getJSONArray("result_images").getString(i);
@@ -233,6 +231,10 @@ public class SciGamesHttpPoster extends AsyncTask <String, Void, JSONObject> {
 				
 				try {
 					score_images = new String[response.getJSONArray("score_images").length()];
+					Log.d(TAG, "number of score_images:");
+					Log.d(TAG, String.valueOf(response.getJSONArray("score_images").length()));
+					Log.d(TAG, response.getJSONArray("score_images").toString());
+					
 					for(int i=0; i<response.getJSONArray("score_images").length(); i++ ){
 						score_images[i] = response.getJSONArray("score_images").getString(i);
 					}
@@ -241,8 +243,11 @@ public class SciGamesHttpPoster extends AsyncTask <String, Void, JSONObject> {
 				}
 			}
 			if(response.has("attempts")){
+				Log.d(TAG, "respones does have attempts");
 				try {
-					attempts = response.getString("attempts");
+					int rawAttempts = Integer.valueOf(response.getString("attempts"));
+					attempts = String.valueOf(rawAttempts); //db starts at 0, we want to start at 1
+					Log.d(TAG, "attempts: "+attempts);
 				} catch (JSONException e) {
 					e.printStackTrace();
 				}
@@ -303,9 +308,11 @@ public class SciGamesHttpPoster extends AsyncTask <String, Void, JSONObject> {
 		
 		slideSessionObj = response.getJSONObject("slide_session");
 		slideSessionId = slideSessionObj.getJSONObject("_id").getString("$id");
+		Log.d(TAG,"parseSlideSession");
 		
 		if(slideSessionObj.has("attempt")){ //this means we are recalling a slide_session, not creating one
-			attempt = slideSessionObj.getString("attempt");
+			int rawAttempt = slideSessionObj.getInt("attempt");
+			attempt = String.valueOf(rawAttempt); //add one bc db starts attempts at 0, we want 1.
 			gameLevel = slideSessionObj.getString("slide_game_level");
 			levelCompleted = slideSessionObj.getString("level_completed");
 			score = slideSessionObj.getString("score");
@@ -353,10 +360,12 @@ public class SciGamesHttpPoster extends AsyncTask <String, Void, JSONObject> {
 
 
     public boolean checkLoginFailed(JSONObject response){
+    	//listener.failedQuery(response.toString());
 		if((response).has("error")){
 			Log.d(TAG, "BAD LOGIN");
 			try {
 				failureReason = response.get("error").toString();
+				listener.failedQuery(failureReason);
 				Log.d(TAG, failureReason);
 			} catch (JSONException e) {
 				Log.e(TAG, "failed at getting failedReason string");

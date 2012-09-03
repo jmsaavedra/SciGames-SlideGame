@@ -1,6 +1,5 @@
 
 void RFID_reader(){
-
   blueFader();
 
   byte i = 0;

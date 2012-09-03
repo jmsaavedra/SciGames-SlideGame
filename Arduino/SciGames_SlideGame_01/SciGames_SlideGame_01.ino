@@ -3,12 +3,22 @@
 #include <AndroidAccessory.h>
 
 boolean RFID_GO = false;
-boolean MASS_GO = false;
+boolean SLIDE_GO = false;
 boolean mass_leds = false;
 boolean haveInfoToSend = false;
 byte infoToSend[5];
 int numBytesToSend = 5;
 boolean currLedStatus = false; //true==on
+
+/* slide sensor vars */
+#define SIG1_PIN  A5
+#define SIG2_PIN  A4
+#define SIG3_PIN  A3
+#define SIG4_PIN  A2
+int i, j;
+int sig_pins[] = {
+  SIG1_PIN, SIG2_PIN, SIG3_PIN, SIG4_PIN};
+
 
 AndroidAccessory acc("Joe Saavedra",
 "SG SlideGame",
@@ -23,10 +33,13 @@ void setup() {
   Serial.println("SETUP BEGIN...");
   Serial3.begin(9600);   
   initLeds();
-  delay(500);
-  acc.powerOn();
 
-  //RFID_GO = true;
+  for (i=0; i<(sizeof(sig_pins)/sizeof(int)); i++) {
+    digitalWrite(sig_pins[i], LOW);
+    pinMode(sig_pins[i], INPUT);
+  }
+  delay(500);   
+  acc.powerOn();
   Serial.println("...SETUP DONE");
 }
 
@@ -38,7 +51,8 @@ void loop () {
     RFID_reader();
   }
 
-  if (!RFID_GO){
+  if (SLIDE_GO){
+    updateSlide();
   }
 }
 
@@ -57,12 +71,12 @@ void checkForAndroidComm(){
 
       Serial.println("-------  -------");
       char command = (char)msgIn[1];
-      
+
       Serial.println("command: ");
       Serial.println(command);
       Serial.println();
       ledsOff();
-      
+
       switch(command) {
       case 'Y':
         Serial.println("received Y"); //prepare for RFID Scan
@@ -70,26 +84,15 @@ void checkForAndroidComm(){
         RFID_GO = true;
         break;
 
-//      case 'B':
-//        Serial.println("received B"); //prepare for Scale read
-//        //initMass(); // calibrate with NO weight
-//        mass_leds = true;
-//        break;
-//
-//      case 'C':
-//        Serial.println("received C"); //get my mass!
-//        mass_leds = false;
-//        RFID_GO = false;
-//        MASS_GO = true;
-//        break;
-//        
-      case 'D':
-        Serial.println("received D"); //turn LEDs off, standby
+      case 'S':
+        Serial.println("received S"); //prepare for SLIDE sensor data
+        //initMass(); // calibrate with NO weight
         redOn();
+        SLIDE_GO = true;
         break;
-//        
-      case 'X':
-        Serial.println("received X"); //turn LEDs off, standby
+
+      case 'Z':
+        Serial.println("received Z"); //turn LEDs on/off = standby
         currLedStatus = !currLedStatus;
         allLeds(currLedStatus);
         break;
@@ -104,7 +107,8 @@ void checkForAndroidComm(){
         ledsOff();
       }
     }
-  } else {
+  } 
+  else {
     //solid green when not connected to board
     RFID_GO = false;
     haveInfoToSend = false;
@@ -117,6 +121,8 @@ void reset(){
   RFID_GO = false;
   ledsOff();
 }
+
+
 
 
 
