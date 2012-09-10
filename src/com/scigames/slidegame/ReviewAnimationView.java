@@ -51,6 +51,8 @@ import android.widget.TextView;
  */
 class ReviewAnimationView extends SurfaceView implements SurfaceHolder.Callback {
     class ReviewAnimationThread extends Thread {
+    	
+    	private String TAG = "reviewAnimationView";
         /*
          * Difficulty setting constants
          */
@@ -131,7 +133,7 @@ class ReviewAnimationView extends SurfaceView implements SurfaceHolder.Callback 
         private int mCanvasWidth = 1;
 
         /** What to draw for the Lander when it has crashed */
-        private Drawable mCrashedImage;
+        //private Drawable mCrashedImage;
 
         /**
          * Current difficulty -- amount of fuel, allowed angle, etc. Default is
@@ -149,7 +151,7 @@ class ReviewAnimationView extends SurfaceView implements SurfaceHolder.Callback 
         private boolean mEngineFiring;
 
         /** What to draw for the Lander when the engine is firing */
-        private Drawable mFiringImage;
+        //private Drawable mFiringImage;
 
         /** Fuel remaining */
         private double mFuel;
@@ -179,7 +181,7 @@ class ReviewAnimationView extends SurfaceView implements SurfaceHolder.Callback 
         private int mLanderHeight;
 
         /** What to draw for the Lander in its normal state */
-        private Drawable mLanderImage;
+        //private Drawable mLanderImage;
 
         /** Pixel width of lander image. */
         private int mLanderWidth;
@@ -223,15 +225,11 @@ class ReviewAnimationView extends SurfaceView implements SurfaceHolder.Callback 
         private Paint mThermalPaint;
         private Paint mGoldPaint;
         
-        private Bitmap mGunImage;
-        private Bitmap mPieceImage;
-        private Bitmap mRockImage;
-        private Bitmap mDrillImage;
-        
         private Drawable mRockDrawable;
         private Drawable mDrillDrawable;
         private Drawable mLaserDrawable;
         private Drawable mPieceDrawable;
+        private Drawable mStickFigure;
         
         private boolean isScene2 = false;
         private boolean isScene3 = false;
@@ -247,6 +245,11 @@ class ReviewAnimationView extends SurfaceView implements SurfaceHolder.Callback 
     	int groupY = 260;
     	private int[] groupXRandom = new int[50];
     	private int[] groupYRandom = new int[50];
+    	
+    	private int drillPowerBarMax = 0;
+    	private int mDrillX = 50;
+    	private long drillMoveTime = 0;
+    	private int drillTimeCount = 0;
 
         public ReviewAnimationThread(SurfaceHolder surfaceHolder, Context context,
                 Handler handler) {
@@ -257,14 +260,15 @@ class ReviewAnimationView extends SurfaceView implements SurfaceHolder.Callback 
 
             Resources res = context.getResources();
             // cache handles to our key sprites & other drawables
-            mLanderImage = context.getResources().getDrawable(
-                    R.drawable.lander_plain);
-            mFiringImage = context.getResources().getDrawable(
-                    R.drawable.lander_firing);
-            mCrashedImage = context.getResources().getDrawable(
-                    R.drawable.lander_crashed);
-        	mRockDrawable = res.getDrawable(2130837513);
-        	mDrillDrawable = res.getDrawable(2130837514); 
+//            mLanderImage = context.getResources().getDrawable(
+//                    R.drawable.lander_plain);
+//            mFiringImage = context.getResources().getDrawable(
+//                    R.drawable.lander_firing);
+//            mCrashedImage = context.getResources().getDrawable(
+//                    R.drawable.lander_crashed);
+        	//mRockDrawable = res.getDrawable(2130837513);
+        	//mDrillDrawable = res.getDrawable(2130837514); 
+        	mStickFigure = context.getResources().getDrawable(R.drawable.stick_figure);
 
             // load background image as a Bitmap instead of a Drawable b/c
             // we don't need to transform it and it's faster to draw this way
@@ -274,8 +278,8 @@ class ReviewAnimationView extends SurfaceView implements SurfaceHolder.Callback 
                     mBackgroundImage, 1280, 736, true);
 
             // Use the regular lander image as the model size for all sprites
-            mLanderWidth = mLanderImage.getIntrinsicWidth();
-            mLanderHeight = mLanderImage.getIntrinsicHeight();
+            //mLanderWidth = mLanderImage.getIntrinsicWidth();
+            //mLanderHeight = mLanderImage.getIntrinsicHeight();
 
             // Initialize paints for speedometer
             mLinePaint = new Paint();
@@ -478,11 +482,11 @@ class ReviewAnimationView extends SurfaceView implements SurfaceHolder.Callback 
         public void setBackgroundResource(int img){
         	Log.d("ReviewThread", "setBgResource");
         	Resources res = mContext.getResources();
-        	
         	//bgDrawable = img;
         	Bitmap newBg;
-        	newBg = BitmapFactory.decodeResource(res, img);        	
-        	mBackgroundImage = Bitmap.createScaledBitmap(newBg, 1280, 736, true); 
+        	newBg = BitmapFactory.decodeResource(res, img);
+        	mBackgroundImage = Bitmap.createScaledBitmap(newBg, 1280, 736, true);
+        	//mBackgroundImage.recycle();
         	isScene2 = false;
         	isScene3 = false; //assume not a scene
         	isScene4 = false; //assume not a scene
@@ -495,17 +499,20 @@ class ReviewAnimationView extends SurfaceView implements SurfaceHolder.Callback 
         	Log.d("ReviewThread","setLevelScene: " + String.valueOf(level)+ " " + String.valueOf(scene));
         	Log.d("ReviewThread","Sceneimages: " + String.valueOf(foregroundImg)+ " " + String.valueOf(foregroundImg));
 
-        	Log.d("ReviewThread","rockDrawable: " + mRockDrawable.toString());
-        	Log.d("ReviewThread","drillDrawable: " + mDrillDrawable.toString());
+        	
         	if(scene == 3){
             	mLaserDrawable = res.getDrawable(foregroundImg);
-            	mPieceDrawable = res.getDrawable(middleGroundImg);  
+            	mPieceDrawable = res.getDrawable(middleGroundImg); 
+        		Log.d("ReviewThread","mLaserDrawable: " + mLaserDrawable.toString());
+            	Log.d("ReviewThread","mPieceDrawable: " + mPieceDrawable.toString());
         		isScene3 = true;
         		isScene4 = false;
         	}
         	else {
             	mRockDrawable = res.getDrawable(foregroundImg);
             	mDrillDrawable = res.getDrawable(middleGroundImg);  
+        		Log.d("ReviewThread","rockDrawable: " + mRockDrawable.toString());
+            	Log.d("ReviewThread","drillDrawable: " + mDrillDrawable.toString());
         		isScene3 = false;
         		isScene4 = true;
         	}
@@ -659,67 +666,25 @@ class ReviewAnimationView extends SurfaceView implements SurfaceHolder.Callback 
         	//thisView.setBackgroundResource(bgDrawable);
             int yTop = mCanvasHeight - ((int) mY + mLanderHeight / 2);
             int xLeft = (int) mX - mLanderWidth / 2;
-//
-//            // Draw the fuel gauge
-//            int fuelWidth = (int) (UI_BAR * mFuel / PHYS_FUEL_MAX);
-//            mScratchRect.set(4, 4, 4 + fuelWidth, 4 + UI_BAR_HEIGHT);
-//            canvas.drawRect(mScratchRect, mLinePaint);
-//
-//            // Draw the speed gauge, with a two-tone effect
-//            double speed = Math.sqrt(mDX * mDX + mDY * mDY);
-//            int speedWidth = (int) (UI_BAR * speed / PHYS_SPEED_MAX);
-//
-//            if (speed <= mGoalSpeed) {
-//                mScratchRect.set(4 + UI_BAR + 4, 4,
-//                        4 + UI_BAR + 4 + speedWidth, 4 + UI_BAR_HEIGHT);
-//                canvas.drawRect(mScratchRect, mLinePaint);
-//            } else {
-//                // Draw the bad color in back, with the good color in front of
-//                // it
-//                mScratchRect.set(4 + UI_BAR + 4, 4,
-//                        4 + UI_BAR + 4 + speedWidth, 4 + UI_BAR_HEIGHT);
-//                canvas.drawRect(mScratchRect, mLinePaintBad);
-//                int goalWidth = (UI_BAR * mGoalSpeed / PHYS_SPEED_MAX);
-//                mScratchRect.set(4 + UI_BAR + 4, 4, 4 + UI_BAR + 4 + goalWidth,
-//                        4 + UI_BAR_HEIGHT);
-//                canvas.drawRect(mScratchRect, mLinePaint);
-//            }
-
-            // Draw the landing pad
-//            canvas.drawLine(mGoalX, 1 + mCanvasHeight - TARGET_PAD_HEIGHT,
-//                    mGoalX + mGoalWidth, 1 + mCanvasHeight - TARGET_PAD_HEIGHT,
-//                    mLinePaint);
-
 
             // Draw the ship with its current rotation
             canvas.save();
-            canvas.rotate((float) mHeading, (float) mX, mCanvasHeight
-                    - (float) mY);
-//            if (mMode == STATE_LOSE) {
-//                mCrashedImage.setBounds(xLeft, yTop, xLeft + mLanderWidth, yTop
-//                        + mLanderHeight);
-//                mCrashedImage.draw(canvas);
-//            } else if (mEngineFiring) {
-//                mFiringImage.setBounds(xLeft, yTop, xLeft + mLanderWidth, yTop
-//                        + mLanderHeight);
-//                mFiringImage.draw(canvas);
-//            } else {
-//                mLanderImage.setBounds(xLeft, yTop, xLeft + mLanderWidth, yTop
-//                        + mLanderHeight);
-//                mLanderImage.draw(canvas);
-//            }
+            canvas.rotate((float) mHeading, (float) mX, mCanvasHeight - (float) mY);
             
             /* energy going down slide */
             if(isScene2){
-            	int energyRadius = 15;
+            	int energyRadius = 10;
+            	
             	if(groupX > 300){
             		groupX -= 1.1;//(int)(groupX*0.007);
             	}
             	if(groupY < 700){
             		groupY += 2;//(int)(groupY*0.009);
             	}
+            	mStickFigure.setBounds(groupX, groupY, 30, 30);
+            	mStickFigure.draw(canvas);
             	
-            	if(elapsedTimeCount%15 == 0){
+            	if(elapsedTimeCount%10 == 0){
             		if(tempTherm<thermalE) tempTherm++;
             	}
             	for(int i=0; i<tempTherm; i++){
@@ -731,6 +696,7 @@ class ReviewAnimationView extends SurfaceView implements SurfaceHolder.Callback 
             	for(int i=0; i<(int)(potentialE-(tempTherm/3+kineticE/2)); i++){
             		canvas.drawCircle((int)(groupX+groupYRandom[i]), (int)(groupY-groupXRandom[i]), energyRadius, mPotentialPaint);
             	}
+            	
             }
             
             /***** Laser melting gold into piece molde *****/
@@ -752,13 +718,13 @@ class ReviewAnimationView extends SurfaceView implements SurfaceHolder.Callback 
             	
             	int fillHeight = (int)elapsedTimeCount/5;
             	if(fillHeight > thermalE*10) fillHeight = thermalE*10;
-            	canvas.drawRect(545, 690-fillHeight, 653, 690, mGoldPaint); //Piece
+            	canvas.drawRect(645, 690-fillHeight, 753, 690, mGoldPaint); //Piece
             	int mLaserX = 392;
             	int mLaserY = 438;
             	int mLaserW = 124;
             	int mLaserH = 154;
             	
-            	int mPieceX = 540;
+            	int mPieceX = 640;
             	int mPieceY = 510;
             	int mPieceW = 127;
             	int mPieceH = 193;
@@ -777,33 +743,58 @@ class ReviewAnimationView extends SurfaceView implements SurfaceHolder.Callback 
             /**** Drill pile of rocks *****/
             if(isScene4){
             	
-            	int mRockX = 753;
+            	int mRockX = 790;
             	int mRockY = 400;
             	int mRockW = 490;
             	int mRockH = 303;
             	
-            	int mDrillX = 50;
+            	//int mDrillX = 50;
             	int mDrillY = 310;
             	int mDrillW = 533;
             	int mDrillH = 300;
             	int energyRadius = 10;
+            	
             	for(int i=0; i<kineticE-(int)elapsedTimeCount/25; i++){
             		//for(int j=0; j<thermalE/4;j++){
-            			canvas.drawCircle(92, 375-(int)(i*energyRadius*2), energyRadius, mKineticPaint);
-            		//}
+            			canvas.drawCircle(92, 360-(int)(i*energyRadius*2), energyRadius, mKineticPaint);
+            			long fillBarW = (int)(elapsedTimeCount/2);
+                    	if(fillBarW < kineticE*12){
+                    		canvas.drawRect(mDrillX+50, mDrillY+135, mDrillX+50+fillBarW, mDrillY+135+60, mKineticPaint) ;
+                    	} else{
+                    		fillBarW = kineticE*10;
+                    		drillMoveTime = (int) (elapsedTimeCount/25);
+                    		Log.e(TAG, "drillMoveTime: "+ String.valueOf(drillMoveTime));
+                    		Log.e(TAG, "elapsedTimeCount/100): "+ String.valueOf(elapsedTimeCount/25));
+                    	}
             	}
             	
-            	int fillBarW = (int)(elapsedTimeCount/2);
-            	if(fillBarW > kineticE*10) fillBarW = kineticE*10;
+//            	int fillBarW = (int)(elapsedTimeCount/2);
+//            	if(fillBarW > kineticE*10){
+//            		fillBarW = kineticE*10;
+//            		drillMoveTime = elapsedTimeCount/2;
+//            	}
             	
             	
-            	int DrillXMoved = mDrillX+ (int)elapsedTimeCount*3;
-            	if(DrillXMoved >kineticE*80) DrillXMoved = kineticE*80;
-            	
-            	canvas.drawRect(DrillXMoved+50, mDrillY+135, DrillXMoved+50+fillBarW, mDrillY+135+60, mKineticPaint) ; //Drill Level
-            	
+            	if(drillMoveTime > 0){// && mDrillX > kineticE*80){
+            		drillTimeCount++;
+            		mDrillX = (int) (mDrillX + drillMoveTime);
+            		Log.e(TAG, "mDrill X: "+ String.valueOf(mDrillX));
+	            	if(mDrillX >kineticE*80)  
+	            		mDrillX = kineticE*80;
+	            		//if((int)(mDrillX-elapsedTimeCount/100) > 0)
+	            	else{
+	            		int meterWidth = (int)(50+kineticE*10 + (mDrillX-drillTimeCount/4));//-(kineticE*80-mDrillX));
+	            		Log.d(TAG,"meterTimer: "+String.valueOf(meterWidth));
+	            		Log.d(TAG,"timeCount: "+String.valueOf(drillTimeCount/5));
+	            		if (meterWidth > 0){
+	            			canvas.drawRect(mDrillX+50, mDrillY+135, meterWidth, mDrillY+135+60, mKineticPaint) ; //Drill Fill Level
+	            		} //else canvas.drawRect(mDrillX+50, mDrillY+135, (int)(50+kineticE*10+mDrillX-timeCount), mDrillY+135+60, mKineticPaint) ; //Drill Fill Level
+	            		
+	            	}
+	            }  
+	            
             	//drill is in middleground
-            	mDrillDrawable.setBounds(DrillXMoved, mDrillY, DrillXMoved + mDrillW, mDrillY + mDrillH); //Drill itself
+            	mDrillDrawable.setBounds(mDrillX, mDrillY, mDrillX + mDrillW, mDrillY + mDrillH); //Drill itself
             	mDrillDrawable.draw(canvas);
             	
             	//rock in foreground

@@ -317,7 +317,6 @@ public class LoginActivity extends Activity implements Runnable, SciGamesListene
     
 	
 	/********* server querying ***********/
-	
 	private void checkBraceletId(String braceletId){
 		Log.d(TAG, "hit checkBraceletId()");
 		Log.d(TAG, "braceletId to check: "+braceletId);
@@ -463,7 +462,7 @@ public class LoginActivity extends Activity implements Runnable, SciGamesListene
   	    		String.valueOf(calculator.getTotalPotential()),
   	    		String.valueOf(calculator.getThermal()),
   	    		String.valueOf(attempt),	//attempt
-  	    		"true", //fake passed for debug testing of passing a level
+  	    		"false", //fake passed for debug testing of passing a level
   	    		//String.valueOf(calculator.getLevelPassed()), //REAL level passed
   	    		slideSessionIdIn 
   	    	};
@@ -473,17 +472,17 @@ public class LoginActivity extends Activity implements Runnable, SciGamesListene
 			infoDialog.show();
 			infoDialog.setMessage(
 					"slide length: "+thisData[0]+
-					"	slide_angle: "+thisData[1]+
-					"	start_gate: "+thisData[2]+
-					"	end_gate: "+thisData[3]+
-					"	total_time: "+thisData[4]+
-					"	score: "+thisData[5]+
-					"	total_kinetic: "+thisData[6]+
-  	    			"	total_potential: "+thisData[7]+
-  	    			"	total_thermal: "+thisData[8]+
-  	    			"	attempt: "+thisData[9]+
-  	    			"	level_passed: "+thisData[10]+
-  	    			"	slide_sessionID: "+thisData[11]);
+					"\nslide_angle: "+thisData[1]+
+					"\nstart_gate: "+thisData[2]+
+					"\nend_gate: "+thisData[3]+
+					"\ntotal_time: "+thisData[4]+
+					"\nscore: "+thisData[5]+
+					"\ntotal_kinetic: "+thisData[6]+
+	    			"\ntotal_potential: "+thisData[7]+
+	    			"\ntotal_thermal: "+thisData[8]+
+	    			"\nattempt: "+thisData[9]+
+	    			"\nlevel_passed: "+thisData[10]+
+	    			"\nslide_sessionID: "+thisData[11]);
   	    	sendSlideData(thisData);
   		}
       };
@@ -527,8 +526,8 @@ public class LoginActivity extends Activity implements Runnable, SciGamesListene
 	    	String[] thisData = {
 	    		String.valueOf(slideLength),  //slide_length
 	    		String.valueOf(slideAngle),	//slide_angle
-	    		String.valueOf(startGate), 
-	    		String.valueOf(endGate), 
+	    		String.valueOf(startGate),
+	    		String.valueOf(endGate),
 	    		String.valueOf(totalTime),
 	    		String.valueOf(1000+(int)(Math.random()*2000)), //fake, random score debug
 	    		//String.valueOf(calculator.getScore(level, attempt, tKineticGoal, tThermalGoal)), //REAL score
@@ -536,28 +535,29 @@ public class LoginActivity extends Activity implements Runnable, SciGamesListene
 	    		String.valueOf(calculator.getTotalPotential()),
 	    		String.valueOf(calculator.getThermal()),
 	    		String.valueOf(attempt),	//attempt
-	    		"true", //fake passed for debug testing of passing a level
+	    		"false", //fake passed for debug testing of passing a level
 	    		//String.valueOf(calculator.getLevelPassed()), //REAL level passed
 	    		slideSessionIdIn 
 	    	};
 
-		infoDialog.setTitle("Slide Data: ");
-		infoDialog.setMessage("holy crap");
-		infoDialog.show();
+		infoDialog.setTitle("Slide Session Data: ");
+		
 		infoDialog.setMessage(
 				"slide length: "+thisData[0]+
-				"	  slide_angle: "+thisData[1]+
-				"	  start_gate: "+thisData[2]+
-				"	  end_gate: "+thisData[3]+
-				"	  total_time: "+thisData[4]+
-				"     score: "+thisData[5]+
-				"     total_kinetic: "+thisData[6]+
-    			"	  total_potential: "+thisData[7]+
-    			"	  total_thermal: "+thisData[8]+
-    			"	  attempt: "+thisData[9]+
-    			"	  level_passed: "+thisData[10]+
-    			"	  slide_sessionID: "+thisData[11]);
-	    	sendSlideData(thisData);
+				"\nslide_angle: "+thisData[1]+
+				"\nstart_gate: "+thisData[2]+
+				"\nend_gate: "+thisData[3]+
+				"\ntotal_time: "+thisData[4]+
+				"\nscore: "+thisData[5]+
+				"\ntotal_kinetic: "+thisData[6]+
+    			"\ntotal_potential: "+thisData[7]+
+    			"\ntotal_thermal: "+thisData[8]+
+    			"\nattempt: "+thisData[9]+
+    			"\nlevel_passed: "+thisData[10]+
+    			"\nslide_sessionID: "+thisData[11]);
+		infoDialog.show();
+		
+	    sendSlideData(thisData);/* BLAM - PASS THAT S***/
    }
 
 

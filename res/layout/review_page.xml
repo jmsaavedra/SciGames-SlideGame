@@ -12,8 +12,8 @@
         android:layout_height="match_parent" />
 
 	<RelativeLayout
-	    android:layout_width="wrap_content"
-	    android:layout_height="wrap_content" >
+	    android:layout_width="match_parent"
+	    android:layout_height="match_parent" >
 
 	<TextView
 	    android:id="@+id/title"
@@ -59,6 +59,15 @@
 	    android:layout_alignLeft="@+id/level"
 	    android:textColor="#ffd700"
 	    android:text="@string/score"
+	    android:textSize="30dip">
+	</TextView>
+	
+	<TextView
+	    android:id="@+id/score_final"
+	  	android:layout_width="600dip"
+	    android:layout_height="45dp"
+	    android:textColor="#ffd700"
+	    android:text=""
 	    android:textSize="30dip">
 	</TextView>
 

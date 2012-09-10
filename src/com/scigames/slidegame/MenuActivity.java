@@ -158,10 +158,11 @@ public class MenuActivity extends Activity implements SciGamesListener{
 	    playBtn = (Button) findViewById(R.id.btn_play);
 	    playBtn.setOnClickListener(mPlay);
 	    setButtonFont(ExistenceLightOtf, playBtn);
-	    
+	        
 	    reviewBtn = (Button) findViewById(R.id.btn_review);
 	    reviewBtn.setOnClickListener(mReview);
 	    setButtonFont(ExistenceLightOtf, reviewBtn);
+	    reviewBtn.setVisibility(View.INVISIBLE);
 	    
 	    infoDialog = new AlertDialog.Builder(MenuActivity.this).create();
 	    infoDialog.setTitle("Debug Info");

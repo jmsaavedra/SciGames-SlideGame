@@ -5,11 +5,11 @@
 #define  LED1_GREEN     11
 #define  LED1_BLUE      12
 
-int currBlue = 10; //vals for fading
-int currRed = 10;
-int currGreen = 10;
+float currBlue = 10; //vals for fading
+float currRed = 10;
+float currGreen = 10;
 
-int fadeAdder = 1; //adder for fading, controls fade speed
+float fadeAdder = 0.5; //adder for fading, controls fade speed
 
 int onVal = 50; //brightness of LEDs when 'on'
 
@@ -66,9 +66,9 @@ void ledsOff(){
 
 void allLeds(boolean state){
   if (state){
-    analogWrite(LED1_RED, 40);
-    analogWrite(LED1_GREEN, 50);
-    analogWrite(LED1_BLUE, 50);
+    analogWrite(LED1_RED, 15);
+    analogWrite(LED1_GREEN, 25);
+    analogWrite(LED1_BLUE, 30);
   }
   else {
     analogWrite(LED1_RED, 0);

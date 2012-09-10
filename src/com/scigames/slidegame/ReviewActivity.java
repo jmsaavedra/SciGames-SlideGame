@@ -67,23 +67,12 @@ import android.widget.Toast;
 public class ReviewActivity extends Activity implements SciGamesListener{
     private String TAG = "ReviewActivity";
     
-    private boolean debug = false;
+    private boolean debug = true;
     
 	static final private int QUIT_ID = Menu.FIRST;
     static final private int BACK_ID = Menu.FIRST + 1;
 
-    private String firstNameIn = "FNAME";
-    private String lastNameIn = "LNAME";
-    private String passwordIn = "PWORD";
-    private String massIn = "MASS";
-    private String emailIn = "EMAIL";
-    private String classIdIn = "CLASSID";
-    private String studentIdIn = "STUDENTID";
-    private String visitIdIn = "VISITID";
     private String rfidIn = "RFID";
-    private String slideLevel = "SLIDELEVEL";
-    private String cartLevel = "CARTLEVEL";
-    private String photoUrl = "none";
     
     private boolean tooMuchOomph = false;
     private boolean levelCompleted = false;
@@ -95,7 +84,7 @@ public class ReviewActivity extends Activity implements SciGamesListener{
     private float thermalMade;
     private float kineticMade;
     private float potentialMade;
-    
+    //private boolean checkCompletion = false; /* temporary! */
     
     private String[] resultImg;
     private String[] scoreImg;
@@ -107,6 +96,7 @@ public class ReviewActivity extends Activity implements SciGamesListener{
     TextView title;
     TextView mLevel;
     TextView mScore;
+    //TextView mScoreFinal;
     TextView mFabric;
     TextView mAttempt;
     
@@ -203,6 +193,7 @@ public class ReviewActivity extends Activity implements SciGamesListener{
         title = (TextView)findViewById(R.id.title);
         mLevel = (TextView)findViewById(R.id.level);
         mScore = (TextView)findViewById(R.id.score);
+        //mScoreFinal = (TextView)findViewById(R.id.score_final);
         mFabric = (TextView)findViewById(R.id.fabric);
         mAttempt = (TextView)findViewById(R.id.attempt);
         //set their font
@@ -212,6 +203,7 @@ public class ReviewActivity extends Activity implements SciGamesListener{
         title.setVisibility(View.INVISIBLE);
         mLevel.setVisibility(View.INVISIBLE);
         mScore.setVisibility(View.INVISIBLE);
+        //mScoreFinal.setVisibility(View.INVISIBLE);
         mFabric.setVisibility(View.INVISIBLE);
         mAttempt.setVisibility(View.INVISIBLE);
         Log.d(TAG,"...Profile Info");
@@ -245,6 +237,7 @@ public class ReviewActivity extends Activity implements SciGamesListener{
     @Override
     protected void onNewIntent(Intent i){
     	showingImgs = false;
+    	//checkCompletion = false; //temporary
     	getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LOW_PROFILE);
         setContentView(R.layout.review_page);
         mAnimationView = (ReviewAnimationView) findViewById(R.id.review);
@@ -292,6 +285,7 @@ public class ReviewActivity extends Activity implements SciGamesListener{
     @Override
     protected void onResume() {
         super.onResume();
+        showingImgs = false;
         getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LOW_PROFILE);
         Log.d(TAG,"...super.onResume()");
     }
@@ -334,31 +328,7 @@ public class ReviewActivity extends Activity implements SciGamesListener{
 				infoDialog.setMessage(serverResponseJSON.toString());
 				infoDialog.show();
 			}
-	     	/** update all text fields **/
-			//locate textViews in this layout
-	     	Resources res = getResources();
-	        title = (TextView)findViewById(R.id.title);
-	        mLevel = (TextView)findViewById(R.id.level);
-	        mScore = (TextView)findViewById(R.id.score);
-	        mFabric = (TextView)findViewById(R.id.fabric);
-	        mAttempt = (TextView)findViewById(R.id.attempt);
-	        //set them to visible
-	        title.setVisibility(View.VISIBLE);
-	        mLevel.setVisibility(View.VISIBLE);
-	        mScore.setVisibility(View.VISIBLE);
-	        mFabric.setVisibility(View.VISIBLE);
-	        mAttempt.setVisibility(View.VISIBLE);
-	     	
-	        //Set the TextView values for first review page
-	        mScore.setText(String.format(res.getString(R.string.score), slide_session[4]));
-	        mFabric.setText(String.format(res.getString(R.string.fabric), fabric[0]));
-	        mAttempt.setText(String.format(res.getString(R.string.attempt), slide_session[1]));
-	        //for the level we add 1 here bc the database starts at level 0.
-	        mLevel.setText(String.format(res.getString(R.string.level), String.valueOf(Integer.parseInt(slide_session[2])+1))); 
-	        
-	        setTextViewFont(Museo700Regular, title);
-	        setTextViewFont(Museo500Regular, mLevel, mScore, mFabric);
-	        
+			
 	        //Set local variables for deciding and displaying some stuff
 	        Log.d(TAG, "thermalGoal: "+slide_level[2]);
 	        Log.d(TAG, "kineticGoal: "+slide_level[1]);
@@ -374,6 +344,55 @@ public class ReviewActivity extends Activity implements SciGamesListener{
 	        kineticMade = Float.parseFloat(slide_session[5]);
 	        potentialMade = Float.parseFloat(slide_session[7]);
 	        
+//	        if(levelCompleted && !checkCompletion){ //this is temporary!!
+//	    	    if (isNetworkAvailable()){
+//	    		    task.cancel(true);
+//	    		    //create a new async task for every time you hit login (each can only run once ever)
+//	    		   	task = new SciGamesHttpPoster(ReviewActivity.this,"http://mysweetwebsite.com/pull/slide_results.php");
+//	    		    //set listener
+//	    	        task.setOnResultsListener(ReviewActivity.this);
+//	    	        //prepare key value pairs to send
+//	    			String[] keyVals = {"rfid", rfidIn}; 
+//	    			//create AsyncTask, then execute
+//	    			AsyncTask<String, Void, JSONObject> serverResponse = null;
+//	    			serverResponse = task.execute(keyVals);
+//	    			checkCompletion = true;
+//	    	    } else {
+//	    			alertDialog.setMessage("You're not connected to the internet. Make sure this tablet is logged into a working Wifi Network.");
+//	    			alertDialog.show();
+//	    	    }
+//	        }
+			
+	     	/** update all text fields **/
+			//locate textViews in this layout
+	     	Resources res = getResources();
+	        title = (TextView)findViewById(R.id.title);
+	        mLevel = (TextView)findViewById(R.id.level);
+	        mScore = (TextView)findViewById(R.id.score);
+	        //mScoreFinal = (TextView)findViewById(R.id.score_final);
+	        mFabric = (TextView)findViewById(R.id.fabric);
+	        mAttempt = (TextView)findViewById(R.id.attempt);
+	     	
+	        //Set the TextView values for first review page
+	        mScore.setText(String.format(res.getString(R.string.score), score));
+	        //mScoreFinal.setText(String.format(res.getString(R.string.score), score));
+	        mFabric.setText(String.format(res.getString(R.string.fabric), fabric[0]));
+	        //for the level and attempt we add 1 here bc the database starts at level 0.
+	        mAttempt.setText(String.format(res.getString(R.string.attempt), String.valueOf(Integer.parseInt(slide_session[1])+1)));
+	        mLevel.setText(String.format(res.getString(R.string.level), String.valueOf(Integer.parseInt(slide_session[2])+1))); 
+	        
+	        setTextViewFont(Museo700Regular, title);
+	        setTextViewFont(Museo500Regular, mLevel, mScore, mFabric, mAttempt);
+	        
+	        //set them to visible
+	        title.setVisibility(View.VISIBLE);
+	        mLevel.setVisibility(View.VISIBLE);
+	        mScore.setVisibility(View.VISIBLE);
+	        //mScoreFinal.setVisibility(View.INVISIBLE);
+	        mFabric.setVisibility(View.VISIBLE);
+	        mAttempt.setVisibility(View.VISIBLE);
+	                
+	        //calculate ratios
 	        kineticToThermalRatioGoal = ((float)kineticGoal/(float)thermalGoal);
 	        kineticToThermalRatioMade = ((float)kineticMade/(float)thermalMade);
 	        
@@ -433,12 +452,18 @@ public class ReviewActivity extends Activity implements SciGamesListener{
 		boolean slideAnimStart = false;
 
 		//token 6 wins
-		if(tokens[6].equals("Score")){
+		if(tokens[6].equals("Score")){ //score scene (last one)
 			bgStr = tokens[7];
-		} else {
+
+		}
+		
+		else {
 			level = Integer.parseInt(String.valueOf(tokens[6].charAt(1)));
 			scene = Integer.parseInt(String.valueOf(tokens[6].charAt(12)));
-			if (tokens[6].substring(tokens[6].lastIndexOf('_') + 1).equals("a")){
+			Log.d(TAG, "CURR SCENE: " + String.valueOf(scene));
+			
+			//--- sizzle gun scene
+			if (tokens[6].substring(tokens[6].lastIndexOf('_') + 1).equals("a")){ 
 				bgStr = tokens[6];	    		
 				resultImgNum++; 
 		    	gunStr = tokens[6].replace(tokens[6].substring(tokens[6].lastIndexOf('_') + 1), "b");
@@ -446,10 +471,10 @@ public class ReviewActivity extends Activity implements SciGamesListener{
 		    	resultImgNum++;
 		    	pieceStr = tokens[6].replace(tokens[6].substring(tokens[6].lastIndexOf('_') + 1), "c");
 		    	Log.d(TAG, "pieceStr: "+ pieceStr);
-		    	
-		    	if(resultImgNum > 0)reviewBtnBack.setVisibility(View.VISIBLE);
-				
-			} else if (tokens[6].substring(tokens[6].lastIndexOf('_') + 1).equals("d")){
+		    	//if(resultImgNum > 0)reviewBtnBack.setVisibility(View.VISIBLE);
+		    
+		    //--- oomph drill scene
+			} else if (tokens[6].substring(tokens[6].lastIndexOf('_') + 1).equals("d")){ 
 				bgStr = tokens[6];
 				resultImgNum++; 
 				rockStr = tokens[6].replace(tokens[6].substring(tokens[6].lastIndexOf('_') + 1), "e");
@@ -457,7 +482,9 @@ public class ReviewActivity extends Activity implements SciGamesListener{
 		    	resultImgNum++;
 		    	drillStr = tokens[6].replace(tokens[6].substring(tokens[6].lastIndexOf('_') + 1), "f");
 		    	Log.d(TAG, "drillStr: "+ drillStr);
-			} else if(tokens[6].substring(tokens[6].lastIndexOf('_') + 1).equals("02")){
+		    
+	    	//--- slide energy scene
+			} else if(tokens[6].substring(tokens[6].lastIndexOf('_') + 1).equals("02")){ 
 				bgStr = tokens[6];
 				 thisPot = (int)(potentialMade/100);
 				 thisTherm = (int)(thermalMade/100);
@@ -467,18 +494,18 @@ public class ReviewActivity extends Activity implements SciGamesListener{
 				Log.d(TAG, "thisTherm: "+String.valueOf(thisTherm));
 				Log.d(TAG, "thisKinetic: "+String.valueOf(thisKinetic));
 				slideAnimStart = true;
-
 			}
 			
-			else {
+			//--- all other images
+			else {	
 				bgStr = tokens[6];
 			}
 		}
 		
+		//select the BG resource from the .pngs in the 'drawable' folder
 		int thisBg = getResources().getIdentifier(bgStr, "drawable", getPackageName());
-		//Drawable dThisImg = findViewById(getResources().getIdentifier(imgStr, "drawable", getPackageName()));
-		Log.d(TAG, "BG: "+bgStr);
-		mAnimationThread.setBackgroundResource(thisBg);//+tokens[4]);
+		mAnimationThread.setBackgroundResource(thisBg);
+		
 		if (slideAnimStart){
 			mAnimationThread.setSlideEnergy(thisPot, thisTherm, thisKinetic);
 			mAnimationThread.doStart();
@@ -504,8 +531,6 @@ public class ReviewActivity extends Activity implements SciGamesListener{
     		//reviewBtnNext.setVisibility(View.INVISIBLE);
     		//btnContinue.setVisibility(View.VISIBLE);
     	}
-
-		
 	}
 	
     OnClickListener mNext = new OnClickListener(){
@@ -517,15 +542,8 @@ public class ReviewActivity extends Activity implements SciGamesListener{
 		    	Log.d(TAG, "setCurrImg: "+resultImg[resultImgNum]);
 		    	Log.d(TAG, "result img #: "+resultImgNum + "out of: " + String.valueOf(resultImg.length));
 		    	setCurrImg(resultImg[resultImgNum]);
-		    	if(resultImgNum > 0)reviewBtnBack.setVisibility(View.VISIBLE);
+		    	//if(resultImgNum > 0)reviewBtnBack.setVisibility(View.VISIBLE);
 		    	
-//	    	} else if (resultImgNum >=(resultImg.length-4) && scoreImgNum<scoreImg.length-1 ){
-//		    	Log.d(TAG, "curr scoreImgNum" + String.valueOf(scoreImgNum));
-//		    	Log.d(TAG, "setCurrImg: "+scoreImg[scoreImgNum]);
-//		    	Log.d(TAG, "score img #: "+scoreImgNum + "out of: " + String.valueOf(scoreImg.length));
-//	    		scoreImgNum++;
-//	    		setCurrImg(scoreImg[scoreImgNum]);
-//	    		Log.d(TAG, "setCurrImg: "+scoreImg[scoreImgNum]);
 	    		
 	    	} else { //show score!
 	    		if(levelCompleted){
@@ -538,7 +556,13 @@ public class ReviewActivity extends Activity implements SciGamesListener{
 	    		}
 	    		reviewBtnNext.setVisibility(View.INVISIBLE);
 	    		//btnContinue.setText("Done");
+	    		btnContinue.setX(35);
+	    		btnContinue.setY(570);
 	    		btnContinue.setVisibility(View.VISIBLE);
+				mScore.setX(1060);
+				mScore.setY(647);
+				mScore.setHeight(50);
+				mScore.setVisibility(View.VISIBLE);
 	    		//setCurrImg(scoreImg[scoreImgNum]);
 	    	}
 	    	
@@ -550,7 +574,11 @@ public class ReviewActivity extends Activity implements SciGamesListener{
 	    	reviewBtnNext.setVisibility(View.VISIBLE);
 	    	btnContinue.setVisibility(View.INVISIBLE);
 	    	if(resultImgNum > 1){
-	    		resultImgNum-=3; 
+	    		resultImgNum--;
+	    		if(resultImgNum == 3 || resultImgNum == 4)
+	    			resultImgNum = 2;
+	    		else if(resultImgNum == 6 || resultImgNum == 7)
+	    			resultImgNum = 5;
 		    	setCurrImg(resultImg[resultImgNum]);
 		    	Log.d(TAG, "setCurrImg: "+resultImg[resultImgNum]);
 		    	if(resultImgNum == 1) reviewBtnBack.setVisibility(View.INVISIBLE);
@@ -561,15 +589,22 @@ public class ReviewActivity extends Activity implements SciGamesListener{
     
     OnClickListener mContinue = new OnClickListener(){
 	    public void onClick(View v) {
+	    	Log.d(TAG, "mContinue .onClick!");
+	    	Log.d(TAG, "showingImgs: "+String.valueOf(showingImgs));
+	    	if(debug){
+		    	infoDialog.setTitle("mContinue .onClick!");
+		    	infoDialog.setMessage("showingImgs: "+String.valueOf(showingImgs));
+		    	infoDialog.show();
+		    }
 	    	if(!showingImgs){
-	    		btnContinue.setVisibility(View.INVISIBLE);
-	    		reviewBtnNext.setVisibility(View.VISIBLE);
-	    		setCurrImg(resultImg[0]);
-	    		showingImgs = true;
+	    		setCurrImg(resultImg[0]); // show he first result image
+	    		reviewBtnNext.setVisibility(View.VISIBLE); //show review button
+	    		btnContinue.setVisibility(View.INVISIBLE); //hide several buttons
 	    		mLevel.setVisibility(View.INVISIBLE);
 	    		mScore.setVisibility(View.INVISIBLE);
 	    		mAttempt.setVisibility(View.INVISIBLE);
 	    		mFabric.setVisibility(View.INVISIBLE);
+	    		showingImgs = true;
 	    	} else {
 	    		//mAnimationView.surfaceDestroyed(null);
 	    		mAnimationThread.destroySurface();

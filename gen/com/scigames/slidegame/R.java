@@ -121,6 +121,7 @@ public final class R {
         public static final int lander_firing=0x7f020063;
         public static final int lander_plain=0x7f020064;
         public static final int scigames_icon=0x7f020065;
+        public static final int stick_figure=0x7f020066;
     }
     public static final class id {
         public static final int attempt=0x7f0b000f;
@@ -129,18 +130,19 @@ public final class R {
         public static final int btn_next=0x7f0b0008;
         public static final int btn_play=0x7f0b0000;
         public static final int btn_review=0x7f0b0004;
-        public static final int btn_sendfakedata=0x7f0b0012;
-        public static final int fabric=0x7f0b0011;
+        public static final int btn_sendfakedata=0x7f0b0013;
+        public static final int fabric=0x7f0b0012;
         public static final int fabric_id=0x7f0b0001;
         public static final int level=0x7f0b000e;
         public static final int login_page=0x7f0b0002;
-        public static final int menu_settings=0x7f0b0013;
+        public static final int menu_settings=0x7f0b0014;
         public static final int no_device=0x7f0b0006;
         public static final int objective_page=0x7f0b0007;
         public static final int profile_image=0x7f0b0003;
         public static final int review=0x7f0b000c;
         public static final int review_page=0x7f0b000b;
         public static final int score=0x7f0b0010;
+        public static final int score_final=0x7f0b0011;
         public static final int student_name=0x7f0b0005;
         public static final int title=0x7f0b000d;
     }

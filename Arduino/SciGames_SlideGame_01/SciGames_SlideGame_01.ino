@@ -31,7 +31,6 @@ void setup() {
   // connect to the serial port
   Serial.begin(9600);  
   Serial.println("SETUP BEGIN...");
-  Serial3.begin(9600);   
   initLeds();
 
   for (i=0; i<(sizeof(sig_pins)/sizeof(int)); i++) {
@@ -80,6 +79,8 @@ void checkForAndroidComm(){
       switch(command) {
       case 'Y':
         Serial.println("received Y"); //prepare for RFID Scan
+        Serial3.begin(9600);
+        delay(50); //let serial initialize
         ledsOff();
         RFID_GO = true;
         break;
