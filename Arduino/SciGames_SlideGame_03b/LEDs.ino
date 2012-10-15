@@ -2,8 +2,8 @@
 /* all led functions */
 
 #define  LED1_RED       13 //pin assignments
-#define  LED1_GREEN     11
-#define  LED1_BLUE      12
+#define  LED1_GREEN     12
+#define  LED1_BLUE      11
 
 float currBlue = 10; //vals for fading
 float currRed = 10;
