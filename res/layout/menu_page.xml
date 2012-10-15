@@ -30,19 +30,19 @@
         android:id="@+id/btn_play"
         android:layout_width="262px"
         android:layout_height="106px"
-        android:layout_marginLeft="630dp"
+        android:layout_marginLeft="530dp"
         android:layout_marginTop="265dp"
         android:textSize="30sp"
         android:background="@drawable/btn_play" />
     
-    <Button
+<!--     <Button
         android:id="@+id/btn_review"
         android:layout_width="207px"
         android:layout_height="85px"
         android:layout_marginLeft="426dp"
         android:layout_marginTop="265dp"
         android:textSize="30sp"
-        android:background="@drawable/btn_review" />
+        android:background="@drawable/btn_review" /> -->
 
     <TextView
         android:id="@+id/student_name"

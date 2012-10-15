@@ -71,7 +71,7 @@ public class ObjectiveActivity extends Activity implements SciGamesListener{
     AlertDialog infoDialog;
     AlertDialog needSlideDataDialog;
     
-    SciGamesHttpPoster task = new SciGamesHttpPoster(ObjectiveActivity.this,"http://mysweetwebsite.com/pull/slide_results.php");
+    SciGamesHttpPoster task = new SciGamesHttpPoster(ObjectiveActivity.this,"http://db.scigam.es/pull/slide_results.php");
     DownloadNarrativeImage imgTask = new DownloadNarrativeImage(ObjectiveActivity.this, "url");
     
     public ObjectiveActivity() {
@@ -90,15 +90,15 @@ public class ObjectiveActivity extends Activity implements SciGamesListener{
     	studentIdIn = i.getStringExtra("studentId");
     	slideLevelIn = i.getStringExtra("slideLevel");
 //    	photoUrl = i.getStringExtra("photo");
-//    	photoUrl = "http://mysweetwebsite.com/" + photoUrl;
+//    	photoUrl = "http://db.scigam.es/" + photoUrl;
     	Log.d(TAG,"...getStringExtra");
         // Inflate our UI from its XML layout description.
         setContentView(R.layout.objective_page);
         Log.d(TAG,"...setContentView");
         objectiveImgNum = 0;
         
-        //resultImg[0] = "http://mysweetwebsite.com/narrative_images/Level0/results/_0012_Layer-Comp-13.png";
-        //resultImg[1] = "http://mysweetwebsite.com/narrative_images/Level0/results/_0012_Layer-Comp-13.png";
+        //resultImg[0] = "http://db.scigam.es/narrative_images/Level0/results/_0012_Layer-Comp-13.png";
+        //resultImg[1] = "http://db.scigam.es/narrative_images/Level0/results/_0012_Layer-Comp-13.png";
         
 		alertDialog = new AlertDialog.Builder(ObjectiveActivity.this).create();
 	    alertDialog.setTitle("No Registration System Attached ");
@@ -155,7 +155,7 @@ public class ObjectiveActivity extends Activity implements SciGamesListener{
 	    if (isNetworkAvailable()){
 		    task.cancel(true);
 		    //create a new async task for every time you hit login (each can only run once ever)
-		   	task = new SciGamesHttpPoster(ObjectiveActivity.this,"http://mysweetwebsite.com/pull/objective_images.php"); //objective_images.php
+		   	task = new SciGamesHttpPoster(ObjectiveActivity.this,"http://db.scigam.es/pull/objective_images.php"); //objective_images.php
 		    //set listener
 	        task.setOnResultsListener(ObjectiveActivity.this);
 	        //prepare key value pairs to send

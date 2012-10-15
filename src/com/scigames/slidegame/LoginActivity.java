@@ -55,16 +55,15 @@ public class LoginActivity extends Activity implements Runnable, SciGamesListene
     /** Called when the activity is first created. */
     
 	private static final String TAG = "LoginActivity";
-	public String baseDbURL = "http://mysweetwebsite.com";
-	
+	public String baseDbURL = "http://db.scigam.es";
 	
     private boolean debug = false; //for debug info popups
     private boolean debugFakeBracelet = false; //to send fake bracelet Ids
+    
     private String debugBracelet1 = "500315c37";
     private String debugBracelet2 = "500315c37"; //500315518 (yellow) //500315affffffe5 (green) //5006affffffc3ffffffd9 (red) //500315c37 (blue)
-    private String debugFabricID = "0056ffffff9affffff90";
+    private String debugFabricID = "0000000000";//"0056ffffff9affffff90";
     //private int debugSlideLevel = 2;
-    private int debugMassVal = 65;
     private String slideSessionDataDebug = "";
 	
 	/*** service stuff ***/
@@ -108,6 +107,7 @@ public class LoginActivity extends Activity implements Runnable, SciGamesListene
     
     Button sendFakeSlideData; //for testing
     Button playBtn;
+    Button pantsBtn;
     
     AlertDialog alertDialog;
     AlertDialog infoDialog;
@@ -218,7 +218,6 @@ public class LoginActivity extends Activity implements Runnable, SciGamesListene
 	    }
 	}
 	
-	
     @Override
 	public Object onRetainNonConfigurationInstance() {
 		if (mAccessory != null) {
@@ -265,11 +264,14 @@ public class LoginActivity extends Activity implements Runnable, SciGamesListene
         	  } 
         	  
         	  /* from objectiveActivity to fabric page */
+        	  //this is also a coment
         	  else if(intent.getExtras().getString("page").equals("fabric")){
 	        	  currPage = "fabric";
 	        	  studentId = intent.getExtras().getString("studentId");
 	        	  currSlideLevel = intent.getExtras().getString("slideLevel");
 	        	  currRfid = intent.getExtras().getString("rfid");
+	        	 
+	        			  
 	        	  if(debug){
 		        	  infoDialog.setTitle("objActivity to Fabric page:");
 		        	  infoDialog.setMessage("studentID: " + studentId+ ", slideLevel: " + currSlideLevel);
@@ -279,10 +281,16 @@ public class LoginActivity extends Activity implements Runnable, SciGamesListene
 	              fabricId = (TextView)findViewById(R.id.fabric_id);
 				  setTextViewFont(Museo700Regular, fabricId);
         	      fabricId.setVisibility(View.INVISIBLE);
-	              playBtn = (Button)findViewById(R.id.btn_play);
+        	      
+        	      pantsBtn = (Button)findViewById(R.id.btn_pants); //this is the right arrow
+        	      pantsBtn.setOnClickListener(mChoosePants);
+        	      pantsBtn.setVisibility(View.VISIBLE);
+        	      
+	              playBtn = (Button)findViewById(R.id.btn_play); //this is the right arrow
 	              playBtn.setOnClickListener(mSlidePage);
-        	      playBtn.setVisibility(View.INVISIBLE);
-	              Log.d(TAG,"...fabricId");
+        	      playBtn.setVisibility(View.INVISIBLE); //set invisible until a fabric is swiped/chosen
+	              
+        	      Log.d(TAG,"...fabricId");
 	              sendPress('Y');
 	              if(debugFakeBracelet) sendFabricId(debugFabricID);
 	              
@@ -296,22 +304,22 @@ public class LoginActivity extends Activity implements Runnable, SciGamesListene
         	      sendFakeSlideData = (Button) findViewById(R.id.btn_sendfakedata);
         	      sendFakeSlideData.setOnClickListener(mSlideDataGo);
         	      
-        	      //*****send press TELL ARDUINO SLIDE GO *******
+        	      //*****send press TELL ARDUINO SLIDE GO, WAIT FOR *******
         	      slideTimeGo = true;
         	      sendPress('S');
         	  } 
         	  
-        	  /* head to slideRevewActivity */
-        	  else if (intent.getExtras().getString("page").equals("slideReview")){
-        		  currPage = "slideReview";
-        		  currRfid = intent.getExtras().getString("rfid");
-	       		  Intent i = new Intent(LoginActivity.this, ReviewActivity.class);
-	     		  Log.d(TAG,"new Intent");
-	     		  i.putExtra("rfid",currRfid);;
-	     		  Log.d(TAG,"startActivity...");
-	     		  LoginActivity.this.startActivity(i);
-	     		  Log.d(TAG,"...startActivity");
-        	  }
+        	  /* head to slideRevewActivity -- MOVED TO SciGames_SlideGame_Review App!! */
+//        	  else if (intent.getExtras().getString("page").equals("slideReview")){
+//        		  currPage = "slideReview";
+//        		  currRfid = intent.getExtras().getString("rfid");
+//	       		  Intent i = new Intent(LoginActivity.this, ReviewActivity.class);
+//	     		  Log.d(TAG,"new Intent");
+//	     		  i.putExtra("rfid",currRfid);
+//	     		  Log.d(TAG,"startActivity...");
+//	     		  LoginActivity.this.startActivity(i);
+//	     		  Log.d(TAG,"...startActivity");
+//        	  }
          }   		
     } 
     
@@ -414,7 +422,14 @@ public class LoginActivity extends Activity implements Runnable, SciGamesListene
  		}
      };
      
-     OnClickListener mSlideDataGo = new OnClickListener(){ //gets called when Arduino returns last stop bit
+     OnClickListener mChoosePants = new OnClickListener(){
+    	public void onClick(View v) {
+    		Log.d(TAG, "mSendPants.onClick");
+    		sendFabricId("0000000000"); //this fabricId is set to "Pants" in the database
+    	}
+     };
+     
+     OnClickListener mSlideDataGo = new OnClickListener(){ //gets called when ARDUINO returns last stop bit
   	    public void onClick(View v) { 	    	
   	    	Log.d(TAG, "mSlideDataGo.onClick");
   	    	/* from Arduino! */
@@ -437,12 +452,10 @@ public class LoginActivity extends Activity implements Runnable, SciGamesListene
   	    	Log.d(TAG, ">>>>>>> tKineticGoal: "+kineticGoal);
   	    	Log.d(TAG, ">>>>>>> level: "+currSlideLevel);
   	    	  	    	
-  	    	if(debug){
-  	  	    	 startGate = 190 + (int)(Math.random()*220);
-  	  	    	 endGate = 65+(int)(Math.random()*110);
-  	  	    	 totalTime = startGate+endGate+400;
-  	    	}
-  	    	
+  	  	    startGate = 190 + (int)(Math.random()*220);
+  	  	    endGate = 65+(int)(Math.random()*110);
+  	  	    totalTime = startGate+endGate+400;
+
   	    	/* remains static for now: */
   	    	float slideLength = 5.1f;
   	    	float slideAngle = 30;
@@ -451,27 +464,25 @@ public class LoginActivity extends Activity implements Runnable, SciGamesListene
   	    	calculator = new SciMath(mass, startGate, endGate, totalTime);
   	    	
   	    	String[] thisData = {
-  	    		String.valueOf(slideLength),  //slide_length
-  	    		String.valueOf(slideAngle),	//slide_angle
-  	    		String.valueOf(startGate), 
-  	    		String.valueOf(endGate), 
-  	    		String.valueOf(totalTime),
-  	    		String.valueOf(1000+(int)(Math.random()*2000)), //fake, random score debug
-  	    		//String.valueOf(calculator.getScore(level, attempt, tKineticGoal, tThermalGoal)), //REAL score
-  	    		String.valueOf(calculator.getTotalKinetic()),
-  	    		String.valueOf(calculator.getTotalPotential()),
-  	    		String.valueOf(calculator.getThermal()),
-  	    		String.valueOf(attempt),	//attempt
-  	    		"false", //fake passed for debug testing of passing a level
-  	    		//String.valueOf(calculator.getLevelPassed()), //REAL level passed
-  	    		slideSessionIdIn 
+  	    		String.valueOf(slideLength),  //slide_length 	//0	
+  	    		String.valueOf(slideAngle),	//slide_angle		//1
+  	    		String.valueOf(startGate), 						//2
+  	    		String.valueOf(endGate), 						//3
+  	    		String.valueOf(totalTime),						//4
+  	    		//String.valueOf(1000+(int)(Math.random()*2000)), //fake, random score debug				  //5
+  	    		String.valueOf(calculator.getScore(level, attempt, tKineticGoal, tThermalGoal)), //REAL score //5
+  	    		String.valueOf(calculator.getTotalKinetic()),	//6
+  	    		String.valueOf(calculator.getTotalPotential()),	//7
+  	    		String.valueOf(calculator.getThermal()),		//8
+  	    		String.valueOf(attempt),	//attempt			//9
+  	    		//"false", //fake passed for debug testing of passing a level	 //10
+  	    		String.valueOf(calculator.getLevelPassed()), //REAL level passed //10
+  	    		slideSessionIdIn 								//11
   	    	};
 
 			infoDialog.setTitle("Slide Data: ");
-			infoDialog.setMessage("holy crap");
-			infoDialog.show();
-			infoDialog.setMessage(
-					"slide length: "+thisData[0]+
+			infoDialog.setMessage(">>> RANDOMLY GENERATED VALUES <<<"+
+					"\nslide length: "+thisData[0]+
 					"\nslide_angle: "+thisData[1]+
 					"\nstart_gate: "+thisData[2]+
 					"\nend_gate: "+thisData[3]+
@@ -483,6 +494,7 @@ public class LoginActivity extends Activity implements Runnable, SciGamesListene
 	    			"\nattempt: "+thisData[9]+
 	    			"\nlevel_passed: "+thisData[10]+
 	    			"\nslide_sessionID: "+thisData[11]);
+			infoDialog.show();
   	    	sendSlideData(thisData);
   		}
       };
@@ -541,9 +553,8 @@ public class LoginActivity extends Activity implements Runnable, SciGamesListene
 	    	};
 
 		infoDialog.setTitle("Slide Session Data: ");
-		
-		infoDialog.setMessage(
-				"slide length: "+thisData[0]+
+		infoDialog.setMessage( ">>> ARDUINO RECORDED VALUES <<<"+
+				"\nslide length: "+thisData[0]+
 				"\nslide_angle: "+thisData[1]+
 				"\nstart_gate: "+thisData[2]+
 				"\nend_gate: "+thisData[3]+

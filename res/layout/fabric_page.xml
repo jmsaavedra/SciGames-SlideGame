@@ -41,15 +41,15 @@
 	    android:textSize="30sp"
 	    android:background="@drawable/btn_arrow_right"/>
     
-<!--     <Button
-        android:id="@+id/btn_review"
+     <Button
+        android:id="@+id/btn_pants"
         android:layout_width="260px"
         android:layout_height="120px"
-        android:layout_marginLeft="310dp"
-        android:layout_marginTop="760dp"
-        android:text="review last turn"
+        android:layout_marginLeft="530dp"
+        android:layout_marginTop="360dp"
+        android:text="pants"
         android:textSize="30sp" />
- -->
+
  
 
 <!--     <TextView

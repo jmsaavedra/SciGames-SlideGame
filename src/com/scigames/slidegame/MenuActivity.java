@@ -32,7 +32,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Typeface;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -41,12 +40,10 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
-
 
 public class MenuActivity extends Activity implements SciGamesListener{
     private String TAG = "MenuActivity";
-    private String baseDbURL = "http://mysweetwebsite.com";
+    private String baseDbURL = "http://db.scigam.es";
     
     private boolean debug = false;
 
@@ -75,7 +72,6 @@ public class MenuActivity extends Activity implements SciGamesListener{
     Typeface ExistenceLightOtf;
     
     Button playBtn;
-    Button reviewBtn;
     
     DownloadProfilePhoto photoTask = new DownloadProfilePhoto(MenuActivity.this, "sUrl");
     SciGamesHttpPoster task = new SciGamesHttpPoster(MenuActivity.this, baseDbURL+"/pull/objective_images.php");
@@ -101,7 +97,7 @@ public class MenuActivity extends Activity implements SciGamesListener{
 	    	visitIdIn = i.getStringExtra("visitId");
 	    	rfidIn = i.getStringExtra("rfid");
 	    	photoUrl = i.getStringExtra("photo");
-	    	photoUrl = "http://mysweetwebsite.com/" + photoUrl;
+	    	photoUrl = baseDbURL+"/"+photoUrl;
 	    	slideLevelIn = i.getStringExtra("slideLevel");
 	    	massIn = i.getStringExtra("mass");
 	    	Log.d(TAG, "slideLevelIn: " + slideLevelIn);
@@ -130,7 +126,7 @@ public class MenuActivity extends Activity implements SciGamesListener{
     	lastNameIn = i.getStringExtra("lName");;
     	visitIdIn = i.getStringExtra("visitId");
     	photoUrl = i.getStringExtra("photo");
-    	photoUrl = "http://mysweetwebsite.com/" + photoUrl;
+    	photoUrl = baseDbURL+"/"+photoUrl;
     	Log.d(TAG, "Menu Activity INs: ");
     	Log.d(TAG, rfidIn + studentIdIn + slideLevelIn + massIn);
     	displayProfile();
@@ -158,11 +154,6 @@ public class MenuActivity extends Activity implements SciGamesListener{
 	    playBtn = (Button) findViewById(R.id.btn_play);
 	    playBtn.setOnClickListener(mPlay);
 	    setButtonFont(ExistenceLightOtf, playBtn);
-	        
-	    reviewBtn = (Button) findViewById(R.id.btn_review);
-	    reviewBtn.setOnClickListener(mReview);
-	    setButtonFont(ExistenceLightOtf, reviewBtn);
-	    reviewBtn.setVisibility(View.INVISIBLE);
 	    
 	    infoDialog = new AlertDialog.Builder(MenuActivity.this).create();
 	    infoDialog.setTitle("Debug Info");
@@ -215,18 +206,6 @@ public class MenuActivity extends Activity implements SciGamesListener{
 		}
     };
     	
-    OnClickListener mReview = new OnClickListener() {
-        public void onClick(View v) {
-			Log.d(TAG,"mReview.onClick");
-			Intent i = new Intent(MenuActivity.this, ReviewActivity.class);
-			Log.d(TAG,"new LoginActivity Intent");
-			i.putExtra("rfid", rfidIn);
-			i.putExtra("page", "slideReview");
-			Log.d(TAG,"startActivity...");
-			MenuActivity.this.startActivity(i);
-			Log.d(TAG,"...startActivity");
-        }
-    };
 
 	public void failedQuery(String failureReason) {
 
