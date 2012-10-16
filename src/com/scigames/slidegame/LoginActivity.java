@@ -429,13 +429,13 @@ public class LoginActivity extends Activity implements Runnable, SciGamesListene
     	}
      };
      
-     OnClickListener mSlideDataGo = new OnClickListener(){ //gets called when ARDUINO returns last stop bit
+     OnClickListener mSlideDataGo = new OnClickListener(){ //gets called when FAKE SLIDE DATA is pressed
   	    public void onClick(View v) { 	    	
   	    	Log.d(TAG, "mSlideDataGo.onClick");
-  	    	/* from Arduino! */
-  	    	int startGate = 200;
-  	    	int endGate = 75;
-  	    	int totalTime = 1008;
+  	    	/* would be from Arduino! */
+  	    	int startGate;
+  	    	int endGate;
+  	    	int totalTime;
   	    	
   	    	/* from server! */
   	    	int attempt = Integer.parseInt(currAttempt);
@@ -452,9 +452,9 @@ public class LoginActivity extends Activity implements Runnable, SciGamesListene
   	    	Log.d(TAG, ">>>>>>> tKineticGoal: "+kineticGoal);
   	    	Log.d(TAG, ">>>>>>> level: "+currSlideLevel);
   	    	  	    	
-  	  	    startGate = 190 + (int)(Math.random()*220);
-  	  	    endGate = 65+(int)(Math.random()*110);
-  	  	    totalTime = startGate+endGate+400;
+  	  	    startGate = 150 + (int)(Math.random()*100);
+  	  	    endGate = 50+(int)(Math.random()*50);
+  	  	    totalTime = startGate+endGate+650;
 
   	    	/* remains static for now: */
   	    	float slideLength = 5.1f;
@@ -488,9 +488,9 @@ public class LoginActivity extends Activity implements Runnable, SciGamesListene
 					"\nend_gate: "+thisData[3]+
 					"\ntotal_time: "+thisData[4]+
 					"\nscore: "+thisData[5]+
-					"\ntotal_kinetic: "+thisData[6]+
+					"\ntotal_KINETIC:       "+thisData[6]+
 	    			"\ntotal_potential: "+thisData[7]+
-	    			"\ntotal_thermal: "+thisData[8]+
+	    			"\ntotal_THERMAL:       "+thisData[8]+
 	    			"\nattempt: "+thisData[9]+
 	    			"\nlevel_passed: "+thisData[10]+
 	    			"\nslide_sessionID: "+thisData[11]);
@@ -499,8 +499,8 @@ public class LoginActivity extends Activity implements Runnable, SciGamesListene
   		}
       };
       
-   //called when we receive slide timer durations from Arduino
-   public void prepareSlideData(int timer1, int timer2, int timer3){ 
+
+   public void prepareSlideData(int timer1, int timer2, int timer3){    //called when we receive slide timer durations from ARDUINO 
 	    	Log.d(TAG, "mSlideDataGo.onClick");
 	    	/* from Arduino! */
 	    	int startGate = timer1;
@@ -521,12 +521,6 @@ public class LoginActivity extends Activity implements Runnable, SciGamesListene
 	    	Log.d(TAG, ">>>>>>> fabricValue: "+chosenFabricValue);
 	    	Log.d(TAG, ">>>>>>> tKineticGoal: "+kineticGoal);
 	    	Log.d(TAG, ">>>>>>> level: "+currSlideLevel);
-	    	  	    	
-//	    	if(debug){
-//	  	    	 startGate = 190 + (int)(Math.random()*220);
-//	  	    	 endGate = 65+(int)(Math.random()*110);
-//	  	    	 totalTime = startGate+endGate+400;
-//	    	}
 	    	
 	    	/* remains static for now: */
 	    	float slideLength = 5.1f;
