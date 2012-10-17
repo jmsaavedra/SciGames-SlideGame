@@ -87,11 +87,11 @@ public final class R {
         public static final int bg_blank=0x7f020041;
         public static final int bg_fabric=0x7f020042;
         public static final int bg_last_turn=0x7f020043;
-        public static final int bg_login=0x7f020044;
-        public static final int bg_no_device=0x7f020045;
-        public static final int bg_profile=0x7f020046;
-        public static final int bg_ready_set_go=0x7f020047;
-        public static final int bg_welcome=0x7f020048;
+        public static final int bg_no_device=0x7f020044;
+        public static final int bg_profile=0x7f020045;
+        public static final int bg_ready_set_go=0x7f020046;
+        public static final int bg_welcome_review=0x7f020047;
+        public static final int bg_welcome_slide=0x7f020048;
         public static final int btn_arrow_left=0x7f020049;
         public static final int btn_arrow_right=0x7f02004a;
         public static final int btn_capture_mass_off=0x7f02004b;

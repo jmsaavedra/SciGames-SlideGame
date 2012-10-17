@@ -3,6 +3,6 @@
     android:layout_width="wrap_content"
     android:layout_height="wrap_content" 
     android:id="@+id/login_page"
-    android:background="@drawable/bg_login">
+    android:background="@drawable/bg_welcome_slide">
 
 </RelativeLayout>
