@@ -1,9 +1,9 @@
 /*
 v04b is for a COMMON ANODE RGB LED
-
-- includes RFID, updated slide sensors, led beacon
-
-*/
+ 
+ - includes RFID, updated slide sensors, led beacon
+ 
+ */
 
 #include <Max3421e.h>
 #include <Usb.h>
@@ -46,10 +46,12 @@ void setup() {
   }
   delay(500);   
   acc.powerOn();
-  
+
+  ledMeterSetup();
+
   Serial.println("MEASURING SENSOR OFFSETS - DO NOT TOUCH SENSORS FOR 5 SECONDS");
   measure_slide_sensor_offsets();
-  
+
   Serial.println("...SETUP DONE");
 }
 
@@ -108,6 +110,70 @@ void checkForAndroidComm(){
         currLedStatus = !currLedStatus;
         allLeds(currLedStatus);
         break;
+
+      case '0': 
+        //levelOne();
+        setLedMeter(16, 16);
+        break;
+
+
+      case '1': 
+        //        levelTwo();
+        setLedMeter(19, 13);
+        break;
+
+
+      case '2': 
+        //        levelThree();
+        setLedMeter(12, 20);
+
+        break;
+
+
+      case '3': 
+        //  levelFour();
+        setLedMeter(22, 10);
+
+        break;
+
+
+      case '4': 
+        //  levelFive();
+        setLedMeter(10, 22);
+
+        break;
+
+
+      case 'a':
+         setLedMeter(3, 29);
+
+      case 'b': 
+        setLedMeter(6, 26); 
+
+      case 'c': 
+        setLedMeter(9, 23);
+
+      case 'd': 
+        setLedMeter(12, 20);
+
+      case 'e': 
+        setLedMeter(16, 16);
+
+      case 'f': 
+        setLedMeter(18, 14);
+
+      case 'g': 
+        setLedMeter(21, 11);
+
+      case 'h': 
+        setLedMeter(24, 8);
+
+      case 'i': 
+        setLedMeter(27, 5);
+
+      case 'j': 
+        setLedMeter(30, 2); 
+
       }
     } 
     else {
@@ -133,6 +199,11 @@ void reset(){
   RFID_GO = false;
   ledsOff();
 }
+
+
+
+
+
 
 
 
