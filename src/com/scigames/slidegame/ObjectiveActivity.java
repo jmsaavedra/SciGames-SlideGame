@@ -149,6 +149,11 @@ public class ObjectiveActivity extends Activity implements SciGamesListener{
         btnContinue.setOnClickListener(mContinue);
         
         getObjectiveImages(slideLevelIn);
+        //level 0 : 50 kin, 50 therm
+        //level 1 : 60 kin, 40 therm
+        //level 2 : 40 kin, 60 therm
+        //level 3 : 70 kin, 30 therm
+        //level 4 : 30 kin, 70 therm
     }
     
     private void getObjectiveImages(String mSlideLevelIn){

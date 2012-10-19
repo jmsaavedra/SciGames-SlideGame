@@ -1,5 +1,5 @@
 
-/* v03a is for a COMMON ANODE RGB LED */
+/* v03a is for a COMMON CATHODE RGB LED */
 
 #include <Max3421e.h>
 #include <Usb.h>
@@ -101,6 +101,7 @@ void checkForAndroidComm(){
 
       case 'Z':
         Serial.println("received Z"); //turn LEDs on/off = standby
+        RFID_GO = false;
         currLedStatus = !currLedStatus;
         allLeds(currLedStatus);
         break;

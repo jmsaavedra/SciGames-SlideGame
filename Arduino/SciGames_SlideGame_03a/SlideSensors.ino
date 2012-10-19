@@ -41,8 +41,8 @@ void measure_slide_sensor_offsets(void) {
     } 
 
     offsets[i] = (byte)((accums[i] / 8) >> 2);
-    thresholds[i] = min(offsets[i] + 50, 225);     // TODO (JS) - the value to be added should be determined empirically. 
-                                                   // use a value high enough to unequivocally separate actuated from non-actuated states.  
+    //thresholds[i] = min(offsets[i] + (50-i*10), 225);     // TODO (JS) - the value to be added should be determined empirically. 
+    thresholds[i] = min(offsets[i] + 40, 225);                                               // use a value high enough to unequivocally separate actuated from non-actuated states.  
                                                    // I've also set an arbitrary cap on the value - no idea if this is actually needed as it depends on the results you see.
   }
 }

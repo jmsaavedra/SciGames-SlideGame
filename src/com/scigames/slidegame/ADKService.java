@@ -144,8 +144,7 @@ public class ADKService extends Service {
 			} catch (IOException e) {
 				Log.e(TAG, "write failed", e);
 			}
-		}
-		
+		}	
 	}
 
 	public void checkInput() {

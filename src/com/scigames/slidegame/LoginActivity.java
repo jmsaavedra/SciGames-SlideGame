@@ -60,8 +60,8 @@ public class LoginActivity extends Activity implements Runnable, SciGamesListene
     private boolean debug = false; //for debug info popups
     private boolean debugFakeBracelet = false; //to send fake bracelet Ids
     
-    private String debugBracelet1 = "500315c37";
-    private String debugBracelet2 = "500315c37"; //500315518 (yellow) //500315affffffe5 (green) //5006affffffc3ffffffd9 (red) //500315c37 (blue)
+    private String debugBracelet1 = "30ffffffb0ffffffe3ffffff8a";
+    private String debugBracelet2 = "30ffffffb0ffffffe3ffffff8a"; //500315518 (yellow) //500315affffffe5 (green) //5006affffffc3ffffffd9 (red) //500315c37 (blue)
     private String debugFabricID = "0000000000";//"0056ffffff9affffff90";
     //private int debugSlideLevel = 2;
     private String slideSessionDataDebug = "";
@@ -252,6 +252,12 @@ public class LoginActivity extends Activity implements Runnable, SciGamesListene
         		  studentId = intent.getExtras().getString("studentId");
         		  currSlideLevel = intent.getExtras().getString("slideLevel");
         		  currMass = intent.getExtras().getString("mass");
+        		  
+        		  //pass the objective Ratio to Arduino for the LED meter
+        		  //this will pass chars '0' through '4' for the level it's at.
+        		  char sendLedRatio = currSlideLevel.charAt(0);
+        		  sendPress(sendLedRatio);
+        		  
 	       		  Intent i = new Intent(LoginActivity.this, ObjectiveActivity.class);
 	     		  Log.d(TAG,"new Intent");
 	     		  i.putExtra("rfid",currRfid);
@@ -264,7 +270,6 @@ public class LoginActivity extends Activity implements Runnable, SciGamesListene
         	  } 
         	  
         	  /* from objectiveActivity to fabric page */
-        	  //this is also a coment
         	  else if(intent.getExtras().getString("page").equals("fabric")){
 	        	  currPage = "fabric";
 	        	  studentId = intent.getExtras().getString("studentId");
@@ -419,6 +424,7 @@ public class LoginActivity extends Activity implements Runnable, SciGamesListene
  			Log.d(TAG,"startActivity...");
  			LoginActivity.this.startActivity(i);
  			Log.d(TAG,"...startActivity");
+ 			//sendPress('S');
  		}
      };
      
@@ -426,6 +432,10 @@ public class LoginActivity extends Activity implements Runnable, SciGamesListene
     	public void onClick(View v) {
     		Log.d(TAG, "mSendPants.onClick");
     		sendFabricId("0000000000"); //this fabricId is set to "Pants" in the database
+    		
+    		//sendPress('Z');
+    		
+    		//****************HERE
     	}
      };
      
@@ -480,21 +490,27 @@ public class LoginActivity extends Activity implements Runnable, SciGamesListene
   	    		slideSessionIdIn 								//11
   	    	};
 
-			infoDialog.setTitle("Slide Data: ");
-			infoDialog.setMessage(">>> RANDOMLY GENERATED VALUES <<<"+
-					"\nslide length: "+thisData[0]+
-					"\nslide_angle: "+thisData[1]+
-					"\nstart_gate: "+thisData[2]+
-					"\nend_gate: "+thisData[3]+
-					"\ntotal_time: "+thisData[4]+
-					"\nscore: "+thisData[5]+
-					"\ntotal_KINETIC:       "+thisData[6]+
-	    			"\ntotal_potential: "+thisData[7]+
-	    			"\ntotal_THERMAL:       "+thisData[8]+
-	    			"\nattempt: "+thisData[9]+
-	    			"\nlevel_passed: "+thisData[10]+
-	    			"\nslide_sessionID: "+thisData[11]);
-			infoDialog.show();
+  		    char sendAchievedRatio = calculator.getRatioChar();
+  		    String mAchievedRatio = String.valueOf(calculator.getAchievedRatio());
+  		    sendPress(sendAchievedRatio);
+  		    	
+  			infoDialog.setTitle("Slide Session Data: ");
+  			infoDialog.setMessage( ">>> FAKE RECORDED VALUES <<<"+
+  					"\nslide length: "+thisData[0]+
+  					"\nslide_angle: "+thisData[1]+
+  					"\nstart_gate: "+thisData[2]+
+  					"\nend_gate: "+thisData[3]+
+  					"\ntotal_time: "+thisData[4]+
+  					"\nscore: "+thisData[5]+
+  					"\ntotal_kinetic: "+thisData[6]+
+  	    			"\ntotal_potential: "+thisData[7]+
+  	    			"\ntotal_thermal: "+thisData[8]+
+  	    			"\nattempt: "+thisData[9]+
+  	    			"\nlevel_passed: "+thisData[10]+
+  	    			"\nslide_sessionID: "+thisData[11]+
+  	    			"\nacheived_ratio: "+mAchievedRatio+
+  					"\nratio_char: "+sendAchievedRatio);
+  			infoDialog.show();
   	    	sendSlideData(thisData);
   		}
       };
@@ -535,17 +551,21 @@ public class LoginActivity extends Activity implements Runnable, SciGamesListene
 	    		String.valueOf(startGate),
 	    		String.valueOf(endGate),
 	    		String.valueOf(totalTime),
-	    		String.valueOf(1000+(int)(Math.random()*2000)), //fake, random score debug
-	    		//String.valueOf(calculator.getScore(level, attempt, tKineticGoal, tThermalGoal)), //REAL score
+	    		//String.valueOf(1000+(int)(Math.random()*2000)), //fake, random score debug
+	    		String.valueOf(calculator.getScore(level, attempt, tKineticGoal, tThermalGoal)), //REAL score
 	    		String.valueOf(calculator.getTotalKinetic()),
 	    		String.valueOf(calculator.getTotalPotential()),
 	    		String.valueOf(calculator.getThermal()),
 	    		String.valueOf(attempt),	//attempt
-	    		"false", //fake passed for debug testing of passing a level
-	    		//String.valueOf(calculator.getLevelPassed()), //REAL level passed
+	    		//"false", //fake passed for debug testing of passing a level
+	    		String.valueOf(calculator.getLevelPassed()), //REAL level passed
 	    		slideSessionIdIn 
 	    	};
-
+	    
+	    char sendAchievedRatio = calculator.getRatioChar();
+	    String mAchievedRatio = String.valueOf(calculator.getAchievedRatio());
+	    sendPress(sendAchievedRatio);
+	    	
 		infoDialog.setTitle("Slide Session Data: ");
 		infoDialog.setMessage( ">>> ARDUINO RECORDED VALUES <<<"+
 				"\nslide length: "+thisData[0]+
@@ -559,7 +579,9 @@ public class LoginActivity extends Activity implements Runnable, SciGamesListene
     			"\ntotal_thermal: "+thisData[8]+
     			"\nattempt: "+thisData[9]+
     			"\nlevel_passed: "+thisData[10]+
-    			"\nslide_sessionID: "+thisData[11]);
+    			"\nslide_sessionID: "+thisData[11]+
+    			"\nacheived_ratio: "+mAchievedRatio+
+				"\nratio_char: "+sendAchievedRatio);
 		infoDialog.show();
 		
 	    sendSlideData(thisData);/* BLAM - PASS THAT S***/
@@ -681,8 +703,9 @@ public class LoginActivity extends Activity implements Runnable, SciGamesListene
 	
 	
 	/****** ADK stuff!! *****/
-	  @Override
+	  	@Override
 		public void onResume() {
+		  Log.d(TAG, "onResume() hit!!");
 	    	Resources res = getResources();
 			super.onResume();
 			//setContentView(R.layout.login_page);
@@ -733,7 +756,9 @@ public class LoginActivity extends Activity implements Runnable, SciGamesListene
 	    	Log.v(TAG, "onPause");
 	    	//closeAccessory();
 	    	try {
-	    		ADKService.self.startUpdater();
+	    		if(!currPage.equals("sliding")){
+	    			ADKService.self.startUpdater();
+	    		}
 			} catch(Exception e) {		
 			} 	
 	        Log.v(TAG, "done, now pause");

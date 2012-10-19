@@ -28,6 +28,7 @@ public class SciMath {
 	private float totalSeconds;
 	
 	public boolean bLevelPassed = false; //calculated in getScore()
+	public float achievedRatio = 0.0f;
 	
 	public SciMath(int m, int fMillis, int sMillis, int tMillis){ //when deployed at various schools, slide measurements will also get passed
 		mass = m;
@@ -101,7 +102,7 @@ public class SciMath {
 		float goalRatio = kineticGoal/thermalGoal; //kinetic to thermal ratio (goal)
 		Log.d(TAG, "goalRatio: " + String.valueOf(goalRatio)); 
 		
-		float achievedRatio = getTotalKinetic()/getThermal(); //kinetic to thermal ratio (achieved)
+		achievedRatio = getTotalKinetic()/getThermal(); //kinetic to thermal ratio (achieved)
 		Log.d(TAG, "achievedRatio: " + String.valueOf(achievedRatio)); 
 		
 		float ratioDiff = Math.abs(goalRatio - achievedRatio); //absolute value of difference
@@ -120,6 +121,17 @@ public class SciMath {
 	
 	public boolean getLevelPassed(){
 		return bLevelPassed;
+	}
+	
+	public float getAchievedRatio(){
+		return achievedRatio;
+	}
+	
+	public char getRatioChar(){
+		char chars[] = {'a', 'b','c','d','e','f','g','h','i','j'};
+		int mRatio = (int)(achievedRatio*10);
+		char thisChar = chars[mRatio];
+		return thisChar;
 	}
 }
 
