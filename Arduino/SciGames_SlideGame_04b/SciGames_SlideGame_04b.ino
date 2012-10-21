@@ -1,7 +1,7 @@
 /*
 v04b is for a COMMON ANODE RGB LED
  
- - includes RFID, updated slide sensors, led beacon
+ - includes RFID, updated slide sensors, led meter
  
  */
 
@@ -113,69 +113,69 @@ void checkForAndroidComm(){
 
       case '0': 
         //levelOne();
-        setLedMeter(16, 16);
+        setLedMeter(10, 10);
         break;
-
 
       case '1': 
-        //        levelTwo();
-        setLedMeter(19, 13);
+        //levelTwo();
+        setLedMeter(12, 8);
         break;
-
 
       case '2': 
-        //        levelThree();
-        setLedMeter(12, 20);
-
+        //levelThree();
+        setLedMeter(8, 12);
         break;
-
 
       case '3': 
-        //  levelFour();
-        setLedMeter(22, 10);
-
+        //levelFour();
+        setLedMeter(14, 6);
         break;
-
 
       case '4': 
-        //  levelFive();
-        setLedMeter(10, 22);
-
+        //levelFive();
+        setLedMeter(6, 14);
         break;
 
-
       case 'a':
-         setLedMeter(3, 29);
+        setLedMeter(2, 18);
+        break;
 
       case 'b': 
-        setLedMeter(6, 26); 
+        setLedMeter(4, 16); 
+        break;
 
       case 'c': 
-        setLedMeter(9, 23);
+        setLedMeter(6, 14);
+        break;
 
       case 'd': 
-        setLedMeter(12, 20);
+        setLedMeter(8, 12);
+        break;
 
       case 'e': 
-        setLedMeter(16, 16);
+        setLedMeter(10, 10);
+        break;
 
       case 'f': 
-        setLedMeter(18, 14);
+        setLedMeter(12, 8);
+        break;
 
       case 'g': 
-        setLedMeter(21, 11);
+        setLedMeter(14, 6);
 
       case 'h': 
-        setLedMeter(24, 8);
+        setLedMeter(16, 4);
+        break;
 
       case 'i': 
-        setLedMeter(27, 5);
+        setLedMeter(18, 2);
+        break;
 
       case 'j': 
-        setLedMeter(30, 2); 
-
+        setLedMeter(20, 0);
+        break; 
       }
-    } 
+    }
     else {
       if(haveInfoToSend){
         //redOn(); // turn on light
@@ -199,15 +199,4 @@ void reset(){
   RFID_GO = false;
   ledsOff();
 }
-
-
-
-
-
-
-
-
-
-
-
 

@@ -196,7 +196,8 @@ public class LoginActivity extends Activity implements Runnable, SciGamesListene
         
         if(debugFakeBracelet){
         	sendFakeBraceletId(debugBracelet1);
-        }  
+        }
+        sendPress('-');//set LED Meter to all potential (blue) on the first start up of app.
     }
 
 	private void sendFakeBraceletId(String mBracelet){
@@ -289,7 +290,8 @@ public class LoginActivity extends Activity implements Runnable, SciGamesListene
         	      
         	      pantsBtn = (Button)findViewById(R.id.btn_pants); //this is the right arrow
         	      pantsBtn.setOnClickListener(mChoosePants);
-        	      pantsBtn.setVisibility(View.VISIBLE);
+        	     // pantsBtn.setVisibility(View.VISIBLE);
+        	      pantsBtn.setVisibility(View.INVISIBLE); //keep invisible for now (not using it)
         	      
 	              playBtn = (Button)findViewById(R.id.btn_play); //this is the right arrow
 	              playBtn.setOnClickListener(mSlidePage);
@@ -439,6 +441,7 @@ public class LoginActivity extends Activity implements Runnable, SciGamesListene
     	}
      };
      
+     /*** FAKE SLIDE DATA GO ***/
      OnClickListener mSlideDataGo = new OnClickListener(){ //gets called when FAKE SLIDE DATA is pressed
   	    public void onClick(View v) { 	    	
   	    	Log.d(TAG, "mSlideDataGo.onClick");
@@ -460,6 +463,7 @@ public class LoginActivity extends Activity implements Runnable, SciGamesListene
   	    	Log.d(TAG, ">>>>>>> currAttempt: "+currAttempt);
   	    	Log.d(TAG, ">>>>>>> fabricValue: "+chosenFabricValue);
   	    	Log.d(TAG, ">>>>>>> tKineticGoal: "+kineticGoal);
+  	    	Log.d(TAG, ">>>>>>> tThermalGoal: "+thermalGoal);
   	    	Log.d(TAG, ">>>>>>> level: "+currSlideLevel);
   	    	  	    	
   	  	    startGate = 150 + (int)(Math.random()*100);
@@ -515,7 +519,7 @@ public class LoginActivity extends Activity implements Runnable, SciGamesListene
   		}
       };
       
-
+   /*** ARDUINO SENSORS SLIDE DATA GO ***/
    public void prepareSlideData(int timer1, int timer2, int timer3){    //called when we receive slide timer durations from ARDUINO 
 	    	Log.d(TAG, "mSlideDataGo.onClick");
 	    	/* from Arduino! */
@@ -525,7 +529,7 @@ public class LoginActivity extends Activity implements Runnable, SciGamesListene
 	    	
 	    	/* from server! */
 	    	int attempt = Integer.parseInt(currAttempt);
-	    	int fabricFrictionCoefficient = Integer.parseInt(chosenFabricValue);
+	    	//int fabricFrictionCoefficient = Integer.parseInt(chosenFabricValue);
 	    	int tKineticGoal = Integer.parseInt(kineticGoal);
 	    	int tThermalGoal = Integer.parseInt(thermalGoal);
 	    	int level = Integer.parseInt(currSlideLevel);
@@ -536,6 +540,7 @@ public class LoginActivity extends Activity implements Runnable, SciGamesListene
 	    	Log.d(TAG, ">>>>>>> currAttempt: "+currAttempt);
 	    	Log.d(TAG, ">>>>>>> fabricValue: "+chosenFabricValue);
 	    	Log.d(TAG, ">>>>>>> tKineticGoal: "+kineticGoal);
+	    	Log.d(TAG, ">>>>>>> tThermalGoal: "+thermalGoal);
 	    	Log.d(TAG, ">>>>>>> level: "+currSlideLevel);
 	    	
 	    	/* remains static for now: */
@@ -598,6 +603,7 @@ public class LoginActivity extends Activity implements Runnable, SciGamesListene
 		Log.d(TAG, "currPage equals:" + currPage);
 		
 		if (currPage.equals("login")){
+			sendPress('-'); //set LED Meter to all blue (all potential)
 			Log.d(TAG, "onResultsSucceeded,login page: "+ serverResponseJSON.toString());
 			//currAttempt = String.valueOf(serverResponseJSON.getInt("attempts"));
 			currAttempt = attempts;
