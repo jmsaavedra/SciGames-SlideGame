@@ -58,13 +58,15 @@ public class LoginActivity extends Activity implements Runnable, SciGamesListene
 	public String baseDbURL = "http://db.scigam.es";
 	
     private boolean debug = false; //for debug info popups
-    private boolean debugFakeBracelet = false; //to send fake bracelet Ids
+    private boolean debugFakeBracelet = false; //to send fake bracelet + mat IDs
     
-    private String debugBracelet1 = "30ffffffb0ffffffe3ffffff8a";
-    private String debugBracelet2 = "30ffffffb0ffffffe3ffffff8a"; //500315518 (yellow) //500315affffffe5 (green) //5006affffffc3ffffffd9 (red) //500315c37 (blue)
-    private String debugFabricID = "0000000000";//"0056ffffff9affffff90";
+    private String debugBracelet1 = "500315c37";
+    private String debugBracelet2 = "5006affffffc3ffffffd9"; //500315518 (yellow) //500315affffffe5 (green) //5006affffffc3ffffffd9 (red) //500315c37 (blue)
+    private String debugFabricID = "5006affffffc9ffffffcf";//"0056ffffff9affffff90";
     //private int debugSlideLevel = 2;
     private String slideSessionDataDebug = "";
+    
+    protected int joulesPerDot = 50;
 	
 	/*** service stuff ***/
 	private static final String ACTION_USB_PERMISSION = "com.google.android.DemoKit.action.USB_PERMISSION";
@@ -256,8 +258,36 @@ public class LoginActivity extends Activity implements Runnable, SciGamesListene
         		  
         		  //pass the objective Ratio to Arduino for the LED meter
         		  //this will pass chars '0' through '4' for the level it's at.
-        		  char sendLedRatio = currSlideLevel.charAt(0);
-        		  sendPress(sendLedRatio);
+        		  
+        		  calculator = new SciMath(Integer.parseInt(currMass), 0,0,0); //quick sciMath just to get potential, nothing else
+        		  float thisPotential = calculator.getTotalPotential();
+        		  Log.d(TAG, "**thisPotential:");
+        		  Log.d(TAG, String.valueOf(thisPotential));
+        		  
+//        		  Log.d(TAG, "**thisKineticGoal:");
+//        		  Log.d(TAG, String.valueOf(kineticGoal));
+//        		  Log.d(TAG, "**thisThermalGoal:");
+//        		  Log.d(TAG, String.valueOf(thermalGoal));
+        		  
+        		  float kPct = (Float.parseFloat(kineticGoal)/100);
+        		  float tPct = (Float.parseFloat(thermalGoal)/100);
+        		  
+        		  Log.d(TAG, "**thisKineticPct:");
+        		  Log.d(TAG, String.valueOf(kPct));
+        		  
+        		  Log.d(TAG, "**thisThermalPct:");
+        		  Log.d(TAG, String.valueOf(tPct));
+        		  
+        		  int kineticLeds = (int)((thisPotential * kPct)/joulesPerDot);
+        		  Log.d(TAG, "**thisKineticLEDs:");
+        		  Log.d(TAG, String.valueOf(kineticLeds));
+        		  
+        		  int thermalLeds = (int)((thisPotential * tPct)/joulesPerDot);
+        		  Log.d(TAG, "**thisThermalLEDs:");
+        		  Log.d(TAG, String.valueOf(thermalLeds));
+        		  
+        		  sendLedMeterValues(kineticLeds, thermalLeds);  //kinetic, thermal
+        		  //sendPress(sendLedRatio);
         		  
 	       		  Intent i = new Intent(LoginActivity.this, ObjectiveActivity.class);
 	     		  Log.d(TAG,"new Intent");
@@ -389,11 +419,18 @@ public class LoginActivity extends Activity implements Runnable, SciGamesListene
 		    //set listener
 	        task.setOnResultsListener(this);
 	        
+	        
+	        
+	        /******* TODO: 
+	         * add session_valid to slideDataIn
+	         */
+	        
+	        
 			//prepare key value pairs to send
 			String[] keyVals = {"slide_length",slideDataIn[0] , "slide_angle",slideDataIn[1] ,"start_time",slideDataIn[2],
 					"end_time",slideDataIn[3] ,"total_time",slideDataIn[4] ,"score",slideDataIn[5] ,"kinetic",slideDataIn[6],
 					"potential",slideDataIn[7] ,"thermal",slideDataIn[8] ,"attempt",slideDataIn[9],"level_completed",slideDataIn[10],
-					"slide_session_id", slideDataIn[11]};
+					"slide_session_id", slideDataIn[11],slideDataIn[12]};
 			if(debug){
 				for(int i=0; i<keyVals.length-1; i+=2)
 				slideSessionDataDebug += keyVals[i] + ": " + keyVals[i+1] + " \t ";
@@ -430,14 +467,11 @@ public class LoginActivity extends Activity implements Runnable, SciGamesListene
  		}
      };
      
-     OnClickListener mChoosePants = new OnClickListener(){
+     OnClickListener mChoosePants = new OnClickListener(){ /* not using this anymore */
     	public void onClick(View v) {
     		Log.d(TAG, "mSendPants.onClick");
     		sendFabricId("0000000000"); //this fabricId is set to "Pants" in the database
-    		
     		//sendPress('Z');
-    		
-    		//****************HERE
     	}
      };
      
@@ -466,9 +500,9 @@ public class LoginActivity extends Activity implements Runnable, SciGamesListene
   	    	Log.d(TAG, ">>>>>>> tThermalGoal: "+thermalGoal);
   	    	Log.d(TAG, ">>>>>>> level: "+currSlideLevel);
   	    	  	    	
-  	  	    startGate = 150 + (int)(Math.random()*100);
-  	  	    endGate = 50+(int)(Math.random()*50);
-  	  	    totalTime = startGate+endGate+650;
+  	  	    startGate = 100 + (int)(Math.random()*50);
+  	  	    endGate = 70+(int)(Math.random()*30);
+  	  	    totalTime = startGate+endGate+550;
 
   	    	/* remains static for now: */
   	    	float slideLength = 5.1f;
@@ -476,6 +510,14 @@ public class LoginActivity extends Activity implements Runnable, SciGamesListene
   	    	
   	    	//create the calculator object with incoming data from Arduino!
   	    	calculator = new SciMath(mass, startGate, endGate, totalTime);
+  	    	float thisPotential = calculator.getTotalPotential();
+  		    float totalEnergy = calculator.getTotalKinetic() + calculator.getThermal(); 		  
+  		    float kPct = (calculator.getTotalKinetic()/totalEnergy);
+  		    float tPct = (calculator.getThermal()/totalEnergy);
+  		   		  
+  		    int kineticLeds = (int)((thisPotential * kPct)/joulesPerDot);
+  		    int thermalLeds = (int)((thisPotential * tPct)/joulesPerDot);
+  		    sendLedMeterValues(kineticLeds, thermalLeds);
   	    	
   	    	String[] thisData = {
   	    		String.valueOf(slideLength),  //slide_length 	//0	
@@ -490,13 +532,12 @@ public class LoginActivity extends Activity implements Runnable, SciGamesListene
   	    		String.valueOf(calculator.getThermal()),		//8
   	    		String.valueOf(attempt),	//attempt			//9
   	    		//"false", //fake passed for debug testing of passing a level	 //10
-  	    		String.valueOf(calculator.getLevelPassed()), //REAL level passed //10
-  	    		slideSessionIdIn 								//11
+  	    		String.valueOf(calculator.getLevelPassed()), 	//10
+  	    		String.valueOf(calculator.getSessionValid()),	//11
+  	    		slideSessionIdIn 								//12
   	    	};
 
-  		    char sendAchievedRatio = calculator.getRatioChar();
   		    String mAchievedRatio = String.valueOf(calculator.getAchievedRatio());
-  		    sendPress(sendAchievedRatio);
   		    	
   			infoDialog.setTitle("Slide Session Data: ");
   			infoDialog.setMessage( ">>> FAKE RECORDED VALUES <<<"+
@@ -511,9 +552,13 @@ public class LoginActivity extends Activity implements Runnable, SciGamesListene
   	    			"\ntotal_thermal: "+thisData[8]+
   	    			"\nattempt: "+thisData[9]+
   	    			"\nlevel_passed: "+thisData[10]+
-  	    			"\nslide_sessionID: "+thisData[11]+
-  	    			"\nacheived_ratio: "+mAchievedRatio+
-  					"\nratio_char: "+sendAchievedRatio);
+  	    			"\nsession_valid: "+thisData[11]+
+  	    			"\nslide_sessionID: "+thisData[12]+
+  	    			"\nthermal_leds: "+thermalLeds+
+  	    			"\nkinetic_leds: "+kineticLeds+
+  	    			"\nthermal_PCT: "+tPct+
+  	    			"\nkinetic_PCT: "+kPct+
+  	    			"\nacheived_ratio: "+mAchievedRatio);
   			infoDialog.show();
   	    	sendSlideData(thisData);
   		}
@@ -550,6 +595,16 @@ public class LoginActivity extends Activity implements Runnable, SciGamesListene
 	    	//create the calculator object with incoming data from Arduino!
 	    	calculator = new SciMath(mass, startGate, endGate, totalTime);
 	    	
+  	    	//calculator = new SciMath(mass, startGate, endGate, totalTime);
+  	    	float thisPotential = calculator.getTotalPotential();
+  		    float totalEnergy = calculator.getTotalKinetic() + calculator.getThermal(); 		  
+  		    float kPct = (calculator.getTotalKinetic()/totalEnergy);
+  		    float tPct = (calculator.getThermal()/totalEnergy);
+  		   		  
+  		    int kineticLeds = (int)((thisPotential * kPct)/joulesPerDot);
+  		    int thermalLeds = (int)((thisPotential * tPct)/joulesPerDot);
+  		    sendLedMeterValues(kineticLeds, thermalLeds);
+	    	 
 	    	String[] thisData = {
 	    		String.valueOf(slideLength),  //slide_length
 	    		String.valueOf(slideAngle),	//slide_angle
@@ -564,12 +619,13 @@ public class LoginActivity extends Activity implements Runnable, SciGamesListene
 	    		String.valueOf(attempt),	//attempt
 	    		//"false", //fake passed for debug testing of passing a level
 	    		String.valueOf(calculator.getLevelPassed()), //REAL level passed
+	    		String.valueOf(calculator.getSessionValid()),
 	    		slideSessionIdIn 
 	    	};
 	    
-	    char sendAchievedRatio = calculator.getRatioChar();
+//	    char sendAchievedRatio = calculator.getRatioChar();
 	    String mAchievedRatio = String.valueOf(calculator.getAchievedRatio());
-	    sendPress(sendAchievedRatio);
+//	    sendPress(sendAchievedRatio);
 	    	
 		infoDialog.setTitle("Slide Session Data: ");
 		infoDialog.setMessage( ">>> ARDUINO RECORDED VALUES <<<"+
@@ -584,9 +640,9 @@ public class LoginActivity extends Activity implements Runnable, SciGamesListene
     			"\ntotal_thermal: "+thisData[8]+
     			"\nattempt: "+thisData[9]+
     			"\nlevel_passed: "+thisData[10]+
-    			"\nslide_sessionID: "+thisData[11]+
-    			"\nacheived_ratio: "+mAchievedRatio+
-				"\nratio_char: "+sendAchievedRatio);
+    			"\nsession_valid: "+thisData[11]+
+  	    		"\nslide_sessionID: "+thisData[12]+
+    			"\nacheived_ratio: "+mAchievedRatio);
 		infoDialog.show();
 		
 	    sendSlideData(thisData);/* BLAM - PASS THAT S***/
@@ -607,6 +663,8 @@ public class LoginActivity extends Activity implements Runnable, SciGamesListene
 			Log.d(TAG, "onResultsSucceeded,login page: "+ serverResponseJSON.toString());
 			//currAttempt = String.valueOf(serverResponseJSON.getInt("attempts"));
 			currAttempt = attempts;
+			thermalGoal = String.valueOf(serverResponseJSON.getJSONObject("slide_level").getJSONObject("ratio").getInt("thermal"));
+			kineticGoal = String.valueOf(serverResponseJSON.getJSONObject("slide_level").getJSONObject("ratio").getInt("kinetic"));
 			Log.d(TAG, "currAttempt received: "+ currAttempt);
 	   		Intent i = new Intent(LoginActivity.this, MenuActivity.class);
 			Log.d(TAG,"new Intent");
@@ -626,6 +684,8 @@ public class LoginActivity extends Activity implements Runnable, SciGamesListene
 		else if(currPage.equals("objective")){
 	   		Intent i = new Intent(LoginActivity.this, LoginActivity.class);
 			Log.d(TAG,"new Intent");
+			//thermalGoal = String.valueOf(serverResponseJSON.getJSONObject("slide_level").getJSONObject("ratio").getInt("thermal"));
+			//kineticGoal = String.valueOf(serverResponseJSON.getJSONObject("slide_level").getJSONObject("ratio").getInt("kinetic"));
 			i.putExtra("page", "objective");
 			//i.putExtra("studentId",studentId);
 			Log.d(TAG,"startActivity...");
@@ -943,6 +1003,21 @@ public class LoginActivity extends Activity implements Runnable, SciGamesListene
 				mAccessory = null;
 			}
 			enableControls(false);
+		}
+		
+		public void sendLedMeterValues(int kLeds, int tLeds){
+			byte[] buffer = new byte[3];
+			buffer[0] = '+';
+			buffer[1] = (byte)kLeds;
+			buffer[2] = (byte)tLeds;
+			
+			if (mOutputStream != null) {
+				try {
+					mOutputStream.write(buffer);
+				} catch (IOException e) {
+					Log.e(TAG, "write failed", e);
+				}
+			}
 		}
 
 		public void sendCommand(byte command, byte target, int value) {

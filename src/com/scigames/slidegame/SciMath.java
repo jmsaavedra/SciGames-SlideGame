@@ -18,8 +18,8 @@ public class SciMath {
 	private static final float bottomHeight = 1.14f; 		//height of sensor3, meters -- needs verifying
 	private static final float lastSensorHeight = 0.889f;	//height of sensor4, meters (used for total potential calc)
 	private static final float totalGateDistance = 5.1f; 	//distance btwn sensor1 and sensor4, meters -- needs verifying
-	private static final float firstGateDistance = 0.368f; 	//distance of top gate, meters
-	private static final float secondGateDistance = 0.343f; //distance of bottom gate, meters
+	private static final float firstGateDistance = 0.368f; 	//distance of top gate, meters //14.5in
+	private static final float secondGateDistance = 0.343f; //distance of bottom gate, meters //13.5in
 //	private static final float firstGateDistance = 0.355f; 	//distance of top gate, meters
 //	private static final float secondGateDistance = 0.381f; //distance of bottom gate, meters
 	
@@ -125,35 +125,43 @@ public class SciMath {
 		return bLevelPassed;
 	}
 	
+	public boolean getSessionValid(){
+		boolean validity = true;
+		if(getThermal() < 10 || getTotalKinetic() < 10){
+			validity = false;
+		}
+		return validity;
+	}
+	
 	public float getAchievedRatio(){
 		return achievedRatio;
 	}
 	
-	public char getRatioChar(){
-		//10:90 20:80 70:30
-		char chars[] = {'_', 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'x'}; //
-		float thisRatio = achievedRatio;
-		int mRatio = 0;
-		if (thisRatio > 0 && thisRatio < 0.1f) mRatio = 0; //ALL THERMAL
-		else if(thisRatio >= 0.1f && thisRatio < 0.25f ) mRatio = 1; // 1:9 // a
-		else if(thisRatio >= 0.25f && thisRatio < 0.4f) mRatio = 2; // 2:8 // b
-		else if(thisRatio >= 0.4f && thisRatio < 0.6f) mRatio = 3; // 3:7 // c
-		else if(thisRatio >= 0.6f && thisRatio < 0.9f) mRatio = 4; // 4:6 // d
-		else if(thisRatio >= 0.9f && thisRatio < 1.4f) mRatio = 5;  // 5:5 // e
-		else if(thisRatio >= 1.4f && thisRatio < 2.3f) mRatio = 6;  // 6:4 // f
-		else if(thisRatio >= 2.3f && thisRatio < 4.1f) mRatio = 7;  // 7:3 // g
-		else if(thisRatio >= 4.1f && thisRatio < 9.1f) mRatio = 8;  // 8:2 // h
-		else if(thisRatio >= 9.1f && thisRatio < 19f) mRatio = 9;  // 9:1 // i
-		else if(thisRatio >= 19) mRatio = 10;	 //ALL KINETIC // j
-		else mRatio = 11; //ratio is a negative number, something is wrong.
-		
-		//int mRatio = (int)(achievedRatio*100); // 0 - 100
-		//mRatio = 
-		char thisChar = '-';
-		//if(mRatio >= 0 && mRatio <=9) thisChar = chars[mRatio];
-		thisChar = chars[mRatio];
-		return thisChar;
-	}
+//	public char getRatioChar(){
+//		//10:90 20:80 70:30
+//		char chars[] = {'_', 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'x'}; //
+//		float thisRatio = achievedRatio;
+//		int mRatio = 0;
+//		if (thisRatio > 0 && thisRatio < 0.1f) mRatio = 0; //ALL THERMAL
+//		else if(thisRatio >= 0.1f && thisRatio < 0.25f ) mRatio = 1; // 1:9 // a
+//		else if(thisRatio >= 0.25f && thisRatio < 0.4f) mRatio = 2; // 2:8 // b
+//		else if(thisRatio >= 0.4f && thisRatio < 0.6f) mRatio = 3; // 3:7 // c
+//		else if(thisRatio >= 0.6f && thisRatio < 0.9f) mRatio = 4; // 4:6 // d
+//		else if(thisRatio >= 0.9f && thisRatio < 1.4f) mRatio = 5;  // 5:5 // e
+//		else if(thisRatio >= 1.4f && thisRatio < 2.3f) mRatio = 6;  // 6:4 // f
+//		else if(thisRatio >= 2.3f && thisRatio < 4.1f) mRatio = 7;  // 7:3 // g
+//		else if(thisRatio >= 4.1f && thisRatio < 9.1f) mRatio = 8;  // 8:2 // h
+//		else if(thisRatio >= 9.1f && thisRatio < 19f) mRatio = 9;  // 9:1 // i
+//		else if(thisRatio >= 19) mRatio = 10;	 //ALL KINETIC // j
+//		else mRatio = 11; //ratio is a negative number, something is wrong.
+//		
+//		//int mRatio = (int)(achievedRatio*100); // 0 - 100
+//		//mRatio = 
+//		char thisChar = '-';
+//		//if(mRatio >= 0 && mRatio <=9) thisChar = chars[mRatio];
+//		thisChar = chars[mRatio];
+//		return thisChar;
+//	}
 }
 
 

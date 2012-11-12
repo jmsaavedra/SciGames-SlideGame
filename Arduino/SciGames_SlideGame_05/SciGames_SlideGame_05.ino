@@ -1,6 +1,4 @@
 /*
-v04b is for a COMMON ANODE RGB LED
- 
  - includes RFID, updated slide sensors, led meter
  - set LEDs
  
@@ -101,7 +99,7 @@ void checkForAndroidComm(){
 
       case 'S':
         Serial.println("received S"); //prepare for SLIDE sensor data
-        //initMass(); // calibrate with NO weight
+        measure_slide_sensor_offsets();
         greenOn();
         SLIDE_GO = true;
         break;

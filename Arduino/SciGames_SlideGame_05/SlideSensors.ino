@@ -37,7 +37,9 @@ void measure_slide_sensor_offsets(void) {
     accums[i] = 0;
     for (j=0; j<8; j++) {
       accums[i] += analogRead(sig_pins[i]);
-      delay(100);
+      blueOn();
+      delay(50);
+      allLeds(false);
     } 
 
     offsets[i] = (byte)((accums[i] / 8) >> 2);
