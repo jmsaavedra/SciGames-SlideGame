@@ -30,7 +30,8 @@ public class SciMath {
 	private float totalSeconds;
 	
 	public boolean bLevelPassed = false; //calculated in getScore()
-	public float achievedRatio = 0;
+	public float achievedRatio = 0.0f;
+	public float goalRatio = 0.0f;
 	
 	public SciMath(int m, int fMillis, int sMillis, int tMillis){ //when deployed at various schools, slide measurements will also get passed
 		mass = m;
@@ -101,7 +102,7 @@ public class SciMath {
 		
 		int predeterminedPts = (level+1)*1000; //levels start at 0 in the architecture so add 1
 		
-		float goalRatio = kineticGoal/thermalGoal; //kinetic to thermal ratio (goal)
+		goalRatio = (float)((float)kineticGoal/(float)thermalGoal); //kinetic to thermal ratio (goal)
 		Log.d(TAG, "goalRatio: " + String.valueOf(goalRatio)); 
 		
 		achievedRatio = getTotalKinetic()/getThermal(); //kinetic to thermal ratio (achieved)
@@ -137,6 +138,47 @@ public class SciMath {
 		return achievedRatio;
 	}
 	
+	public float getGoalRatio(){
+		return goalRatio;
+	}
+	
+	public int getPotentialDots(){
+		int potentialDots = 0;
+		potentialDots = (int) (getTotalPotential()/LoginActivity.joulesPerDot);
+		return potentialDots;
+	}
+	
+	public int getKineticGoalDots(){
+		int kineticDots = 0;
+		float kPct = (Float.parseFloat(LoginActivity.kineticGoal)/100);
+		kineticDots = Math.round((getTotalPotential() * kPct)/LoginActivity.joulesPerDot);
+		return kineticDots;
+	}
+	
+	public int getThermalGoalDots(){
+		int thermalDots = 0;
+		float tPct = (Float.parseFloat(LoginActivity.thermalGoal)/100);
+		thermalDots = Math.round((getTotalPotential() * tPct)/LoginActivity.joulesPerDot);
+		return thermalDots;
+	}
+	
+	
+//	  float kPct = (Float.parseFloat(kineticGoal)/100);
+//	  float tPct = (Float.parseFloat(thermalGoal)/100);
+//	  
+//	  Log.d(TAG, "**thisKineticPct:");
+//	  Log.d(TAG, String.valueOf(kPct));
+//	  
+//	  Log.d(TAG, "**thisThermalPct:");
+//	  Log.d(TAG, String.valueOf(tPct));
+//	  
+//	  int kineticLeds = Math.round((thisPotential * kPct)/joulesPerDot);
+//	  Log.d(TAG, "**thisKineticLEDs:");
+//	  Log.d(TAG, String.valueOf(kineticLeds));
+//	  
+//	   = Math.round((thisPotential * tPct)/joulesPerDot);
+//	  Log.d(TAG, "**thisThermalLEDs:");
+	  
 //	public char getRatioChar(){
 //		//10:90 20:80 70:30
 //		char chars[] = {'_', 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'x'}; //
