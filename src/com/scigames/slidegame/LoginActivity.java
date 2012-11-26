@@ -66,7 +66,7 @@ public class LoginActivity extends Activity implements Runnable, SciGamesListene
     //private int debugSlideLevel = 2;
     private String slideSessionDataDebug = "";
     
-    protected int joulesPerDot = 50;
+    protected int joulesPerDot = 65;
 	
 	/*** service stuff ***/
 	private static final String ACTION_USB_PERMISSION = "com.google.android.DemoKit.action.USB_PERMISSION";
@@ -278,15 +278,25 @@ public class LoginActivity extends Activity implements Runnable, SciGamesListene
         		  Log.d(TAG, "**thisThermalPct:");
         		  Log.d(TAG, String.valueOf(tPct));
         		  
-        		  int kineticLeds = (int)((thisPotential * kPct)/joulesPerDot);
+        		  int kineticLeds = Math.round((thisPotential * kPct)/joulesPerDot);
         		  Log.d(TAG, "**thisKineticLEDs:");
         		  Log.d(TAG, String.valueOf(kineticLeds));
         		  
-        		  int thermalLeds = (int)((thisPotential * tPct)/joulesPerDot);
+        		  int thermalLeds = Math.round((thisPotential * tPct)/joulesPerDot);
         		  Log.d(TAG, "**thisThermalLEDs:");
         		  Log.d(TAG, String.valueOf(thermalLeds));
         		  
-        		  sendLedMeterValues(kineticLeds, thermalLeds);  //kinetic, thermal
+//	        	  infoDialog.setTitle("LED METER DEBUG");
+//	        	  infoDialog.setMessage(
+//	        			  "this Potential: " +String.valueOf(thisPotential)+
+//	        			  "\nthermalPCT: " + String.valueOf(tPct)+
+//	        			  "\nthermalLEDs: "+ String.valueOf(thermalLeds)+
+//	        			  "\nkineticPCT: " + String.valueOf(kPct)+
+//	        			  "\nkineticLEDs: "+ String.valueOf(kineticLeds)
+//	        			  );
+//	        	  infoDialog.show();
+        		  
+        		  sendLedMeterGoalValues(kineticLeds, thermalLeds);  //kinetic, thermal
         		  //sendPress(sendLedRatio);
         		  
 	       		  Intent i = new Intent(LoginActivity.this, ObjectiveActivity.class);
@@ -430,7 +440,7 @@ public class LoginActivity extends Activity implements Runnable, SciGamesListene
 			String[] keyVals = {"slide_length",slideDataIn[0] , "slide_angle",slideDataIn[1] ,"start_time",slideDataIn[2],
 					"end_time",slideDataIn[3] ,"total_time",slideDataIn[4] ,"score",slideDataIn[5] ,"kinetic",slideDataIn[6],
 					"potential",slideDataIn[7] ,"thermal",slideDataIn[8] ,"attempt",slideDataIn[9],"level_completed",slideDataIn[10],
-					"slide_session_id", slideDataIn[11],slideDataIn[12]};
+					"slide_session_id", slideDataIn[12], "session_valid", slideDataIn[11]};
 			if(debug){
 				for(int i=0; i<keyVals.length-1; i+=2)
 				slideSessionDataDebug += keyVals[i] + ": " + keyVals[i+1] + " \t ";
@@ -491,7 +501,7 @@ public class LoginActivity extends Activity implements Runnable, SciGamesListene
   	    	int tThermalGoal = Integer.parseInt(thermalGoal);
   	    	int level = Integer.parseInt(currSlideLevel);
   	    	int mass = Integer.parseInt(currMass);
-  	    	if (mass < 20) mass = 65; /* for debug for now! */
+  	    	//if (mass < 20) mass = 65; /* for debug for now! */
   	    	
   	    	Log.d(TAG, ">>>>>>> currMass: "+currMass);
   	    	Log.d(TAG, ">>>>>>> currAttempt: "+currAttempt);
@@ -500,8 +510,8 @@ public class LoginActivity extends Activity implements Runnable, SciGamesListene
   	    	Log.d(TAG, ">>>>>>> tThermalGoal: "+thermalGoal);
   	    	Log.d(TAG, ">>>>>>> level: "+currSlideLevel);
   	    	  	    	
-  	  	    startGate = 100 + (int)(Math.random()*50);
-  	  	    endGate = 70+(int)(Math.random()*30);
+  	  	    startGate = 85 + (int)(Math.random()*90);
+  	  	    endGate = 50+(int)(Math.random()*30);
   	  	    totalTime = startGate+endGate+550;
 
   	    	/* remains static for now: */
@@ -515,9 +525,11 @@ public class LoginActivity extends Activity implements Runnable, SciGamesListene
   		    float kPct = (calculator.getTotalKinetic()/totalEnergy);
   		    float tPct = (calculator.getThermal()/totalEnergy);
   		   		  
-  		    int kineticLeds = (int)((thisPotential * kPct)/joulesPerDot);
-  		    int thermalLeds = (int)((thisPotential * tPct)/joulesPerDot);
-  		    sendLedMeterValues(kineticLeds, thermalLeds);
+  		    int kineticLeds = Math.round((thisPotential * kPct)/joulesPerDot);
+  		    int thermalLeds = Math.round((thisPotential * tPct)/joulesPerDot);
+  		    sendLedMeterResultValues(kineticLeds, thermalLeds);
+  		    
+  		    boolean testFail = false;
   	    	
   	    	String[] thisData = {
   	    		String.valueOf(slideLength),  //slide_length 	//0	
@@ -531,7 +543,6 @@ public class LoginActivity extends Activity implements Runnable, SciGamesListene
   	    		String.valueOf(calculator.getTotalPotential()),	//7
   	    		String.valueOf(calculator.getThermal()),		//8
   	    		String.valueOf(attempt),	//attempt			//9
-  	    		//"false", //fake passed for debug testing of passing a level	 //10
   	    		String.valueOf(calculator.getLevelPassed()), 	//10
   	    		String.valueOf(calculator.getSessionValid()),	//11
   	    		slideSessionIdIn 								//12
@@ -601,9 +612,9 @@ public class LoginActivity extends Activity implements Runnable, SciGamesListene
   		    float kPct = (calculator.getTotalKinetic()/totalEnergy);
   		    float tPct = (calculator.getThermal()/totalEnergy);
   		   		  
-  		    int kineticLeds = (int)((thisPotential * kPct)/joulesPerDot);
-  		    int thermalLeds = (int)((thisPotential * tPct)/joulesPerDot);
-  		    sendLedMeterValues(kineticLeds, thermalLeds);
+  		    int kineticLeds = Math.round((thisPotential * kPct)/joulesPerDot);
+  		    int thermalLeds = Math.round((thisPotential * tPct)/joulesPerDot);
+  		    sendLedMeterResultValues(kineticLeds, thermalLeds);
 	    	 
 	    	String[] thisData = {
 	    		String.valueOf(slideLength),  //slide_length
@@ -1005,9 +1016,24 @@ public class LoginActivity extends Activity implements Runnable, SciGamesListene
 			enableControls(false);
 		}
 		
-		public void sendLedMeterValues(int kLeds, int tLeds){
+		public void sendLedMeterGoalValues(int kLeds, int tLeds){
 			byte[] buffer = new byte[3];
 			buffer[0] = '+';
+			buffer[1] = (byte)kLeds;
+			buffer[2] = (byte)tLeds;
+			
+			if (mOutputStream != null) {
+				try {
+					mOutputStream.write(buffer);
+				} catch (IOException e) {
+					Log.e(TAG, "write failed", e);
+				}
+			}
+		}
+		
+		public void sendLedMeterResultValues(int kLeds, int tLeds){
+			byte[] buffer = new byte[3];
+			buffer[0] = '_';
 			buffer[1] = (byte)kLeds;
 			buffer[2] = (byte)tLeds;
 			
