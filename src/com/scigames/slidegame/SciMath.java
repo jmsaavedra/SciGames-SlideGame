@@ -14,14 +14,12 @@ public class SciMath {
 	private static final float g = 9.81f; 	//gravity constant
 	
 	/* the following are constants for now (nysci slide), when deployed they will need to be variables for each school's slide */
-	private static final float topHeight = 3.25f; 			//height of sensor1, meters
-	private static final float bottomHeight = 1.14f; 		//height of sensor3, meters -- needs verifying
-	private static final float lastSensorHeight = 0.889f;	//height of sensor4, meters (used for total potential calc)
-	private static final float totalGateDistance = 5.1f; 	//distance btwn sensor1 and sensor4, meters -- needs verifying
-	private static final float firstGateDistance = 0.368f; 	//distance of top gate, meters //14.5in
-	private static final float secondGateDistance = 0.343f; //distance of bottom gate, meters //13.5in
-//	private static final float firstGateDistance = 0.355f; 	//distance of top gate, meters
-//	private static final float secondGateDistance = 0.381f; //distance of bottom gate, meters
+	private static final float topSensorHeight = 3.4798f; 			//height of sensor1, meters
+//	private static final float bottomHeight = 1.397f;//1.14f; 		//height of sensor3, meters -- needs verifying
+	private static final float lastSensorHeight = 1.0668f;//0.889f;	//height of sensor4, meters (used for total potential calc)
+	private static final float totalGateDistance = 3.3147f;		 	//distance btwn sensor1 and sensor4, meters -- needs verifying
+	private static final float firstGateDistance = 0.35f; 			//distance of top gate, meters //14.5in
+	private static final float secondGateDistance = 0.35f; 			//distance of bottom gate, meters //13.5in
 	
 	/* the following are variables that come from student's performance on the slide */
 	private int mass;
@@ -40,13 +38,21 @@ public class SciMath {
 		totalSeconds = tMillis*0.001f;
 	}
 	
-	public float getTotalKinetic(){
-		//kinetic energy = (m*v^2)/2
-		float thisKinetic = 0.0f;
-		double totalVelocity = totalGateDistance/totalSeconds; //total velocity
-		thisKinetic = (float) (mass * Math.pow(totalVelocity,2))/2;
-		Log.d(TAG, "get Total Kinetic: " + String.valueOf(thisKinetic)); //for debugging
-		return thisKinetic;
+// 	public float getTotalKinetic(){
+// 		//kinetic energy = (m*v^2)/2
+// 		float thisKinetic = 0.0f;
+// 		double totalVelocity = totalGateDistance/totalSeconds; //total velocity
+// 		thisKinetic = (float) (mass * Math.pow(totalVelocity,2))/2;
+// 		Log.d(TAG, "get Total Kinetic: " + String.valueOf(thisKinetic)); //for debugging
+// 		return thisKinetic;
+// 	}
+	
+	public float getTotalPotential(){
+		//potential energy = m*g*h
+		float thisPotential = 0.0f;
+		thisPotential = (mass*g*(topSensorHeight-lastSensorHeight));
+		Log.d(TAG, "get Total Potential: " + String.valueOf(thisPotential)); 
+		return thisPotential;
 	}
 	
 	public float getBottomKinetic(){
@@ -57,45 +63,29 @@ public class SciMath {
 		Log.d(TAG, "get Bottom Kinetic: " + String.valueOf(thisKinetic)); 
 		return thisKinetic;
 	}
-	
-	public float getTotalPotential(){
-		//potential energy = m*g*h
-		float thisPotential = 0.0f;
-		thisPotential = (mass*g*(topHeight-lastSensorHeight));
-		Log.d(TAG, "get Total Potential: " + String.valueOf(thisPotential)); 
-		return thisPotential;
-	}
-	
-	public float getBottomPotential(){
-		//potential energy = m*g*h
-		float thisPotential = 0.0f;
-		thisPotential = (mass*g*bottomHeight);
-		Log.d(TAG, "get Bottom Potential: " + String.valueOf(thisPotential)); 
-		return thisPotential;
-	}
+// 	public float getBottomPotential(){
+// 		//potential energy = m*g*h
+// 		float thisPotential = 0.0f;
+// 		thisPotential = (mass*g*bottomHeight);
+// 		Log.d(TAG, "get Bottom Potential: " + String.valueOf(thisPotential)); 
+// 		return thisPotential;
+// 	}
 	
 	public float getThermal(){
-		
-//		float thisThermal = 0.0f;
-//		double endVelocity = secondGateDistance/secondGateSeconds; //velocity at bottom gates	
-//		equation 1- NOT USED: thermal = m(g*h - v^2/2)
-//		thisThermal = (float) (mass * (g*bottomHeight - Math.pow(endVelocity,2)/2));
-//		Log.d(TAG, "get Thermal Calc 1: " + String.valueOf(thisThermal)); 
-		
-		//equation 2 - USING THIS: totalInitial - bottomKinetic - bottom potential
-		float thisThermal2 = (float) totalInitialEnergy() - getBottomKinetic() - getBottomPotential();
-		Log.d(TAG, "get Thermal Calc 2: " + String.valueOf(thisThermal2)); 
-		return thisThermal2;	
+		float thisThermal = 0.0f;
+		thisThermal = getTotalPotential() - getBottomKinetic(); 
+		Log.d(TAG, "get Thermal Calc 1: " + String.valueOf(thisThermal)); 	
+		return thisThermal;
 	}
-	
-	public float totalInitialEnergy(){
-		float totalInitEnergy = 0.0f;
-		//totaInitial = m*v^2/2 + m*g*h
-		double velocity = firstGateDistance/firstGateSeconds; //velocity at top gates
-		totalInitEnergy = (float) ((mass * Math.pow(velocity,2) / 2) + mass*g*topHeight);
-		Log.d(TAG, "get Total Inital: " + String.valueOf(totalInitEnergy)); 
-		return totalInitEnergy;
-	}
+		
+//	public float totalInitialEnergy(){
+//		float totalInitEnergy = 0.0f;
+//		//totaInitial = m*v^2/2 + m*g*h
+//		double velocity = firstGateDistance/firstGateSeconds; //velocity at top gates
+//		totalInitEnergy = (float) ((mass * Math.pow(velocity,2) / 2) + mass*g*topSensorHeight);
+//		Log.d(TAG, "get Total Inital: " + String.valueOf(totalInitEnergy)); 
+//		return totalInitEnergy;
+//	}
 	
 	public int getScore(int level, int attemptNum, int kineticGoal, int thermalGoal){
 		int thisScore = 0;
@@ -105,7 +95,7 @@ public class SciMath {
 		goalRatio = (float)((float)kineticGoal/(float)thermalGoal); //kinetic to thermal ratio (goal)
 		Log.d(TAG, "goalRatio: " + String.valueOf(goalRatio)); 
 		
-		achievedRatio = getTotalKinetic()/getThermal(); //kinetic to thermal ratio (achieved)
+		achievedRatio = getBottomKinetic()/getThermal(); //kinetic to thermal ratio (achieved)
 		Log.d(TAG, "achievedRatio: " + String.valueOf(achievedRatio)); 
 		
 		float ratioDiff = Math.abs(goalRatio - achievedRatio); //absolute value of difference
@@ -128,7 +118,7 @@ public class SciMath {
 	
 	public boolean getSessionValid(){
 		boolean validity = true;
-		if(getThermal() < 10 || getTotalKinetic() < 10){
+		if(getThermal() < 10 || getBottomKinetic() < 10){
 			validity = false;
 		}
 		return validity;
@@ -205,5 +195,3 @@ public class SciMath {
 //		return thisChar;
 //	}
 }
-
-
